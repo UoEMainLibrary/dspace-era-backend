@@ -2527,6 +2527,13 @@
                 <stored-value>Other</stored-value>
             </pair>
         </value-pairs>
+
+        <value-pairs value-pairs-name="institution" dc-term="publisher">
+            <pair>
+            <displayed-value>The University of Edinburgh</displayed-value>
+            <stored-value>The University of Edinburgh</stored-value>
+            </pair>
+        </value-pairs>
         <!-- Custom value pairs end -->
 
     </form-value-pairs>
