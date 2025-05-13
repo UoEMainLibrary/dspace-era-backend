@@ -1350,7 +1350,7 @@
 
         <!-- Custom Forms -->
         <!-- Thesis Form -->
-        <form name="theseform">
+        <form name="thesisform">
             <row>
                 <field>
                     <dc-schema>dc</dc-schema>
@@ -1617,7 +1617,7 @@
                     <dc-qualifier>ispartofseries</dc-qualifier>
                     <repeatable>true</repeatable>
                     <label>Series/Report No.</label>
-                    <input-type>twobox</input-type>
+                    <input-type>onebox</input-type>
                     <hint>Enter the series and number assigned to this item by your community.</hint>
                 </field>
             </row>
@@ -1692,10 +1692,9 @@
                     <dc-schema>dc</dc-schema>
                     <dc-element>subject</dc-element>
                     <dc-qualifier></dc-qualifier>
-                    <!-- An input-type of twobox MUST be marked as repeatable -->
                     <repeatable>true</repeatable>
                     <label>Subject Keywords</label>
-                    <input-type>twobox</input-type>
+                    <input-type>onebox</input-type>
                     <hint> Enter appropriate subject keywords or phrases below. </hint>
                     <required>Please enter subject keywords.</required>
                 </field>

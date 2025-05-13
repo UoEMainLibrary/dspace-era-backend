@@ -467,9 +467,9 @@
         </submission-process>
 
         <!-- Custom submission processes -->
-        <submission-process name="theseform">
+        <submission-process name="thesisform">
             <step id="collection"/>
-            <step id="theseform"/>
+            <step id="thesisform"/>
             <step id="upload"/>
             <step id="license"/>
         </submission-process>
