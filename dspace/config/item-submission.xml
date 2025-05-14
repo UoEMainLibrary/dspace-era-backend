@@ -300,6 +300,24 @@
             <type>duplicates</type>
         </step-definition>
 
+        <!-- Custom Definitions -->
+        <!-- Thesis form -->
+        <step-definition id="thesisform">
+            <heading>submit.progressbar.describe.stepone</heading>
+            <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+            <type>submission-form</type>
+        </step-definition>
+        <!-- Thesis form end -->
+
+        <!-- Research form -->
+        <step-definition id="researchform">
+            <heading>submit.progressbar.describe.stepone</heading>
+            <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+            <type>submission-form</type>
+        </step-definition>
+        <!-- Research form end -->
+        <!-- Custom Definitions end -->
+
     </step-definitions>
 
     <!-- The submission-definitions map lays out the detailed definition of -->
