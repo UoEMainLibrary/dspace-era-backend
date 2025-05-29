@@ -345,4 +345,13 @@
             <class>org.dspace.iiif.canvasdimension.CanvasDimensionCLI</class>
         </step>
     </command>
+    <!-- ERA specific custom comands-->
+     <command>
+        <name>era-citation-updater</name>
+        <description>Create or update citations for Items.</description>
+        <step>
+            <class>uk.ac.ed.era.commands.EraCitationUpdaterCLI</class>
+        </step>
+    </command>
+     <!-- END-->
 </commands>
