@@ -489,6 +489,7 @@
             <step id="collection"/>
             <step id="thesisform"/>
             <step id="upload"/>
+            <step id="itemAccessConditions"/>
             <step id="license"/>
         </submission-process>
 
