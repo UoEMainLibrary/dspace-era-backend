@@ -350,7 +350,7 @@
             <step id="traditionalpagetwo"/>
 
             <!-- Uncomment this step to allow the user to embargo or access restrict the entire item -->
-            <!-- <step id="itemAccessConditions"/> -->
+            <step id="itemAccessConditions"/>
 
             <!-- Uncomment this step to show when appropriate publisher policies retrieved from SHERPA/RoMEO -->
             <!-- <step id="sherpaPolicies"/> -->
