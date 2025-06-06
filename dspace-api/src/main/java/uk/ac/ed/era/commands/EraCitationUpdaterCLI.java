@@ -163,15 +163,28 @@ public class EraCitationUpdaterCLI {
 			boolean hasDoi = identifiers.stream()
 					.anyMatch(identifier -> identifier.getValue().contains("doi.org"));
 
+		    // Check that citation is using dc.title alternative for title if it exists.
+			boolean useAltTitle = false;
+			List<MetadataValue> titles = itemService.getMetadata(item, "dc", "title", Item.ANY, Item.ANY, false);
+			String title = titles.isEmpty() ? null : titles.get(0).getValue();
+			List<MetadataValue> altTitles = itemService.getMetadata(item, "dc", "title", "alternative", Item.ANY, false);
+            String altTitle = altTitles.isEmpty() ? null : altTitles.get(0).getValue();
+			if (altTitle != null && title != null && !altTitle.equals(title)) {
+				useAltTitle = true;
+			}
+
 			log.info("Item " + item.getID() + " citation: " + citation);
 
-			if (citation == null && hasDoi) {
+			if (citation == null) {
 				// Create new citation
 				String newCitation = createCitation(item);
 				if (newCitation != null) {
 					itemService.addMetadata(context, item, "dc", "identifier", "citation", "en", newCitation);
 				}
-			} else if (citation != null && !citation.contains("doi.org") && hasDoi) {
+				// If citation exists:
+				// If citation doesn't contain doi.org, but item has doi: update citation.
+				// If citation is using dc.title for title, when dc.title.alternative exists: update citation.
+			} else if (citation != null && ((!citation.contains("doi.org") && hasDoi) || useAltTitle)) {
 				// Clear existing citation and create new one
 				itemService.clearMetadata(context, item, "dc", "identifier", "citation", Item.ANY);
 				String newCitation = createCitation(item);
@@ -238,9 +251,16 @@ public class EraCitationUpdaterCLI {
 			buffer.append("). ");
 
 			// Add title
-			List<MetadataValue> titles = itemService.getMetadata(item, "dc", "title", Item.ANY, Item.ANY, false);
+			// See if dc.title.alternative is available
+			List<MetadataValue> titles = itemService.getMetadata(item, "dc", "title", "alternative", Item.ANY, false);
 			if (!titles.isEmpty()) {
 				buffer.append(titles.get(0).getValue());
+			} else {
+				// Otherwise use dc.title if available
+				titles = itemService.getMetadata(item, "dc", "title", Item.ANY, Item.ANY, false);
+				if (!titles.isEmpty()) {
+					buffer.append(titles.get(0).getValue());
+				}
 			}
 			buffer.append(", ");
 
