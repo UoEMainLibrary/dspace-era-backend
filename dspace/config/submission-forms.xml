@@ -1423,7 +1423,7 @@
                     <dc-qualifier></dc-qualifier>
                     <repeatable>false</repeatable>
                     <label>Qualification Type</label>
-                    <input-type value-pairs-name="common_types">dropdown</input-type>
+                    <input-type value-pairs-name="thesis_types">dropdown</input-type>
                     <hint>Select the qualification type that you are submitting.</hint>
                     <required>Select the qualification type that you are submitting for.</required>
                 </field>
@@ -2676,6 +2676,13 @@
                 <stored-value>Undergraduate</stored-value>
             </pair>
         </value-pairs>
+
+         <value-pairs value-pairs-name="thesis_types" dc-term="type">
+            <pair>
+                <displayed-value>Thesis</displayed-value>
+                <stored-value>Thesis</stored-value>
+            </pair>
+         </value-pairs>
         <!-- Common qualification name end -->
         <!-- Custom value pairs end -->
 
