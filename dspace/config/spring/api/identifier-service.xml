@@ -97,7 +97,7 @@
          e.g. EZID is part of DataCite but provides their own APIs. The following
          DataCiteConnector won't work if EZID is your registration agency.
     -->
-    <!-- Uncomment this to use the DataCite API directly as DOIConnector.
+    <!-- Uncomment this to use the DataCite API directly as DOIConnector. -->
     <bean id="org.dspace.identifier.doi.DOIConnector"
         class="org.dspace.identifier.doi.DataCiteConnector"
         scope="singleton">
@@ -107,7 +107,7 @@
         <property name='DATACITE_METADATA_PATH' value='/metadata/' />
         <property name='disseminationCrosswalkName' value="DataCite" />
     </bean>
-    -->
+   
 
     <!-- Provider to mint and register DOIs using EZID as the registrar.
     -->
