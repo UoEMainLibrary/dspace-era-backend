@@ -18,7 +18,7 @@
     <!-- for handle "default". -->
     <submission-map>
         <!-- Default submission process -->
-        <name-map collection-handle="default" submission-name="traditional"/>
+        <name-map collection-handle="default" submission-name="researchform"/>
 
         <!-- Sample Entities Collection configuration based on the demo Entities dataset available at:
              https://github.com/DSpace-Labs/AIP-Files/releases/tag/demo-entities-data
@@ -55,9 +55,7 @@
             - - - - - -
             PLEASE NOTICE THAT YOU WILL HAVE TO RESTART DSPACE
             - - - - - -
-            Uncomment if you intend to use them
-        -->  
-        <!-- 
+        -->
         <name-map collection-entity-type="Publication" submission-name="Publication"/>
         <name-map collection-entity-type="Person" submission-name="Person"/>
         <name-map collection-entity-type="Project" submission-name="Project"/>
@@ -65,7 +63,60 @@
         <name-map collection-entity-type="Journal" submission-name="Journal"/>
         <name-map collection-entity-type="JournalVolume" submission-name="JournalVolume"/>
         <name-map collection-entity-type="JournalIssue" submission-name="JournalIssue"/>
-         -->
+
+        <!-- Example of configuration using a community handle to map an Item Submission Process.
+
+            This configuration maps the submission process to the community's descendant
+            collections that do not have a mapping defined by collection-handle or entity-type
+
+        <name-map community-handle="123456789/1234" submission-name="xxxx"/>
+        -->
+
+        <!-- Form mapping for thesis collection -->
+        <name-map collection-handle="1842/2204" submission-name="thesisform" />
+        <name-map collection-handle="1842/2138" submission-name="thesisform" />
+        <name-map collection-handle="1842/2274" submission-name="thesisform" />
+        <name-map collection-handle="1842/3415" submission-name="thesisform" />
+        <name-map collection-handle="1842/1682" submission-name="thesisform" />
+        <name-map collection-handle="1842/1536" submission-name="thesisform" />
+        <name-map collection-handle="1842/35594" submission-name="thesisform" />
+        <name-map collection-handle="1842/35593" submission-name="thesisform" />
+        <name-map collection-handle="1842/868" submission-name="thesisform" />
+        <name-map collection-handle="1842/3420" submission-name="thesisform" />
+        <name-map collection-handle="1842/1256" submission-name="thesisform" />
+        <name-map collection-handle="1842/1394" submission-name="thesisform" />
+        <name-map collection-handle="1842/3414" submission-name="thesisform" />
+        <name-map collection-handle="1842/1154" submission-name="thesisform" />
+        <name-map collection-handle="1842/1901" submission-name="thesisform" />
+        <name-map collection-handle="1842/1687" submission-name="thesisform" />
+        <name-map collection-handle="1842/1788" submission-name="thesisform" />
+        <name-map collection-handle="1842/1692" submission-name="thesisform" />
+        <name-map collection-handle="1842/1694" submission-name="thesisform" />
+        <name-map collection-handle="1842/1252" submission-name="thesisform" />
+        <name-map collection-handle="1842/1746" submission-name="thesisform" />
+        <name-map collection-handle="1842/1747" submission-name="thesisform" />
+        <name-map collection-handle="1842/2284" submission-name="thesisform" />
+        <name-map collection-handle="1842/3520" submission-name="thesisform" />
+        <name-map collection-handle="1842/1745" submission-name="thesisform" />
+        <name-map collection-handle="1842/3013" submission-name="thesisform" />
+        <name-map collection-handle="1842/2624" submission-name="thesisform" />
+        <name-map collection-handle="1842/1516" submission-name="thesisform" />
+        <name-map collection-handle="1842/1807" submission-name="thesisform" />
+        <name-map collection-handle="1842/3412" submission-name="thesisform" />
+        <name-map collection-handle="1842/1410" submission-name="thesisform" />
+        <name-map collection-handle="1842/3990" submission-name="thesisform" />
+        <name-map collection-handle="1842/3389" submission-name="thesisform" />
+        <name-map collection-handle="1842/4446" submission-name="thesisform" />
+        <name-map collection-handle="1842/1951" submission-name="thesisform" />
+        <name-map collection-handle="1842/1688" submission-name="thesisform" />
+        <name-map collection-handle="1842/917" submission-name="thesisform" />
+        <name-map collection-handle="1842/6695" submission-name="thesisform" />
+        <name-map collection-handle="1842/7551" submission-name="thesisform" />
+        <name-map collection-handle="1842/8719" submission-name="thesisform" />
+        <name-map collection-handle="1842/1690" submission-name="thesisform" />
+        <name-map collection-handle="1842/15819" submission-name="thesisform" />
+        <name-map collection-handle="1842/21712" submission-name="thesisform" />
+        <name-map collection-handle="1842/37246" submission-name="thesisform" />
 
     </submission-map>
 
@@ -189,28 +240,28 @@
             <type>extract</type>
         </step-definition>
 
-        <!-- OpenAIRE submission steps/forms -->
-        <step-definition id="openAIREProjectForm" mandatory="true">
+        <!-- Openaire submission steps/forms -->
+        <step-definition id="openaireProjectForm" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
         </step-definition>
-        <step-definition id="openAIREPersonForm" mandatory="true">
+        <step-definition id="openairePersonForm" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
         </step-definition>
-        <step-definition id="openAIREOrganizationForm" mandatory="true">
+        <step-definition id="openaireOrganizationForm" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
         </step-definition>
-        <step-definition id="openAIREPublicationPageoneForm" mandatory="true">
+        <step-definition id="openairePublicationPageoneForm" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
         </step-definition>
-        <step-definition id="openAIREPublicationPagetwoForm" mandatory="true">
+        <step-definition id="openairePublicationPagetwoForm" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
@@ -235,6 +286,38 @@
             <processing-class>org.dspace.app.rest.submit.step.ShowIdentifiersStep</processing-class>
             <type>identifiers</type>
         </step-definition>
+
+        <step-definition id="coarnotify">
+            <heading>submit.progressbar.coarnotify</heading>
+            <processing-class>org.dspace.app.rest.submit.step.NotifyStep</processing-class>
+            <type>coarnotify</type>
+        </step-definition>
+
+        <!-- Detect duplicates step -->
+        <step-definition id="duplicates">
+            <heading>submit.progressbar.duplicates</heading>
+            <processing-class>org.dspace.app.rest.submit.step.DuplicateDetectionStep</processing-class>
+            <type>duplicates</type>
+        </step-definition>
+
+        <!-- Custom Definitions -->
+        <!-- Thesis form -->
+        <step-definition id="thesisform">
+            <heading>submit.progressbar.describe.stepone</heading>
+            <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+            <type>submission-form</type>
+        </step-definition>
+        <!-- Thesis form end -->
+
+        <!-- Research form -->
+        <step-definition id="researchform">
+            <heading>submit.progressbar.describe.stepone</heading>
+            <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+            <type>submission-form</type>
+        </step-definition>
+        <!-- Research form end -->
+        <!-- Custom Definitions end -->
+
     </step-definitions>
 
     <!-- The submission-definitions map lays out the detailed definition of -->
@@ -267,10 +350,18 @@
             <step id="traditionalpagetwo"/>
 
             <!-- Uncomment this step to allow the user to embargo or access restrict the entire item -->
-            <!-- <step id="itemAccessConditions"/> -->
+            <step id="itemAccessConditions"/>
 
             <!-- Uncomment this step to show when appropriate publisher policies retrieved from SHERPA/RoMEO -->
             <!-- <step id="sherpaPolicies"/> -->
+
+            <!-- To include the 'Duplicate Detection' step, uncomment the line below. Make sure
+                 that duplicate-detection.cfg is properly configured and items have been reindexed since
+                 enabling the feature -->
+            <!-- <step id="duplicates"/> -->
+
+            <!--Step will be COAR Notify services to the item -->
+            <!-- <step id="coarnotify"/> -->
 
             <!--Step will be to Upload the item -->
             <step id="upload"/>
@@ -365,13 +456,13 @@
             <step id="license"/>
         </submission-process>
 
-        <!-- OpenAIRE submission processes -->
-        <submission-process name="openAIREPublicationSubmission">
+        <!-- Openaire submission processes -->
+        <submission-process name="openairePublicationSubmission">
             <step id="collection"/>
 
             <!--Step will be to Describe the item. -->
-            <step id="openAIREPublicationPageoneForm"/>
-            <step id="openAIREPublicationPagetwoForm"/>
+            <step id="openairePublicationPageoneForm"/>
+            <step id="openairePublicationPagetwoForm"/>
 
             <!--Step will be to Upload the item -->
             <!-- step id="upload-with-embargo"/-->
@@ -380,18 +471,35 @@
             <!--Step will be to Sign off on the License -->
             <step id="license"/>
         </submission-process>
-        <submission-process name="openAIREPersonSubmission">
+        <submission-process name="openairePersonSubmission">
             <step id="collection"/>
-            <step id="openAIREPersonForm"/>
+            <step id="openairePersonForm"/>
         </submission-process>
-        <submission-process name="openAIREProjectSubmission">
+        <submission-process name="openaireProjectSubmission">
             <step id="collection"/>
-            <step id="openAIREProjectForm"/>
+            <step id="openaireProjectForm"/>
         </submission-process>
-        <submission-process name="openAIREOrganizationSubmission">
+        <submission-process name="openaireOrganizationSubmission">
             <step id="collection"/>
-            <step id="openAIREOrganizationForm"/>
+            <step id="openaireOrganizationForm"/>
         </submission-process>
+
+        <!-- Custom submission processes -->
+        <submission-process name="thesisform">
+            <step id="collection"/>
+            <step id="thesisform"/>
+            <step id="upload"/>
+            <step id="itemAccessConditions"/>
+            <step id="license"/>
+        </submission-process>
+
+        <submission-process name="researchform">
+            <step id="collection"/>
+            <step id="researchform"/>
+            <step id="upload"/>
+            <step id="license"/>
+        </submission-process>
+        <!-- ustum submission processes end -->
     </submission-definitions>
 
 </item-submission>
