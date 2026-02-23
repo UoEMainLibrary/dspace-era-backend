@@ -7,7 +7,6 @@
  */
 package org.dspace.app.mediafilter;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,9 +37,8 @@ import org.dspace.utils.DSpace;
  * MFM: -v verbose outputs all extracted text to STDOUT; -f force forces all
  * bitstreams to be processed, even if they have been before; -n noindex does not
  * recreate index after processing bitstreams; -i [identifier] limits processing
- * scope to a community, collection or item; -m [max] limits processing to a
- * maximum number of items; -fd [fromdate] takes only items starting from this date,
- * filtering by last_modified in the item table.
+ * scope to a community, collection or item; and -m [max] limits processing to a
+ * maximum number of items.
  */
 public class MediaFilterScript extends DSpaceRunnable<MediaFilterScriptConfiguration> {
 
@@ -62,7 +60,6 @@ public class MediaFilterScript extends DSpaceRunnable<MediaFilterScriptConfigura
     private String[] filterNames;
     private String[] skipIds = null;
     private Map<String, List<String>> filterFormats = new HashMap<>();
-    private LocalDate fromDate = null;
 
     public MediaFilterScriptConfiguration getScriptConfiguration() {
         return new DSpace().getServiceManager()
@@ -113,10 +110,6 @@ public class MediaFilterScript extends DSpaceRunnable<MediaFilterScriptConfigura
         if (commandLine.hasOption('s')) {
             //specified which identifiers to skip when processing
             skipIds = commandLine.getOptionValues('s');
-        }
-
-        if (commandLine.hasOption('d')) {
-            fromDate = LocalDate.parse(commandLine.getOptionValue('d'));
         }
 
 
@@ -220,10 +213,6 @@ public class MediaFilterScript extends DSpaceRunnable<MediaFilterScriptConfigura
         if (skipIds != null && skipIds.length > 0) {
             //save to a global skip list
             mediaFilterService.setSkipList(Arrays.asList(skipIds));
-        }
-
-        if (fromDate != null) {
-            mediaFilterService.setFromDate(fromDate);
         }
 
         Context c = null;

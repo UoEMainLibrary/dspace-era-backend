@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -101,17 +100,12 @@ public class PoolTaskServiceImpl implements PoolTaskService {
                 //If the user does not have a claimedtask yet, see whether one of the groups of the user has pooltasks
                 //for this workflow item
                 Set<Group> groups = groupService.allMemberGroupsSet(context, ePerson);
-                List<PoolTask> generalTasks = poolTaskDAO.findByWorkflowItem(context, workflowItem);
+                for (Group group : groups) {
+                    poolTask = poolTaskDAO.findByWorkflowItemAndGroup(context, group, workflowItem);
+                    if (poolTask != null) {
+                        return poolTask;
+                    }
 
-                Optional<PoolTask> firstClaimedTask = groups.stream()
-                        .flatMap(group -> generalTasks.stream()
-                                .filter(f -> f.getGroup().getID().equals(group.getID()))
-                                .findFirst()
-                                .stream())
-                        .findFirst();
-
-                if (firstClaimedTask.isPresent()) {
-                    return firstClaimedTask.get();
                 }
             }
         }

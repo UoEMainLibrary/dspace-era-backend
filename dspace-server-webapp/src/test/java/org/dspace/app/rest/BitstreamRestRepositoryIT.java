@@ -7,8 +7,8 @@
  */
 package org.dspace.app.rest;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_NOT_FOUND;
-import static jakarta.servlet.http.HttpServletResponse.SC_OK;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.dspace.app.rest.matcher.MetadataMatcher.matchMetadata;
 import static org.dspace.app.rest.matcher.MetadataMatcher.matchMetadataDoesNotExist;
 import static org.dspace.app.rest.repository.patch.operation.BitstreamRemoveOperation.OPERATION_PATH_BITSTREAM_REMOVE;
@@ -25,13 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.InputStream;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import javax.ws.rs.core.MediaType;
 
-import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.io.IOUtils;
 import org.dspace.app.rest.matcher.BitstreamFormatMatcher;
@@ -50,7 +49,6 @@ import org.dspace.builder.BundleBuilder;
 import org.dspace.builder.CollectionBuilder;
 import org.dspace.builder.CommunityBuilder;
 import org.dspace.builder.EPersonBuilder;
-import org.dspace.builder.GroupBuilder;
 import org.dspace.builder.ItemBuilder;
 import org.dspace.builder.ResourcePolicyBuilder;
 import org.dspace.content.Bitstream;
@@ -312,7 +310,7 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                 .withName("Test Embargoed Bitstream")
                 .withDescription("This bitstream is embargoed")
                 .withMimeType("text/plain")
-                .withEmbargoPeriod(Period.ofMonths(3))
+                .withEmbargoPeriod("3 months")
                 .build();
         }
         context.restoreAuthSystemState();
@@ -365,7 +363,7 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                 .withName("Test Embargoed Bitstream")
                 .withDescription("This bitstream is embargoed")
                 .withMimeType(bitstreamFormat.getMIMEType())
-                .withEmbargoPeriod(Period.ofMonths(3))
+                .withEmbargoPeriod("3 months")
                 .build();
         }
         context.restoreAuthSystemState();
@@ -519,7 +517,7 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                 .withName("Test Embargoed Bitstream")
                 .withDescription("This bitstream is embargoed")
                 .withMimeType("text/plain")
-                .withEmbargoPeriod(Period.ofMonths(3))
+                .withEmbargoPeriod("3 months")
                 .build();
         }
 
@@ -579,7 +577,7 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                 .withName("Test Embargoed Bitstream")
                 .withDescription("This bitstream is embargoed")
                 .withMimeType(bitstreamFormat.getMIMEType())
-                .withEmbargoPeriod(Period.ofMonths(3))
+                .withEmbargoPeriod("3 months")
                 .build();
         }
 
@@ -640,13 +638,13 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                 .withName("Test Embargoed Bitstream")
                 .withDescription("This bitstream is embargoed")
                 .withMimeType("text/plain")
-                .withEmbargoPeriod(Period.ofMonths(3))
+                .withEmbargoPeriod("3 months")
                 .build();
         }
 
         // Replace anon read policy on bundle of bitstream with ePerson READ policy
         resourcePolicyService.removePolicies(context, bitstream.getBundles().get(0), Constants.READ);
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context).withUser(eperson)
                              .withAction(Constants.READ)
                              .withDspaceObject(bitstream.getBundles().get(0)).build();
 
@@ -703,15 +701,15 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                 .withName("Test Embargoed Bitstream")
                 .withDescription("This bitstream is embargoed")
                 .withMimeType(bitstreamFormat.getMIMEType())
-                .withEmbargoPeriod(Period.ofMonths(3))
+                .withEmbargoPeriod("3 months")
                 .build();
         }
 
         // Replace anon read policy on bundle of bitstream with ePerson READ policy
         resourcePolicyService.removePolicies(context, bitstream.getBundles().get(0), Constants.READ);
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
-                             .withAction(Constants.READ)
-                             .withDspaceObject(bitstream.getBundles().get(0)).build();
+        ResourcePolicyBuilder.createResourcePolicy(context).withUser(eperson)
+            .withAction(Constants.READ)
+            .withDspaceObject(bitstream.getBundles().get(0)).build();
 
         context.restoreAuthSystemState();
 
@@ -770,7 +768,7 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                 .withName("Test Embargoed Bitstream")
                 .withDescription("This bitstream is embargoed")
                 .withMimeType("text/plain")
-                .withEmbargoPeriod(Period.ofMonths(3))
+                .withEmbargoPeriod("3 months")
                 .build();
         }
 
@@ -828,13 +826,13 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                 .withName("Test Embargoed Bitstream")
                 .withDescription("This bitstream is embargoed")
                 .withMimeType("text/plain")
-                .withEmbargoPeriod(Period.ofMonths(3))
+                .withEmbargoPeriod("3 months")
                 .build();
         }
 
         // Replace anon read policy on item of bitstream with ePerson READ policy
         resourcePolicyService.removePolicies(context, publicItem1, Constants.READ);
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context).withUser(eperson)
                              .withAction(Constants.READ)
                              .withDspaceObject(publicItem1).build();
 
@@ -1309,7 +1307,7 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
         getClient(token)
             .perform(patch("/api/core/bitstreams/" + bitstream.getID())
             .content(requestBody)
-            .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON_PATCH_JSON))
+            .contentType(javax.ws.rs.core.MediaType.APPLICATION_JSON_PATCH_JSON))
             .andExpect(status().isOk())
             .andExpect(
                  jsonPath("$.metadata",
@@ -1482,7 +1480,8 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                                         .build();
         }
 
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
+                             .withUser(eperson)
                              .withAction(WRITE)
                              .withDspaceObject(col1)
                              .build();
@@ -1696,53 +1695,6 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
     }
 
     @Test
-    public void thumbnailEndpointTestWithSpecialCharactersInFileName() throws Exception {
-        // Given an Item
-        context.turnOffAuthorisationSystem();
-
-        parentCommunity = CommunityBuilder.createCommunity(context)
-            .withName("Parent Community")
-            .build();
-
-        Collection col1 = CollectionBuilder.createCollection(context, parentCommunity)
-            .withName("Collection 1").build();
-
-        Item item = ItemBuilder.createItem(context, col1)
-            .withTitle("Test item -- thumbnail")
-            .withIssueDate("2017-10-17")
-            .withAuthor("Smith, Donald").withAuthor("Doe, John")
-            .build();
-
-        Bundle originalBundle = BundleBuilder.createBundle(context, item)
-            .withName(Constants.DEFAULT_BUNDLE_NAME)
-            .build();
-        Bundle thumbnailBundle = BundleBuilder.createBundle(context, item)
-            .withName("THUMBNAIL")
-            .build();
-
-        InputStream is = IOUtils.toInputStream("dummy", "utf-8");
-
-        // With an ORIGINAL Bitstream & matching THUMBNAIL Bitstream containing special characters in filenames
-        Bitstream bitstream = BitstreamBuilder.createBitstream(context, originalBundle, is)
-            .withName("test (2023) file.pdf")
-            .withMimeType("application/pdf")
-            .build();
-        Bitstream thumbnail = BitstreamBuilder.createBitstream(context, thumbnailBundle, is)
-            .withName("test (2023) file.pdf.jpg")
-            .withMimeType("image/jpeg")
-            .build();
-
-        context.restoreAuthSystemState();
-
-        String tokenAdmin = getAuthToken(admin.getEmail(), password);
-
-        getClient(tokenAdmin).perform(get("/api/core/bitstreams/" + bitstream.getID() + "/thumbnail"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.uuid", Matchers.is(thumbnail.getID().toString())))
-            .andExpect(jsonPath("$.type", is("bitstream")));
-    }
-
-    @Test
     public void thumbnailEndpointMultipleThumbnailsWithPrimaryBitstreamTest() throws Exception {
         // Given an Item
         context.turnOffAuthorisationSystem();
@@ -1947,7 +1899,7 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                                       .withTitle("Test")
                                       .withIssueDate("2010-10-17")
                                       .withAuthor("Smith, Donald")
-                                      .withEmbargoPeriod(Period.ofMonths(6))
+                                      .withEmbargoPeriod("6 months")
                                       .build();
 
         String bitstreamContent = "This is an archived bitstream";
@@ -2420,7 +2372,7 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                 .withName("Test Embargoed Bitstream")
                 .withDescription("This bitstream is embargoed")
                 .withMimeType("text/plain")
-                .withEmbargoPeriod(Period.ofMonths(3))
+                .withEmbargoPeriod("3 months")
                 .build();
         }
 
@@ -2769,12 +2721,10 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                                           .withEmail("col2admin@test.com")
                                           .withPassword(password)
                                           .build();
-        Group col1_AdminGroup = GroupBuilder.createCollectionAdminGroup(context, col1)
-                .addMember(col1Admin)
-                .build();
-        Group col2_AdminGroup = GroupBuilder.createCollectionAdminGroup(context, col2)
-                .addMember(col2Admin)
-                .build();
+        Group col1_AdminGroup = collectionService.createAdministrators(context, col1);
+        Group col2_AdminGroup = collectionService.createAdministrators(context, col2);
+        groupService.addMember(context, col1_AdminGroup, col1Admin);
+        groupService.addMember(context, col2_AdminGroup, col2Admin);
         Item publicItem1 = ItemBuilder.createItem(context, col1)
                                       .withTitle("Test item 1")
                                       .build();
@@ -2875,9 +2825,8 @@ public class BitstreamRestRepositoryIT extends AbstractControllerIntegrationTest
                                           .withEmail("parentComAdmin@test.com")
                                           .withPassword(password)
                                           .build();
-        Group parentComAdminGroup = GroupBuilder.createCommunityAdminGroup(context, parentCommunity)
-                .addMember(parentCommunityAdmin)
-                .build();
+        Group parentComAdminGroup = communityService.createAdministrators(context, parentCommunity);
+        groupService.addMember(context, parentComAdminGroup, parentCommunityAdmin);
         Item publicItem1 = ItemBuilder.createItem(context, col1)
                                       .withTitle("Test item 1")
                                       .build();

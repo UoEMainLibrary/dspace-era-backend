@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -155,7 +154,7 @@ public class BulkAccessControl extends DSpaceRunnable<BulkAccessControlScriptCon
         }
 
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
+        mapper.setTimeZone(TimeZone.getTimeZone("UTC"));
         BulkAccessControlInput accessControl;
         context = new Context(Context.Mode.BATCH_EDIT);
         setEPerson(context);
@@ -417,7 +416,7 @@ public class BulkAccessControl extends DSpaceRunnable<BulkAccessControlScriptCon
         discoverQuery.setQuery(query);
         discoverQuery.setStart(start);
         discoverQuery.setMaxResults(limit);
-        discoverQuery.setSortField("search.resourceid", DiscoverQuery.SORT_ORDER.asc);
+
         return discoverQuery;
     }
 
@@ -465,7 +464,7 @@ public class BulkAccessControl extends DSpaceRunnable<BulkAccessControlScriptCon
             .forEach(accessCondition -> createResourcePolicy(item, accessCondition,
                 itemAccessConditions.get(accessCondition.getName())));
 
-        itemService.adjustItemPolicies(context, item, item.getOwningCollection(), false);
+        itemService.adjustItemPolicies(context, item, item.getOwningCollection());
     }
 
     /**

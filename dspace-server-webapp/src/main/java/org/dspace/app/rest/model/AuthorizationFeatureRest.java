@@ -21,7 +21,6 @@ import org.dspace.app.rest.RestResourceController;
  */
 public class AuthorizationFeatureRest extends BaseObjectRest<String> {
     public static final String NAME = "feature";
-    public static final String PLURAL_NAME = "features";
     public static final String CATEGORY = RestAddressableModel.AUTHORIZATION;
 
     private String description;
@@ -33,11 +32,6 @@ public class AuthorizationFeatureRest extends BaseObjectRest<String> {
     @JsonProperty(access = Access.READ_ONLY)
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     @Override

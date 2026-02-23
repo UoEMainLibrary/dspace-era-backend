@@ -7,8 +7,9 @@
  */
 package org.dspace.app.rest.repository;
 
-import jakarta.annotation.Nullable;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
+
 import org.dspace.app.rest.authorization.AuthorizationFeature;
 import org.dspace.app.rest.authorization.AuthorizationFeatureService;
 import org.dspace.app.rest.authorization.AuthorizationRestUtil;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
 /**
  * Link repository for "feature" subresource of an individual authorization.
  */
-@Component(AuthorizationRest.CATEGORY + "." + AuthorizationRest.PLURAL_NAME + "." + AuthorizationRest.FEATURE)
+@Component(AuthorizationRest.CATEGORY + "." + AuthorizationRest.NAME + "." + AuthorizationRest.FEATURE)
 public class AuthorizationFeatureLinkRepository extends AbstractDSpaceRestRepository
         implements LinkRestRepository {
 

@@ -7,9 +7,10 @@
  */
 package org.dspace.app.rest.repository;
 
-import jakarta.annotation.Nullable;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.NotFoundException;
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.NotFoundException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.app.rest.model.VocabularyEntryDetailsRest;
 import org.dspace.app.rest.model.VocabularyRest;
@@ -29,8 +30,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Mykhaylo Boychuk ($science.it)
  */
-@Component(VocabularyRest.CATEGORY + "." + VocabularyEntryDetailsRest.PLURAL_NAME + "." +
-    VocabularyEntryDetailsRest.PARENT)
+@Component(VocabularyRest.CATEGORY + "." + VocabularyEntryDetailsRest.NAME + "." + VocabularyEntryDetailsRest.PARENT)
 public class VocabularyEntryDetailsParentLinkRepository extends AbstractDSpaceRestRepository
     implements LinkRestRepository {
 

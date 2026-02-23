@@ -17,9 +17,8 @@ import org.dspace.app.rest.RestResourceController;
  *
  * @author Maria Verdonck (Atmire) on 08/06/2020
  */
-public abstract class UsageReportPointRest extends BaseObjectRest<String> {
+public class UsageReportPointRest extends BaseObjectRest<String> {
     public static final String NAME = "point";
-    public static final String PLURAL_NAME = "points";
     public static final String CATEGORY = RestModel.STATISTICS;
     protected String id;
     protected String label;
@@ -53,16 +52,6 @@ public abstract class UsageReportPointRest extends BaseObjectRest<String> {
     @Override
     public String getType() {
         return NAME;
-    }
-
-    /**
-     * Returns the plural type of this {@link UsageReportPointRest} object
-     *
-     * @return Plural type of this {@link UsageReportPointRest} object
-     */
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     /**

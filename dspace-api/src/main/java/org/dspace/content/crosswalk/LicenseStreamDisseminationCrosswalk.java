@@ -57,6 +57,7 @@ public class LicenseStreamDisseminationCrosswalk
 
             if (licenseBs != null) {
                 Utils.copy(bitstreamService.retrieve(context, licenseBs), out);
+                out.close();
             }
         }
     }

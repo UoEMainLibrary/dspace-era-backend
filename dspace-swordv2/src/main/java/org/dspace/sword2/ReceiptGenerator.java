@@ -8,6 +8,8 @@
 package org.dspace.sword2;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +28,6 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.util.MultiFormatDateParser;
 import org.swordapp.server.DepositReceipt;
 import org.swordapp.server.SwordError;
 import org.swordapp.server.SwordServerException;
@@ -283,8 +284,14 @@ public class ReceiptGenerator {
         List<MetadataValue> dcv = itemService.getMetadataByMetadataString(
             result.getItem(), "dc.date.issued");
         if (dcv != null && !dcv.isEmpty()) {
-            Date published = MultiFormatDateParser.parse(dcv.get(0).getValue());
-            receipt.getWrappedEntry().setPublished(published);
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date published = sdf.parse(dcv.get(0).getValue());
+                receipt.getWrappedEntry().setPublished(published);
+            } catch (ParseException e) {
+                // we tried, but never mind
+                log.warn("Couldn't add published date", e);
+            }
         }
     }
 
@@ -298,8 +305,14 @@ public class ReceiptGenerator {
         List<MetadataValue> dcv = itemService.getMetadataByMetadataString(
             item, "dc.date.issued");
         if (dcv != null && dcv.size() == 1) {
-            Date published = MultiFormatDateParser.parse(dcv.get(0).getValue());
-            receipt.getWrappedEntry().setPublished(published);
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date published = sdf.parse(dcv.get(0).getValue());
+                receipt.getWrappedEntry().setPublished(published);
+            } catch (ParseException e) {
+                // we tried, but never mind
+                log.warn("Couldn't add published date", e);
+            }
         }
     }
 
@@ -316,8 +329,14 @@ public class ReceiptGenerator {
         List<MetadataValue> dcv = itemService.getMetadataByMetadataString(
             result.getItem(), config);
         if (dcv != null && dcv.size() == 1) {
-            Date updated = MultiFormatDateParser.parse(dcv.get(0).getValue());
-            receipt.getWrappedEntry().setUpdated(updated);
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date updated = sdf.parse(dcv.get(0).getValue());
+                receipt.getWrappedEntry().setUpdated(updated);
+            } catch (ParseException e) {
+                // we tried, but never mind
+                log.warn("Couldn't add last updated date", e);
+            }
         }
     }
 
@@ -333,8 +352,14 @@ public class ReceiptGenerator {
         List<MetadataValue> dcv = itemService.getMetadataByMetadataString(
             item, config);
         if (dcv != null && dcv.size() == 1) {
-            Date updated = MultiFormatDateParser.parse(dcv.get(0).getValue());
-            receipt.getWrappedEntry().setUpdated(updated);
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date updated = sdf.parse(dcv.get(0).getValue());
+                receipt.getWrappedEntry().setUpdated(updated);
+            } catch (ParseException e) {
+                // we tried, but never mind
+                log.warn("Couldn't add last updated date", e);
+            }
         }
     }
 }

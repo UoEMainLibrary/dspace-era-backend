@@ -8,7 +8,7 @@
 
 package org.dspace.services;
 
-import jakarta.mail.Session;
+import javax.mail.Session;
 
 /**
  * @author mwood

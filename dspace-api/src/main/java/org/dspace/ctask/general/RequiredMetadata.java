@@ -17,7 +17,6 @@ import org.dspace.app.util.DCInput;
 import org.dspace.app.util.DCInputSet;
 import org.dspace.app.util.DCInputsReader;
 import org.dspace.app.util.DCInputsReaderException;
-import org.dspace.content.Collection;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
@@ -70,7 +69,7 @@ public class RequiredMetadata extends AbstractCurationTask {
                     handle = "in workflow";
                 }
                 sb.append("Item: ").append(handle);
-                for (String req : getReqList(item.getOwningCollection())) {
+                for (String req : getReqList(item.getOwningCollection().getHandle())) {
                     List<MetadataValue> vals = itemService.getMetadataByMetadataString(item, req);
                     if (vals.size() == 0) {
                         sb.append(" missing required field: ").append(req);
@@ -92,14 +91,14 @@ public class RequiredMetadata extends AbstractCurationTask {
         }
     }
 
-    protected List<String> getReqList(Collection collection) throws DCInputsReaderException {
-        List<String> reqList = reqMap.get(collection.getHandle());
+    protected List<String> getReqList(String handle) throws DCInputsReaderException {
+        List<String> reqList = reqMap.get(handle);
         if (reqList == null) {
             reqList = reqMap.get("default");
         }
         if (reqList == null) {
             reqList = new ArrayList<String>();
-            List<DCInputSet> inputSet = reader.getInputsByCollection(collection);
+            List<DCInputSet> inputSet = reader.getInputsByCollectionHandle(handle);
             for (DCInputSet inputs : inputSet) {
                 for (DCInput[] row : inputs.getFields()) {
                     for (DCInput input : row) {

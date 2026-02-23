@@ -8,8 +8,7 @@
 package org.dspace.services.model;
 
 import java.util.Map;
-
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession;
 
 /**
  * Represents a user's session (login session) in the system.  Can hold

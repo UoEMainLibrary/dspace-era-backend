@@ -18,11 +18,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Logger;
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.MemoryUsageSetting;
-import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.ScratchFile;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.dspace.authorize.AuthorizeException;
@@ -330,24 +330,19 @@ public class PDFPackager
         COSDocument cos = null;
 
         try {
-            PDDocument document = null;
-
+            ScratchFile scratchFile = null;
             try {
-                // Use up to 80% of JVM free memory and fall back to a temp file (unlimited size)
-                long useRAM = Runtime.getRuntime().freeMemory() * 80 / 100;
-                document = Loader.loadPDF(
-                        new RandomAccessReadBuffer(metadata),
-                        () -> new ScratchFile(MemoryUsageSetting.setupMixed(useRAM)));
+                long useRAM = Runtime.getRuntime().freeMemory() * 80 / 100; // use up to 80% of JVM free memory
+                scratchFile = new ScratchFile(
+                    MemoryUsageSetting.setupMixed(useRAM)); // then fallback to temp file (unlimited size)
             } catch (IOException ioe) {
                 log.warn("Error initializing scratch file: " + ioe.getMessage());
             }
 
-            // sanity check: loaded PDF document must not be null.
-            if (document == null) {
-                throw new MetadataValidationException("The provided stream could not be parsed into a PDF document.");
-            }
+            PDFParser parser = new PDFParser(new RandomAccessBufferedFileInputStream(metadata), scratchFile);
+            parser.parse();
+            cos = parser.getDocument();
 
-            cos = document.getDocument();
             // sanity check: PDFBox breaks on encrypted documents, so give up.
             if (cos.getEncryptionDictionary() != null) {
                 throw new MetadataValidationException("This packager cannot accept an encrypted PDF document.");

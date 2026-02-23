@@ -9,7 +9,6 @@ package org.dspace.sword2;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -619,33 +618,31 @@ public class SwordAuthenticator {
 
             // short cut by obtaining the collections to which the authenticated user can submit
             List<Collection> cols = collectionService.findAuthorized(
-                authContext, community, Arrays.asList(Constants.ADD, Constants.ADMIN));
-
+                authContext, community, Constants.ADD);
             List<org.dspace.content.Collection> allowed = new ArrayList<>();
 
             // now find out if the obo user is allowed to submit to any of these collections
-            if (swordContext.getOnBehalfOf() != null) {
-                for (Collection col : cols) {
-                    boolean oboAllowed = false;
+            for (Collection col : cols) {
+                boolean oboAllowed = false;
 
-                    //if we have not already determined that the obo user is ok to submit,
-                    //look up the READ policy on the
-                    // community.  THis will include determining if the user is an administrator.
-                    if (!oboAllowed) {
-                        oboAllowed = authorizeService.authorizeActionBoolean(
-                            swordContext.getOnBehalfOfContext(), col,
-                            Constants.ADD);
-                    }
-
-                    // final check to see if we are allowed to READ
-                    if (oboAllowed) {
-                        allowed.add(col);
-                    }
+                // check for obo null
+                if (swordContext.getOnBehalfOf() == null) {
+                    oboAllowed = true;
                 }
-            } else {
-                return cols;
-            }
 
+                // if we have not already determined that the obo user is ok to submit, look up the READ policy on the
+                // community.  THis will include determining if the user is an administrator.
+                if (!oboAllowed) {
+                    oboAllowed = authorizeService.authorizeActionBoolean(
+                        swordContext.getOnBehalfOfContext(), col,
+                        Constants.ADD);
+                }
+
+                // final check to see if we are allowed to READ
+                if (oboAllowed) {
+                    allowed.add(col);
+                }
+            }
             return allowed;
 
         } catch (SQLException e) {

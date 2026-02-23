@@ -65,9 +65,4 @@ public class ProcessFileTypesRest extends BaseObjectRest<String> {
     public String getType() {
         return NAME;
     }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
-    }
 }

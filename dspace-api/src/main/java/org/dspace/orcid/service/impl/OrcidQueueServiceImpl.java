@@ -71,11 +71,6 @@ public class OrcidQueueServiceImpl implements OrcidQueueService {
     }
 
     @Override
-    public List<OrcidQueue> findByEntity(Context context, Item item) throws SQLException {
-        return orcidQueueDAO.findByEntity(context, item);
-    }
-
-    @Override
     public long countByProfileItemId(Context context, UUID profileItemId) throws SQLException {
         return orcidQueueDAO.countByProfileItemId(context, profileItemId);
     }
@@ -224,7 +219,7 @@ public class OrcidQueueServiceImpl implements OrcidQueueService {
 
         return findRelationshipsByItem(context, profile).stream()
             .map(relationship -> getRelatedItem(relationship, profile))
-            .filter(item -> item.isArchived() && entityType.equals(itemService.getEntityTypeLabel(item)))
+            .filter(item -> entityType.equals(itemService.getEntityTypeLabel(item)))
             .collect(Collectors.toList());
 
     }

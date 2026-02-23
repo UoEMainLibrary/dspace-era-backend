@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.browse.ItemCountException;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
@@ -296,9 +297,9 @@ public interface CommunityService extends DSpaceObjectService<Community>, DSpace
     /**
      * Returns total community archived items
      *
-     * @param context         DSpace context
      * @param community       Community
      * @return                total community archived items
+     * @throws ItemCountException
      */
-    int countArchivedItems(Context context, Community community);
+    int countArchivedItems(Community community) throws ItemCountException;
 }

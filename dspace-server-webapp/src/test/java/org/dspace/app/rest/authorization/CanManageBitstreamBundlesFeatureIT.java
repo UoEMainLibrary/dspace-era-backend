@@ -216,8 +216,9 @@ public class CanManageBitstreamBundlesFeatureIT extends AbstractControllerIntegr
     @SuppressWarnings("unchecked")
     public void itemAdminSetPropertyCreateBitstreamToFalseTest() throws Exception {
         context.turnOffAuthorisationSystem();
-        ResourcePolicyBuilder.createResourcePolicy(context, userA, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
                              .withAction(Constants.ADMIN)
+                             .withUser(userA)
                              .withDspaceObject(itemA).build();
 
         configurationService.setProperty("core.authorization.item-admin.create-bitstream", false);
@@ -259,8 +260,9 @@ public class CanManageBitstreamBundlesFeatureIT extends AbstractControllerIntegr
     @SuppressWarnings("unchecked")
     public void itemAdminSetPropertyDeleteBitstreamToFalseTest() throws Exception {
         context.turnOffAuthorisationSystem();
-        ResourcePolicyBuilder.createResourcePolicy(context, userA, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
                              .withAction(Constants.ADMIN)
+                             .withUser(userA)
                              .withDspaceObject(itemA).build();
 
         configurationService.setProperty("core.authorization.item-admin.delete-bitstream", false);
@@ -302,8 +304,9 @@ public class CanManageBitstreamBundlesFeatureIT extends AbstractControllerIntegr
     @SuppressWarnings("unchecked")
     public void itemAdminSetPropertyCollectionAdminCreateBitstreamToFalseTest() throws Exception {
         context.turnOffAuthorisationSystem();
-        ResourcePolicyBuilder.createResourcePolicy(context, userA, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
                              .withAction(Constants.ADMIN)
+                             .withUser(userA)
                              .withDspaceObject(itemA).build();
 
         configurationService.setProperty("core.authorization.collection-admin.item.create-bitstream", false);
@@ -362,8 +365,9 @@ public class CanManageBitstreamBundlesFeatureIT extends AbstractControllerIntegr
     @SuppressWarnings("unchecked")
     public void itemAdminSetPropertyCollectionAdminDeleteBitstreamToFalseTest() throws Exception {
         context.turnOffAuthorisationSystem();
-        ResourcePolicyBuilder.createResourcePolicy(context, userA, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
                              .withAction(Constants.ADMIN)
+                             .withUser(userA)
                              .withDspaceObject(itemA).build();
 
         configurationService.setProperty("core.authorization.collection-admin.item.delete-bitstream", false);
@@ -422,8 +426,9 @@ public class CanManageBitstreamBundlesFeatureIT extends AbstractControllerIntegr
     @SuppressWarnings("unchecked")
     public void itemAdminSetPropertyCommunityAdminCreateBitstreamToFalseTest() throws Exception {
         context.turnOffAuthorisationSystem();
-        ResourcePolicyBuilder.createResourcePolicy(context, userA, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
                              .withAction(Constants.ADMIN)
+                             .withUser(userA)
                              .withDspaceObject(itemA).build();
 
         configurationService.setProperty("core.authorization.community-admin.item.create-bitstream", false);
@@ -482,8 +487,9 @@ public class CanManageBitstreamBundlesFeatureIT extends AbstractControllerIntegr
     @SuppressWarnings("unchecked")
     public void itemAdminSetPropertyCommunityAdminDeleteBitstreamToFalseTest() throws Exception {
         context.turnOffAuthorisationSystem();
-        ResourcePolicyBuilder.createResourcePolicy(context, userA, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
                              .withAction(Constants.ADMIN)
+                             .withUser(userA)
                              .withDspaceObject(itemA).build();
 
         configurationService.setProperty("core.authorization.community-admin.item.delete-bitstream", false);

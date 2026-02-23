@@ -18,7 +18,6 @@ import org.dspace.builder.CollectionBuilder;
 import org.dspace.builder.CommunityBuilder;
 import org.dspace.builder.EPersonBuilder;
 import org.dspace.builder.GroupBuilder;
-import org.dspace.builder.SupervisionOrderBuilder;
 import org.dspace.builder.WorkspaceItemBuilder;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
@@ -86,10 +85,10 @@ public class SupervisionOrderServiceIT extends AbstractIntegrationTestWithDataba
                                    .build();
 
         SupervisionOrder supervisionOrderOne =
-                SupervisionOrderBuilder.createSupervisionOrder(context, item, groupA).build();
+            supervisionOrderService.create(context, item, groupA);
 
         SupervisionOrder supervisionOrderTwo =
-                SupervisionOrderBuilder.createSupervisionOrder(context, item, groupB).build();
+            supervisionOrderService.create(context, item, groupB);
 
         context.restoreAuthSystemState();
 
@@ -137,8 +136,7 @@ public class SupervisionOrderServiceIT extends AbstractIntegrationTestWithDataba
                                    .build();
 
         SupervisionOrder supervisionOrderOne =
-                SupervisionOrderBuilder.createSupervisionOrder(context, workspaceItem.getItem(), groupA)
-                        .build();
+            supervisionOrderService.create(context, workspaceItem.getItem(), groupA);
 
         context.restoreAuthSystemState();
 
@@ -207,12 +205,9 @@ public class SupervisionOrderServiceIT extends AbstractIntegrationTestWithDataba
                                    .addMember(userB)
                                    .build();
 
-        SupervisionOrderBuilder.createSupervisionOrder(context, workspaceItem.getItem(), groupA)
-                .build();
-        SupervisionOrderBuilder.createSupervisionOrder(context, workspaceItem.getItem(), groupB)
-                .build();
-        SupervisionOrderBuilder.createSupervisionOrder(context, workspaceItemTwo.getItem(), groupA)
-                .build();
+        supervisionOrderService.create(context, workspaceItem.getItem(), groupA);
+        supervisionOrderService.create(context, workspaceItem.getItem(), groupB);
+        supervisionOrderService.create(context, workspaceItemTwo.getItem(), groupA);
 
         context.restoreAuthSystemState();
 
@@ -264,12 +259,9 @@ public class SupervisionOrderServiceIT extends AbstractIntegrationTestWithDataba
                                    .addMember(eperson)
                                    .build();
 
-        SupervisionOrderBuilder.createSupervisionOrder(context, workspaceItem.getItem(), groupA)
-                .build();
-        SupervisionOrderBuilder.createSupervisionOrder(context, workspaceItem.getItem(), groupB)
-                .build();
-        SupervisionOrderBuilder.createSupervisionOrder(context, workspaceItemTwo.getItem(), groupA)
-                .build();
+        supervisionOrderService.create(context, workspaceItem.getItem(), groupA);
+        supervisionOrderService.create(context, workspaceItem.getItem(), groupB);
+        supervisionOrderService.create(context, workspaceItemTwo.getItem(), groupA);
 
         context.restoreAuthSystemState();
 
@@ -318,8 +310,7 @@ public class SupervisionOrderServiceIT extends AbstractIntegrationTestWithDataba
                                    .addMember(eperson)
                                    .build();
 
-        SupervisionOrderBuilder.createSupervisionOrder(context, item, groupA)
-                .build();
+        supervisionOrderService.create(context, item, groupA);
 
         context.restoreAuthSystemState();
 
@@ -379,8 +370,7 @@ public class SupervisionOrderServiceIT extends AbstractIntegrationTestWithDataba
                     .addMember(userB)
                     .build();
 
-        SupervisionOrderBuilder.createSupervisionOrder(context, workspaceItem.getItem(), groupA)
-                .build();
+        supervisionOrderService.create(context, workspaceItem.getItem(), groupA);
 
         context.restoreAuthSystemState();
 

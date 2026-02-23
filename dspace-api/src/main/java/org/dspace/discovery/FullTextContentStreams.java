@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
-import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -76,19 +76,14 @@ public class FullTextContentStreams extends ContentStreamBase {
             if (StringUtils.equals(FULLTEXT_BUNDLE, myBundle.getName())) {
                 // a-ha! grab the text out of the bitstreams
                 List<Bitstream> bitstreams = myBundle.getBitstreams();
-                log.debug("Processing full-text bitstreams. Item handle: " + sourceInfo);
 
                 for (Bitstream fulltextBitstream : emptyIfNull(bitstreams)) {
                     fullTextStreams.add(new FullTextBitstream(sourceInfo, fulltextBitstream));
 
-                    if (fulltextBitstream != null) {
-                        log.debug("Added BitStream: "
-                                + fulltextBitstream.getStoreNumber() + " "
-                                + fulltextBitstream.getSequenceID() + " "
-                                + fulltextBitstream.getName());
-                    } else {
-                        log.error("Found a NULL bitstream when processing full-text files: item handle:" + sourceInfo);
-                    }
+                    log.debug("Added BitStream: "
+                                  + fulltextBitstream.getStoreNumber() + " "
+                                  + fulltextBitstream.getSequenceID() + " "
+                                  + fulltextBitstream.getName());
                 }
             }
         }
@@ -163,16 +158,16 @@ public class FullTextContentStreams extends ContentStreamBase {
         }
 
         public String getContentType(final Context context) throws SQLException {
-            BitstreamFormat format = bitstream != null ? bitstream.getFormat(context) : null;
+            BitstreamFormat format = bitstream.getFormat(context);
             return format == null ? null : StringUtils.trimToEmpty(format.getMIMEType());
         }
 
         public String getFileName() {
-            return bitstream != null ? StringUtils.trimToEmpty(bitstream.getName()) : null;
+            return StringUtils.trimToEmpty(bitstream.getName());
         }
 
         public long getSize() {
-            return bitstream != null ? bitstream.getSizeBytes() : -1;
+            return bitstream.getSizeBytes();
         }
 
         public InputStream getInputStream() throws SQLException, IOException, AuthorizeException {

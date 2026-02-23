@@ -24,8 +24,6 @@ import java.util.Optional;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataFieldName;
 import org.dspace.content.MetadataValue;
@@ -50,6 +48,8 @@ import org.dspace.orcid.service.OrcidHistoryService;
 import org.dspace.orcid.service.OrcidProfileSectionFactoryService;
 import org.dspace.orcid.service.OrcidTokenService;
 import org.orcid.jaxb.model.v3.release.record.Activity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -61,7 +61,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class OrcidHistoryServiceImpl implements OrcidHistoryService {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrcidHistoryServiceImpl.class);
 
     @Autowired
     private OrcidHistoryDAO orcidHistoryDAO;
@@ -134,7 +134,7 @@ public class OrcidHistoryServiceImpl implements OrcidHistoryService {
 
     @Override
     public Map<Item, String> findLastPutCodes(Context context, Item entity) throws SQLException {
-        Map<Item, String> profileItemAndPutCodeMap = new HashMap<>();
+        Map<Item, String> profileItemAndPutCodeMap = new HashMap<Item, String>();
 
         List<OrcidHistory> orcidHistoryRecords = findByEntity(context, entity);
         for (OrcidHistory orcidHistoryRecord : orcidHistoryRecords) {
@@ -187,12 +187,10 @@ public class OrcidHistoryServiceImpl implements OrcidHistoryService {
         } catch (OrcidValidationException ex) {
             throw ex;
         } catch (OrcidClientException ex) {
-            LOGGER.error("An error occurs during the orcid synchronization of ORCID queue {}",
-                    orcidQueue, ex);
+            LOGGER.error("An error occurs during the orcid synchronization of ORCID queue " + orcidQueue, ex);
             return createHistoryRecordFromOrcidError(context, orcidQueue, operation, ex);
         } catch (RuntimeException ex) {
-            LOGGER.warn("An unexpected error occurs during the orcid synchronization of ORCID queue {}",
-                    orcidQueue, ex);
+            LOGGER.warn("An unexpected error occurs during the orcid synchronization of ORCID queue " + orcidQueue, ex);
             return createHistoryRecordFromGenericError(context, orcidQueue, operation, ex);
         }
 

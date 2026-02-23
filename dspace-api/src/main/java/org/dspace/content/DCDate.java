@@ -80,9 +80,6 @@ public class DCDate {
     // just year, "2009"
     private final SimpleDateFormat yearIso = new SimpleDateFormat("yyyy");
 
-    // Additional iso-like format which contains milliseconds
-    private final SimpleDateFormat fullIsoWithMs = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000'");
-
     private static Map<Locale, DateFormatSymbols> dfsLocaleMap = new HashMap<Locale, DateFormatSymbols>();
 
     /**
@@ -197,9 +194,6 @@ public class DCDate {
             date = tryParse(fullIso4, fromDC);
         }
         if (date == null) {
-            date = tryParse(fullIsoWithMs, fromDC);
-        }
-        if (date == null) {
             // Seems there is no time component to the date.
             date = tryParse(dateIso, fromDC);
             if (date != null) {
@@ -250,7 +244,6 @@ public class DCDate {
         dateIso.setTimeZone(utcZone);
         yearMonthIso.setTimeZone(utcZone);
         yearIso.setTimeZone(utcZone);
-        fullIsoWithMs.setTimeZone(utcZone);
     }
 
     // Attempt to parse, swallowing errors; return null for failure.

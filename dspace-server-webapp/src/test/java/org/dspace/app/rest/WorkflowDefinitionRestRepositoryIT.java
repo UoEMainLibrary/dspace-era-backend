@@ -48,7 +48,7 @@ public class WorkflowDefinitionRestRepositoryIT extends AbstractControllerIntegr
             = XmlWorkflowServiceFactory.getInstance().getWorkflowFactory();
 
     private static final String WORKFLOW_DEFINITIONS_ENDPOINT
-        = "/api/" + WorkflowDefinitionRest.CATEGORY + "/" + WorkflowDefinitionRest.PLURAL_NAME;
+        = "/api/" + WorkflowDefinitionRest.CATEGORY + "/" + WorkflowDefinitionRest.NAME_PLURAL;
 
     @Test
     public void getAllWorkflowDefinitionsEndpoint() throws Exception {

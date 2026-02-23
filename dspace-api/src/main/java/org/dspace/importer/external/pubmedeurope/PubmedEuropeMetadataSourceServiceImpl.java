@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import javax.el.MethodNotFoundException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
@@ -24,7 +25,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.util.XMLUtils;
 import org.dspace.content.Item;
 import org.dspace.importer.external.datamodel.ImportRecord;
 import org.dspace.importer.external.datamodel.Query;
@@ -153,7 +153,7 @@ public class PubmedEuropeMetadataSourceServiceImpl extends AbstractImportMetadat
 
     @Override
     public Collection<ImportRecord> findMatchingRecords(Item item) throws MetadataSourceException {
-        throw new UnsupportedOperationException("This method is not implemented for PubMed Europe");
+        throw new MethodNotFoundException("This method is not implemented for PubMed Europe");
     }
 
     @Override
@@ -293,7 +293,9 @@ public class PubmedEuropeMetadataSourceServiceImpl extends AbstractImportMetadat
             Map<String, Map<String, String>> params = new HashMap<String, Map<String,String>>();
             String response = liveImportClient.executeHttpGetRequest(1000, buildURI(1, query), params);
 
-            SAXBuilder saxBuilder = XMLUtils.getSAXBuilder();
+            SAXBuilder saxBuilder = new SAXBuilder();
+            // disallow DTD parsing to ensure no XXE attacks can occur
+            saxBuilder.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
             Document document = saxBuilder.build(new StringReader(response));
             Element root = document.getRootElement();
             Element element = root.getChild("hitCount");
@@ -364,7 +366,9 @@ public class PubmedEuropeMetadataSourceServiceImpl extends AbstractImportMetadat
                 String response = liveImportClient.executeHttpGetRequest(1000, uriBuilder.toString(), params);
                 String cursorMark = StringUtils.EMPTY;
                 if (StringUtils.isNotBlank(response)) {
-                    SAXBuilder saxBuilder = XMLUtils.getSAXBuilder();
+                    SAXBuilder saxBuilder = new SAXBuilder();
+                    // disallow DTD parsing to ensure no XXE attacks can occur
+                    saxBuilder.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
                     Document document = saxBuilder.build(new StringReader(response));
                     XPathFactory xpfac = XPathFactory.instance();
                     XPathExpression<Element> xPath = xpfac.compile("//responseWrapper/resultList/result",

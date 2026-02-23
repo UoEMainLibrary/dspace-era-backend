@@ -17,7 +17,6 @@ import org.dspace.app.rest.RestResourceController;
  */
 public class MetadataSchemaRest extends BaseObjectRest<Integer> {
     public static final String NAME = "metadataschema";
-    public static final String PLURAL_NAME = "metadataschemas";
     public static final String CATEGORY = RestAddressableModel.CORE;
 
     private String prefix;
@@ -44,11 +43,6 @@ public class MetadataSchemaRest extends BaseObjectRest<Integer> {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     @Override

@@ -35,8 +35,6 @@ public final class OrcidConfiguration {
 
     private String scopes;
 
-    private String revokeUrl;
-
     public String getApiUrl() {
         return apiUrl;
     }
@@ -113,11 +111,4 @@ public final class OrcidConfiguration {
         return !StringUtils.isAnyBlank(clientId, clientSecret);
     }
 
-    public String getRevokeUrl() {
-        return revokeUrl;
-    }
-
-    public void setRevokeUrl(String revokeUrl) {
-        this.revokeUrl = revokeUrl;
-    }
 }

@@ -8,7 +8,6 @@
 package org.dspace.app.sherpa;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -37,12 +36,6 @@ public class SHERPADataProviderTest extends AbstractDSpaceTest {
     ExternalDataProvider sherpaJournalProvider;
     ExternalDataProvider sherpaPublisherProvider;
     ExternalDataProvider sherpaJournalIssnProvider;
-
-    private static final MetadataFieldRef TITLE_FIELD = new MetadataFieldRef("dc", "title", null);
-    private static final MetadataFieldRef ISSN_FIELD = new MetadataFieldRef("creativeworkseries", "issn", null);
-    private static final MetadataFieldRef SHERPA_PUBLISHER_FIELD =
-        new MetadataFieldRef("dc", "identifier", "sherpaPublisher");
-    private static final MetadataFieldRef OTHER_FIELD = new MetadataFieldRef("dc", "identifier", "other");
 
     @BeforeClass
     public static void setUpClass() {
@@ -90,9 +83,12 @@ public class SHERPADataProviderTest extends AbstractDSpaceTest {
         String title = null;
         String identifier = null;
         for (MetadataValueDTO metadataValue : dataObject.getMetadata()) {
-            if (TITLE_FIELD.matches(metadataValue)) {
+            if (metadataValue.getSchema().equalsIgnoreCase("dc") &&
+            metadataValue.getElement().equalsIgnoreCase("title")) {
                 title = metadataValue.getValue();
-            } else if (ISSN_FIELD.matches(metadataValue)) {
+            } else if (metadataValue.getSchema().equalsIgnoreCase("dc")
+                && metadataValue.getElement().equalsIgnoreCase("identifier")
+                && metadataValue.getQualifier().equalsIgnoreCase("issn")) {
                 identifier = metadataValue.getValue();
             }
         }
@@ -136,9 +132,12 @@ public class SHERPADataProviderTest extends AbstractDSpaceTest {
         String title = null;
         String identifier = null;
         for (MetadataValueDTO metadataValue : dataObject.getMetadata()) {
-            if (TITLE_FIELD.matches(metadataValue)) {
+            if (metadataValue.getSchema().equalsIgnoreCase("dc") &&
+                metadataValue.getElement().equalsIgnoreCase("title")) {
                 title = metadataValue.getValue();
-            } else if (ISSN_FIELD.matches(metadataValue)) {
+            } else if (metadataValue.getSchema().equalsIgnoreCase("dc")
+                && metadataValue.getElement().equalsIgnoreCase("identifier")
+                && metadataValue.getQualifier().equalsIgnoreCase("issn")) {
                 identifier = metadataValue.getValue();
             }
         }
@@ -174,9 +173,12 @@ public class SHERPADataProviderTest extends AbstractDSpaceTest {
         String title = null;
         String identifier = null;
         for (MetadataValueDTO metadataValue : dataObject.getMetadata()) {
-            if (TITLE_FIELD.matches(metadataValue)) {
+            if (metadataValue.getSchema().equalsIgnoreCase("dc") &&
+                metadataValue.getElement().equalsIgnoreCase("title")) {
                 title = metadataValue.getValue();
-            } else if (ISSN_FIELD.matches(metadataValue)) {
+            } else if (metadataValue.getSchema().equalsIgnoreCase("dc")
+                && metadataValue.getElement().equalsIgnoreCase("identifier")
+                && metadataValue.getQualifier().equalsIgnoreCase("issn")) {
                 identifier = metadataValue.getValue();
             }
         }
@@ -221,9 +223,12 @@ public class SHERPADataProviderTest extends AbstractDSpaceTest {
         String title = null;
         String identifier = null;
         for (MetadataValueDTO metadataValue : dataObject.getMetadata()) {
-            if (TITLE_FIELD.matches(metadataValue)) {
+            if (metadataValue.getSchema().equalsIgnoreCase("dc") &&
+                metadataValue.getElement().equalsIgnoreCase("title")) {
                 title = metadataValue.getValue();
-            } else if (ISSN_FIELD.matches(metadataValue)) {
+            } else if (metadataValue.getSchema().equalsIgnoreCase("dc")
+                && metadataValue.getElement().equalsIgnoreCase("identifier")
+                && metadataValue.getQualifier().equalsIgnoreCase("issn")) {
                 identifier = metadataValue.getValue();
             }
         }
@@ -264,11 +269,16 @@ public class SHERPADataProviderTest extends AbstractDSpaceTest {
         String identifier = null;
         String url = null;
         for (MetadataValueDTO metadataValue : dataObject.getMetadata()) {
-            if (TITLE_FIELD.matches(metadataValue)) {
+            if (metadataValue.getSchema().equalsIgnoreCase("dc") &&
+                metadataValue.getElement().equalsIgnoreCase("title")) {
                 title = metadataValue.getValue();
-            } else if (SHERPA_PUBLISHER_FIELD.matches(metadataValue)) {
+            } else if (metadataValue.getSchema().equalsIgnoreCase("dc")
+                && metadataValue.getElement().equalsIgnoreCase("identifier")
+                && metadataValue.getQualifier().equalsIgnoreCase("sherpaPublisher")) {
                 identifier = metadataValue.getValue();
-            } else if (OTHER_FIELD.matches(metadataValue)) {
+            } else if (metadataValue.getSchema().equalsIgnoreCase("dc")
+                && metadataValue.getElement().equalsIgnoreCase("identifier")
+                && metadataValue.getQualifier().equalsIgnoreCase("other")) {
                 url = metadataValue.getValue();
             }
         }
@@ -319,11 +329,16 @@ public class SHERPADataProviderTest extends AbstractDSpaceTest {
         String identifier = null;
         String url = null;
         for (MetadataValueDTO metadataValue : dataObject.getMetadata()) {
-            if (TITLE_FIELD.matches(metadataValue)) {
+            if (metadataValue.getSchema().equalsIgnoreCase("dc") &&
+                metadataValue.getElement().equalsIgnoreCase("title")) {
                 title = metadataValue.getValue();
-            } else if (SHERPA_PUBLISHER_FIELD.matches(metadataValue)) {
+            } else if (metadataValue.getSchema().equalsIgnoreCase("dc")
+                && metadataValue.getElement().equalsIgnoreCase("identifier")
+                && metadataValue.getQualifier().equalsIgnoreCase("sherpaPublisher")) {
                 identifier = metadataValue.getValue();
-            } else if (OTHER_FIELD.matches(metadataValue)) {
+            } else if (metadataValue.getSchema().equalsIgnoreCase("dc")
+                && metadataValue.getElement().equalsIgnoreCase("identifier")
+                && metadataValue.getQualifier().equalsIgnoreCase("other")) {
                 url = metadataValue.getValue();
             }
         }
@@ -337,103 +352,4 @@ public class SHERPADataProviderTest extends AbstractDSpaceTest {
         // Does dc.identifier.other match the expected value?
         assertEquals("Publisher URL must equal " + validUrl, validUrl, url);
     }
-
-    /**
-     * Perform the same essential test as prior, but making sure the new comparator and equals methods
-     * in MetadataValueDTO and ExternalDataObject properly compare objects (even when DTO values are not strictly
-     * in the same order)
-     * The provider is configured to use the Mock SHERPAService.
-     */
-    @Test
-    public void testComparePublisherExternalObjects() {
-        // Get a response with a single valid ISSN, using the mock service which will return a response based on
-        // thelancet.json stored response in test resources
-        // We expect to see the following values set correctly:
-        // dc.title =                       Public Library of Science
-        // dc.identifier.sherpaPublisher    112
-        // dc.identifier.other              http://www.plos.org/
-
-        // Set expected values
-        String validName = "Public Library of Science";
-        String validIdentifier = "112";
-        String validUrl = "http://www.plos.org/";
-
-        // First exemplar object should be identical
-        ExternalDataObject exemplarDataObject = new ExternalDataObject();
-        exemplarDataObject.setSource("sherpaPublisher");
-        exemplarDataObject.setId(validIdentifier);
-        exemplarDataObject.setValue(validName);
-        exemplarDataObject.setDisplayValue(validName);
-        exemplarDataObject.addMetadata(TITLE_FIELD.toMetadata(validName));
-        exemplarDataObject.addMetadata(SHERPA_PUBLISHER_FIELD.toMetadata(validIdentifier));
-        exemplarDataObject.addMetadata(OTHER_FIELD.toMetadata(validUrl));
-
-        // Exemplar object 2 has a different order of metadata values
-        // (we still expect it to be 'equal' when comparing since there is no concept of place for DTOs)
-        ExternalDataObject exemplarDataObject2 = new ExternalDataObject();
-        exemplarDataObject2.setSource("sherpaPublisher");
-        exemplarDataObject2.setId(validIdentifier);
-        exemplarDataObject2.setValue(validName);
-        exemplarDataObject2.setDisplayValue(validName);
-        exemplarDataObject2.addMetadata(OTHER_FIELD.toMetadata(validUrl));
-        exemplarDataObject2.addMetadata(TITLE_FIELD.toMetadata(validName));
-        exemplarDataObject2.addMetadata(SHERPA_PUBLISHER_FIELD.toMetadata(validIdentifier));
-
-        // Nonequal object should NOT evaluate as equal to our data
-        ExternalDataObject nonEqualObject = new ExternalDataObject();
-        nonEqualObject.setSource("sherpaPublisher");
-        nonEqualObject.setId(validIdentifier);
-        nonEqualObject.setValue(validName);
-        nonEqualObject.setDisplayValue(validName);
-        nonEqualObject.addMetadata(TITLE_FIELD.toMetadata("Private Library of Science"));
-        nonEqualObject.addMetadata(SHERPA_PUBLISHER_FIELD.toMetadata(validIdentifier));
-        nonEqualObject.addMetadata(OTHER_FIELD.toMetadata(validUrl));
-
-
-        // Retrieve the dataobject(s) from the data provider
-        List<ExternalDataObject> externalDataObjects =
-                sherpaPublisherProvider.searchExternalDataObjects(validName, 0, 1);
-
-        // Assert that the response is valid and not empty
-        assertTrue("Couldn't find a data object for publication name " + validName,
-                externalDataObjects != null && !externalDataObjects.isEmpty());
-
-        ExternalDataObject dataObject = externalDataObjects.get(0);
-
-        // Assert that the data object itself is not null
-        assertNotNull("External data object must not be null", dataObject);
-
-        // Assert equality to the exemplar object
-        assertEquals(exemplarDataObject, dataObject);
-
-        // Assert equality to the 2nd exemplar object
-        assertEquals(exemplarDataObject2, dataObject);
-
-        // Assert NON-equality to the 3rd object
-        assertNotEquals(nonEqualObject, dataObject);
-    }
-
-    private static class MetadataFieldRef {
-        public final String schema;
-        public final String element;
-        public final String qualifier;
-
-        public MetadataFieldRef(String schema, String element, String qualifier) {
-            this.schema = schema;
-            this.element = element;
-            this.qualifier = qualifier;
-        }
-
-        public boolean matches(MetadataValueDTO value) {
-            return schema.equalsIgnoreCase(value.getSchema()) &&
-                element.equalsIgnoreCase(value.getElement()) &&
-                (qualifier == null ? value.getQualifier() == null
-                    : qualifier.equalsIgnoreCase(value.getQualifier()));
-        }
-
-        public MetadataValueDTO toMetadata(String value) {
-            return new MetadataValueDTO(schema, element, qualifier, null, value);
-        }
-    }
-
 }

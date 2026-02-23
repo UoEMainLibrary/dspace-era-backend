@@ -13,8 +13,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.crosswalk.CrosswalkException;
@@ -27,6 +25,8 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.utils.DSpace;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provide XML based metadata crosswalk for EZID Identifier provider module.
@@ -36,9 +36,9 @@ import org.jdom2.output.XMLOutputter;
 
 public class DataCiteXMLCreator {
     /**
-     * logging category
+     * log4j category
      */
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LoggerFactory.getLogger(DataCiteXMLCreator.class);
 
     /**
      * Name of crosswalk to convert metadata into DataCite Metadata Scheme.
@@ -70,8 +70,9 @@ public class DataCiteXMLCreator {
         this.prepareXwalk();
 
         if (!this.xwalk.canDisseminate(dso)) {
-            LOG.error("Crosswalk {} cannot disseminate DSO with type {} and ID {}.",
-                    this.CROSSWALK_NAME, dso.getType(), dso.getID());
+            LOG.error("Crosswalk " + this.CROSSWALK_NAME
+                          + " cannot disseminate DSO with type " + dso.getType()
+                          + " and ID " + dso.getID() + ".");
             return null;
         }
 
@@ -97,8 +98,8 @@ public class DataCiteXMLCreator {
         try {
             root = xwalk.disseminateElement(context, dso, parameters);
         } catch (CrosswalkException | IOException | SQLException | AuthorizeException e) {
-            LOG.error("Exception while crosswalking DSO with type {} and ID {}.",
-                    dso.getType(), dso.getID(), e);
+            LOG.error("Exception while crosswalking DSO with type "
+                          + dso.getType() + " and ID " + dso.getID() + ".", e);
             return null;
         }
 

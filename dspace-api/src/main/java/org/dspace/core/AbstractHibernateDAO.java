@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 
 import com.google.common.collect.AbstractIterator;
-import jakarta.persistence.Query;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Root;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Session;
 
@@ -97,16 +97,6 @@ public abstract class AbstractHibernateDAO<T> implements GenericDAO<T> {
 
     @Override
     public T findByID(Context context, Class clazz, int id) throws SQLException {
-        @SuppressWarnings("unchecked")
-        T result = (T) getHibernateSession(context).get(clazz, id);
-        return result;
-    }
-
-    @Override
-    public T findByID(Context context, Class clazz, String id) throws SQLException {
-        if (id == null) {
-            return null;
-        }
         @SuppressWarnings("unchecked")
         T result = (T) getHibernateSession(context).get(clazz, id);
         return result;
@@ -468,21 +458,7 @@ public abstract class AbstractHibernateDAO<T> implements GenericDAO<T> {
         for (Map.Entry<String, Object> entry : equals.entrySet()) {
             criteria.where(criteriaBuilder.equal(root.get(entry.getKey()), entry.getValue()));
         }
-
-        criteria.orderBy(criteriaBuilder.asc(root.get("id")));
-
         return executeCriteriaQuery(context, criteria, cacheable, maxResults, offset);
-    }
-
-    /**
-     * Create a Query object from a CriteriaQuery
-     * @param context current Context
-     * @param criteriaQuery CriteriaQuery built via CriteriaBuilder
-     * @return corresponding Query
-     * @throws SQLException if error occurs
-     */
-    public Query createQuery(Context context, CriteriaQuery criteriaQuery) throws SQLException {
-        return this.getHibernateSession(context).createQuery(criteriaQuery);
     }
 
 }

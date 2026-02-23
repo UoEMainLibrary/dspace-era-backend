@@ -9,6 +9,7 @@ package org.dspace.app.rest.link;
 
 import java.util.LinkedList;
 
+import org.atteo.evo.inflector.English;
 import org.dspace.app.rest.RestResourceController;
 import org.dspace.app.rest.model.BrowseEntryRest;
 import org.dspace.app.rest.model.BrowseIndexRest;
@@ -35,7 +36,7 @@ public class BrowseEntryHalLinkFactory extends HalLinkFactory<BrowseEntryResourc
 
             UriComponentsBuilder baseLink = uriBuilder(
                 getMethodOn(bix.getCategory(), bix.getType()).findRel(null, null, bix.getCategory(),
-                                                                      bix.getTypePlural(), bix.getId(),
+                                                                      English.plural(bix.getType()), bix.getId(),
                                                                       BrowseIndexRest.LINK_ITEMS, null, null));
 
             addFilterParams(baseLink, data);

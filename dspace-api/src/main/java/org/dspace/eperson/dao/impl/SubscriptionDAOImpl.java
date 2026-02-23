@@ -11,12 +11,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Root;
 
-import jakarta.persistence.Query;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Root;
 import org.dspace.content.DSpaceObject;
 import org.dspace.core.AbstractHibernateDAO;
 import org.dspace.core.Context;
@@ -44,12 +44,11 @@ public class SubscriptionDAOImpl extends AbstractHibernateDAO<Subscription> impl
     public List<Subscription> findByEPerson(Context context, EPerson eperson, Integer limit, Integer offset)
             throws SQLException {
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder(context);
-        jakarta.persistence.criteria.CriteriaQuery criteriaQuery =
-            getCriteriaQuery(criteriaBuilder, Subscription.class);
+        javax.persistence.criteria.CriteriaQuery criteriaQuery = getCriteriaQuery(criteriaBuilder, Subscription.class);
         Root<Subscription> subscriptionRoot = criteriaQuery.from(Subscription.class);
         criteriaQuery.select(subscriptionRoot);
         criteriaQuery.where(criteriaBuilder.equal(subscriptionRoot.get(Subscription_.ePerson), eperson));
-        List<jakarta.persistence.criteria.Order> orderList = new LinkedList<>();
+        List<javax.persistence.criteria.Order> orderList = new LinkedList<>();
         orderList.add(criteriaBuilder.asc(subscriptionRoot.get(Subscription_.dSpaceObject)));
         criteriaQuery.orderBy(orderList);
         return list(context, criteriaQuery, false, Subscription.class, limit, offset);
@@ -60,7 +59,7 @@ public class SubscriptionDAOImpl extends AbstractHibernateDAO<Subscription> impl
                                                   DSpaceObject dSpaceObject,
                                                   Integer limit, Integer offset) throws SQLException {
         CriteriaBuilder criteriaBuilder = getCriteriaBuilder(context);
-        jakarta.persistence.criteria.CriteriaQuery criteriaQuery =
+        javax.persistence.criteria.CriteriaQuery criteriaQuery =
                 getCriteriaQuery(criteriaBuilder, Subscription.class);
         Root<Subscription> subscriptionRoot = criteriaQuery.from(Subscription.class);
         criteriaQuery.select(subscriptionRoot);
@@ -68,7 +67,7 @@ public class SubscriptionDAOImpl extends AbstractHibernateDAO<Subscription> impl
                             subscriptionRoot.get(Subscription_.ePerson), eperson),
                 criteriaBuilder.equal(subscriptionRoot.get(Subscription_.dSpaceObject), dSpaceObject)
         ));
-        List<jakarta.persistence.criteria.Order> orderList = new LinkedList<>();
+        List<javax.persistence.criteria.Order> orderList = new LinkedList<>();
         orderList.add(criteriaBuilder.asc(subscriptionRoot.get(Subscription_.dSpaceObject)));
         criteriaQuery.orderBy(orderList);
         return list(context, criteriaQuery, false, Subscription.class, limit, offset);
@@ -105,7 +104,7 @@ public class SubscriptionDAOImpl extends AbstractHibernateDAO<Subscription> impl
     public List<Subscription> findAllOrderedByIDAndResourceType(Context context, String resourceType,
                                                                 Integer limit, Integer offset) throws SQLException {
         String hqlQuery = "select s from Subscription s join %s dso " +
-                "ON dso = s.dSpaceObject ORDER BY s.id";
+                "ON dso.id = s.dSpaceObject ORDER BY subscription_id";
         if (resourceType != null) {
             hqlQuery = String.format(hqlQuery, resourceType);
         }
@@ -126,7 +125,7 @@ public class SubscriptionDAOImpl extends AbstractHibernateDAO<Subscription> impl
         CriteriaQuery criteriaQuery = getCriteriaQuery(criteriaBuilder, Subscription.class);
         Root<Subscription> subscriptionRoot = criteriaQuery.from(Subscription.class);
         criteriaQuery.select(subscriptionRoot);
-        List<jakarta.persistence.criteria.Order> orderList = new LinkedList<>();
+        List<javax.persistence.criteria.Order> orderList = new LinkedList<>();
         orderList.add(criteriaBuilder.asc(subscriptionRoot.get(Subscription_.dSpaceObject)));
         criteriaQuery.orderBy(orderList);
         return list(context, criteriaQuery, false, Subscription.class, limit, offset);
@@ -146,7 +145,7 @@ public class SubscriptionDAOImpl extends AbstractHibernateDAO<Subscription> impl
                 criteriaBuilder.equal(childJoin.get(SubscriptionParameter_.name), "frequency"),
                 criteriaBuilder.equal(childJoin.get(SubscriptionParameter_.value), frequencyValue)
                 ));
-        List<jakarta.persistence.criteria.Order> orderList = new ArrayList<>(1);
+        List<javax.persistence.criteria.Order> orderList = new ArrayList<>(1);
         orderList.add(criteriaBuilder.asc(subscriptionRoot.get(Subscription_.ePerson)));
         orderList.add(criteriaBuilder.asc(subscriptionRoot.get(Subscription_.id)));
         criteriaQuery.orderBy(orderList);

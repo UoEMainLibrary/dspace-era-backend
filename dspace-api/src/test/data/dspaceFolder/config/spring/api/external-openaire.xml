@@ -7,7 +7,7 @@
                            http://www.springframework.org/schema/util/spring-util.xsd"
        default-lazy-init="true">
 
-    <bean id="mockOpenaireRestConnector" class="org.dspace.external.MockOpenaireRestConnector">
+    <bean id="mockOpenAIRERestConnector" class="org.dspace.external.MockOpenAIRERestConnector">
         <constructor-arg value="${openaire.api.url:https://api.openaire.eu}"/>
 		<property name="tokenEnabled" value="${openaire.token.enabled:false}"/>
 		<property name="tokenServiceUrl" value="${openaire.token.url:https://aai.openaire.eu/oidc/token}"/>
@@ -15,10 +15,10 @@
 		<property name="clientSecret" value="${openaire.token.clientSecret}"/>
     </bean>
 	<bean
-		class="org.dspace.external.provider.impl.OpenaireFundingDataProvider"
+		class="org.dspace.external.provider.impl.OpenAIREFundingDataProvider"
 		init-method="init">
-		<property name="sourceIdentifier" value="openaireFunding" />
-		<property name="connector" ref="mockOpenaireRestConnector" />
+		<property name="sourceIdentifier" value="openAIREFunding" />
+		<property name="connector" ref="mockOpenAIRERestConnector" />
 	    <property name="metadataFields" ref="mapOfmetadata"/>
 		<property name="supportedEntityTypes">
 			<list>

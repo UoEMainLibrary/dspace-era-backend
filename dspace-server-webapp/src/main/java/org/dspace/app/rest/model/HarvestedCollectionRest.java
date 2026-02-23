@@ -20,9 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class HarvestedCollectionRest extends BaseObjectRest<Integer> {
 
-    public static final String NAME = "harvestedcollection";
-    public static final String PLURAL_NAME = "harvestedcollections";
-    public static final String CATEGORY = RestModel.CORE;
+    public static final String NAME = "collections";
+    public static final String CATEGORY = "core";
 
     @JsonProperty("harvest_type")
     private HarvestTypeEnum harvestType;
@@ -69,11 +68,6 @@ public class HarvestedCollectionRest extends BaseObjectRest<Integer> {
     @JsonIgnore
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     @JsonIgnore

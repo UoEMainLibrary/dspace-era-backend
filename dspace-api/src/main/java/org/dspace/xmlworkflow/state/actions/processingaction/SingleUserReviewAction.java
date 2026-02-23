@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.util.Util;
@@ -21,8 +21,6 @@ import org.dspace.content.WorkspaceItem;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
-import org.dspace.services.ConfigurationService;
-import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.workflow.WorkflowException;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.state.Step;
@@ -41,9 +39,6 @@ import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
  */
 public class SingleUserReviewAction extends ProcessingAction {
     private static final Logger log = LogManager.getLogger(SingleUserReviewAction.class);
-
-    private final ConfigurationService configurationService
-            = DSpaceServicesFactory.getInstance().getConfigurationService();
 
     public static final int OUTCOME_REJECT = 1;
 
@@ -100,9 +95,6 @@ public class SingleUserReviewAction extends ProcessingAction {
     public List<String> getOptions() {
         List<String> options = new ArrayList<>();
         options.add(SUBMIT_APPROVE);
-        if (configurationService.getBooleanProperty("workflow.reviewer.file-edit", false)) {
-            options.add(SUBMIT_EDIT_METADATA);
-        }
         options.add(SUBMIT_REJECT);
         options.add(SUBMIT_DECLINE_TASK);
         return options;

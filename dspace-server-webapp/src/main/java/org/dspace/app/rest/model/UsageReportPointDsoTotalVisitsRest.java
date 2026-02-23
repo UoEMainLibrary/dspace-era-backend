@@ -7,8 +7,6 @@
  */
 package org.dspace.app.rest.model;
 
-import org.atteo.evo.inflector.English;
-
 /**
  * This class serves as a REST representation of a TotalVisit data Point of a DSO's {@link UsageReportRest} from the
  * DSpace statistics
@@ -25,11 +23,6 @@ public class UsageReportPointDsoTotalVisitsRest extends UsageReportPointRest {
     @Override
     public String getType() {
         return this.type;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return English.plural(getType());
     }
 
     /**

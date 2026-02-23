@@ -101,14 +101,6 @@ public class OpenSearchServiceImpl implements OpenSearchService {
             configurationService.getProperty("websvc.opensearch.uicontext");
     }
 
-    /**
-     * Get base search UI URL (websvc.opensearch.max_num_of_items_per_request)
-     */
-    public int getMaxNumOfItemsPerRequest() {
-        return configurationService.getIntProperty(
-                "websvc.opensearch.max_num_of_items_per_request", 100);
-    }
-
     @Override
     public String getContentType(String format) {
         return "html".equals(format) ? "text/html" :
@@ -163,7 +155,7 @@ public class OpenSearchServiceImpl implements OpenSearchService {
             format = "atom_1.0";
         }
 
-        SyndicationFeed feed = new SyndicationFeed();
+        SyndicationFeed feed = new SyndicationFeed(labels.get(SyndicationFeed.MSG_UITYPE));
         feed.populate(null, context, scope, results, labels);
         feed.setType(format);
         feed.addModule(openSearchMarkup(query, totalResults, start, pageSize));

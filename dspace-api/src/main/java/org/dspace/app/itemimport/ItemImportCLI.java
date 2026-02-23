@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.app.itemimport.service.ItemImportService;
 import org.dspace.content.Collection;
@@ -112,11 +111,7 @@ public class ItemImportCLI extends ItemImport {
 
                 // validate zip file
                 InputStream validationFileStream = new FileInputStream(myZipFile);
-                try {
-                    validateZip(validationFileStream);
-                } finally {
-                    IOUtils.closeQuietly(validationFileStream);
-                }
+                validateZip(validationFileStream);
 
                 workDir = new File(itemImportService.getTempWorkDir() + File.separator + TEMP_DIR
                         + File.separator + context.getCurrentUser().getID());
@@ -125,28 +120,22 @@ public class ItemImportCLI extends ItemImport {
             } else {
                 // manage zip via remote url
                 Optional<InputStream> optionalFileStream = Optional.ofNullable(new URL(zipfilename).openStream());
-                Optional<InputStream> validationFileStream = Optional.ofNullable(new URL(zipfilename).openStream());
-                try {
-                    if (optionalFileStream.isPresent()) {
-                        // validate zip file via url
-
-                        if (validationFileStream.isPresent()) {
-                            validateZip(validationFileStream.get());
-                        }
-
-                        workFile = new File(itemImportService.getTempWorkDir() + File.separator
-                                + zipfilename + "-" + context.getCurrentUser().getID());
-                        FileUtils.copyInputStreamToFile(optionalFileStream.get(), workFile);
-                        workDir = new File(itemImportService.getTempWorkDir() + File.separator + TEMP_DIR
-                                + File.separator + context.getCurrentUser().getID());
-                        sourcedir = itemImportService.unzip(workFile, workDir.getAbsolutePath());
-                    } else {
-                        throw new IllegalArgumentException(
-                                "Error reading file, the file couldn't be found for filename: " + zipfilename);
+                if (optionalFileStream.isPresent()) {
+                    // validate zip file via url
+                    Optional<InputStream> validationFileStream = Optional.ofNullable(new URL(zipfilename).openStream());
+                    if (validationFileStream.isPresent()) {
+                        validateZip(validationFileStream.get());
                     }
-                } finally {
-                    optionalFileStream.ifPresent(IOUtils::closeQuietly);
-                    validationFileStream.ifPresent(IOUtils::closeQuietly);
+
+                    workFile = new File(itemImportService.getTempWorkDir() + File.separator
+                            + zipfilename + "-" + context.getCurrentUser().getID());
+                    FileUtils.copyInputStreamToFile(optionalFileStream.get(), workFile);
+                    workDir = new File(itemImportService.getTempWorkDir() + File.separator + TEMP_DIR
+                                       + File.separator + context.getCurrentUser().getID());
+                    sourcedir = itemImportService.unzip(workFile, workDir.getAbsolutePath());
+                } else {
+                    throw new IllegalArgumentException(
+                            "Error reading file, the file couldn't be found for filename: " + zipfilename);
                 }
             }
         }

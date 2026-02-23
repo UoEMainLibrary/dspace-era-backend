@@ -8,10 +8,10 @@
 package org.dspace.app.rest.repository;
 import java.io.IOException;
 import java.sql.SQLException;
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.DSpaceFeedbackNotFoundException;
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
  * 
  * @author Mykhaylo Boychuk (mykhaylo.boychuk@4science.com)
  */
-@Component(FeedbackRest.CATEGORY + "." + FeedbackRest.PLURAL_NAME)
+@Component(FeedbackRest.CATEGORY + "." + FeedbackRest.NAME)
 public class FeedbackRestRepository extends DSpaceRestRepository<FeedbackRest, Integer> {
 
     @Autowired
@@ -79,14 +79,8 @@ public class FeedbackRestRepository extends DSpaceRestRepository<FeedbackRest, I
             throw new DSpaceBadRequestException("e-mail and message fields are mandatory!");
         }
 
-        String pageUrl = feedbackRest.getPage();
-        String urlPrefix = configurationService.getProperty("dspace.ui.url");
-        if (StringUtils.isNotBlank(pageUrl) && ! StringUtils.startsWith(pageUrl, urlPrefix)) {
-            throw new DSpaceBadRequestException("unexpected page url was submitted");
-        }
-
         try {
-            feedbackService.sendEmail(context, req, recipientEmail, senderEmail, message, pageUrl);
+            feedbackService.sendEmail(context, req, recipientEmail, senderEmail, message, feedbackRest.getPage());
         } catch (IOException | MessagingException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

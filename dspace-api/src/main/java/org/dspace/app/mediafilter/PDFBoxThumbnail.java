@@ -11,8 +11,6 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -73,7 +71,7 @@ public class PDFBoxThumbnail extends MediaFilter {
         BufferedImage buf;
 
         // Render the page image.
-        try ( PDDocument doc = Loader.loadPDF(new RandomAccessReadBuffer(source)); ) {
+        try ( PDDocument doc = PDDocument.load(source); ) {
             PDFRenderer renderer = new PDFRenderer(doc);
             buf = renderer.renderImage(0);
         } catch (InvalidPasswordException ex) {
@@ -83,7 +81,6 @@ public class PDFBoxThumbnail extends MediaFilter {
 
         // Generate thumbnail derivative and return as IO stream.
         JPEGFilter jpegFilter = new JPEGFilter();
-
         return jpegFilter.getThumb(currentItem, buf, verbose);
     }
 }

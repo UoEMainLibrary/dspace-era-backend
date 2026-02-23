@@ -8,11 +8,10 @@
 package org.dspace.app.rest.signposting.processor.item;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.dspace.app.rest.signposting.model.LinksetNode;
 import org.dspace.app.rest.signposting.model.LinksetRelationType;
 import org.dspace.content.Item;
@@ -28,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ItemTypeProcessor extends ItemSignpostingProcessor {
 
-    private static final Logger log = LogManager.getLogger(ItemTypeProcessor.class);
+    private static final Logger log = Logger.getLogger(ItemTypeProcessor.class);
     private static final String ABOUT_PAGE_URI = "https://schema.org/AboutPage";
 
     @Autowired

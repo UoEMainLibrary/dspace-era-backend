@@ -24,18 +24,25 @@ import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SearchServiceException;
 import org.dspace.discovery.configuration.DiscoveryConfigurationParameters;
 import org.dspace.discovery.indexobject.IndexableItem;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.dspace.services.factory.DSpaceServicesFactory;
 
 /**
  * Discovery (Solr) driver implementing ItemCountDAO interface to look up item
  * count information in communities and collections. Caching operations are
  * intentionally not implemented because Solr already is our cache.
+ *
+ * @author Ivan Masár, Andrea Bollini
  */
 public class ItemCountDAOSolr implements ItemCountDAO {
     /**
      * Log4j logger
      */
     private static Logger log = org.apache.logging.log4j.LogManager.getLogger(ItemCountDAOSolr.class);
+
+    /**
+     * DSpace context
+     */
+    private Context context;
 
     /**
      * Hold the communities item count obtained from SOLR after the first query. This only works
@@ -54,28 +61,41 @@ public class ItemCountDAOSolr implements ItemCountDAO {
     /**
      * Solr search service
      */
-    @Autowired
-    protected SearchService searchService;
+    SearchService searcher = DSpaceServicesFactory.getInstance().getServiceManager()
+                                                  .getServiceByName(SearchService.class.getName(), SearchService.class);
+
+    /**
+     * Set the dspace context to use
+     *
+     * @param context DSpace Context
+     * @throws ItemCountException if count error
+     */
+    @Override
+    public void setContext(Context context) throws ItemCountException {
+        this.context = context;
+    }
 
     /**
      * Get the count of the items in the given container.
      *
-     * @param context DSpace context
-     * @param dso DspaceObject
+     * @param dso Dspace Context
      * @return count
+     * @throws ItemCountException if count error
      */
     @Override
-    public int getCount(Context context, DSpaceObject dso) {
-        loadCount(context);
-        Integer val = null;
+    public int getCount(DSpaceObject dso) throws ItemCountException {
+        loadCount();
+        Integer val;
         if (dso instanceof Collection) {
-            val = collectionsCount.get(dso.getID().toString());
+            val = collectionsCount.get(String.valueOf(((Collection) dso).getID()));
         } else if (dso instanceof Community) {
-            val = communitiesCount.get(dso.getID().toString());
+            val = communitiesCount.get(String.valueOf(((Community) dso).getID()));
+        } else {
+            throw new ItemCountException("We can only count items in Communities or Collections");
         }
 
         if (val != null) {
-            return val;
+            return val.intValue();
         } else {
             return 0;
         }
@@ -85,15 +105,15 @@ public class ItemCountDAOSolr implements ItemCountDAO {
      * make sure that the counts are actually fetched from Solr (if haven't been
      * cached in a Map yet)
      *
-     * @param context DSpace Context
+     * @throws ItemCountException if count error
      */
-    private void loadCount(Context context) {
+    private void loadCount() throws ItemCountException {
         if (communitiesCount != null || collectionsCount != null) {
             return;
         }
 
-        communitiesCount = new HashMap<>();
-        collectionsCount = new HashMap<>();
+        communitiesCount = new HashMap<String, Integer>();
+        collectionsCount = new HashMap<String, Integer>();
 
         DiscoverQuery query = new DiscoverQuery();
         query.setFacetMinCount(1);
@@ -105,13 +125,11 @@ public class ItemCountDAOSolr implements ItemCountDAO {
                                                    DiscoveryConfigurationParameters.SORT.COUNT));
         query.addFilterQueries("search.resourcetype:" + IndexableItem.TYPE);    // count only items
         query.addFilterQueries("NOT(discoverable:false)");  // only discoverable
-        query.addFilterQueries("withdrawn:false");  // only not withdrawn
-        query.addFilterQueries("archived:true");  // only archived
         query.setMaxResults(0);
 
-        DiscoverResult sResponse;
+        DiscoverResult sResponse = null;
         try {
-            sResponse = searchService.search(context, query);
+            sResponse = searcher.search(context, query);
             List<FacetResult> commCount = sResponse.getFacetResult("location.comm");
             List<FacetResult> collCount = sResponse.getFacetResult("location.coll");
             for (FacetResult c : commCount) {
@@ -121,7 +139,8 @@ public class ItemCountDAOSolr implements ItemCountDAO {
                 collectionsCount.put(c.getAsFilterQuery(), (int) c.getCount());
             }
         } catch (SearchServiceException e) {
-            log.error("Could not initialize Community/Collection Item Counts from Solr: ", e);
+            log.error("caught exception: ", e);
+            throw new ItemCountException(e);
         }
     }
 }

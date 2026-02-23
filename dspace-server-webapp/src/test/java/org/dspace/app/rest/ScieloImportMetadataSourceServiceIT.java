@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import javax.el.MethodNotFoundException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -91,7 +92,7 @@ public class ScieloImportMetadataSourceServiceIT extends AbstractLiveImportInteg
         }
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = MethodNotFoundException.class)
     public void scieloImportMetadataFindMatchingRecordsTest() throws Exception {
         context.turnOffAuthorisationSystem();
         parentCommunity = CommunityBuilder.createCommunity(context)
@@ -110,7 +111,7 @@ public class ScieloImportMetadataSourceServiceIT extends AbstractLiveImportInteg
         scieloServiceImpl.findMatchingRecords(testItem);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = MethodNotFoundException.class)
     public void scieloImportMetadataGetRecordsCountByQueryTest() throws Exception {
         Query q = new Query();
         q.addParameter("query", "test query");

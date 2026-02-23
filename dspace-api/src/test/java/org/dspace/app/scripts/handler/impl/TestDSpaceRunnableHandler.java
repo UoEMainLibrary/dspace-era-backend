@@ -61,12 +61,6 @@ public class TestDSpaceRunnableHandler extends CommandLineDSpaceRunnableHandler 
         errorMessages.add(message);
     }
 
-    @Override
-    public void logError(String message, Throwable throwable) {
-        super.logError(message, throwable);
-        errorMessages.add(message);
-    }
-
     public List<String> getInfoMessages() {
         return infoMessages;
     }

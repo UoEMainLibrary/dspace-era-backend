@@ -9,10 +9,7 @@ package org.dspace;
 
 import static org.junit.Assert.fail;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
-import javax.sql.DataSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,8 +17,8 @@ import org.dspace.app.launcher.ScriptLauncher;
 import org.dspace.app.scripts.handler.impl.TestDSpaceRunnableHandler;
 import org.dspace.authority.AuthoritySearchService;
 import org.dspace.authority.MockAuthoritySolrServiceImpl;
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.builder.AbstractBuilder;
-import org.dspace.builder.EPersonBuilder;
 import org.dspace.content.Community;
 import org.dspace.core.Context;
 import org.dspace.core.I18nUtil;
@@ -32,8 +29,6 @@ import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.kernel.ServiceManager;
-import org.dspace.qaevent.MockQAEventService;
-import org.dspace.qaevent.service.QAEventService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.statistics.MockSolrLoggerServiceImpl;
 import org.dspace.statistics.MockSolrStatisticsCore;
@@ -94,14 +89,6 @@ public class AbstractIntegrationTestWithDatabase extends AbstractDSpaceIntegrati
         try {
             // Update/Initialize the database to latest version (via Flyway)
             DatabaseUtils.updateDatabase();
-
-            // Register custom functions in the H2 database
-            DataSource dataSource = DSpaceServicesFactory.getInstance()
-                    .getServiceManager()
-                    .getServiceByName("dataSource", DataSource.class);
-            try (Connection c = dataSource.getConnection(); Statement stmt = c.createStatement()) {
-                stmt.execute("CREATE ALIAS IF NOT EXISTS matches FOR 'org.dspace.util.DSpaceH2Dialect.matches'");
-            }
         } catch (SQLException se) {
             log.error("Error initializing database", se);
             fail("Error initializing database: " + se.getMessage()
@@ -127,16 +114,19 @@ public class AbstractIntegrationTestWithDatabase extends AbstractDSpaceIntegrati
             EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
             eperson = ePersonService.findByEmail(context, "test@email.com");
             if (eperson == null) {
-                // Create test EPerson for usage in all tests
-                log.info("Creating Test EPerson (email=test@email.com) for Integration Tests");
-                eperson = EPersonBuilder.createEPerson(context)
-                                        .withNameInMetadata("first", "last")
-                                        .withEmail("test@email.com")
-                                        .withCanLogin(true)
-                                        .withLanguage(I18nUtil.getDefaultLocale().getLanguage())
-                                        .withPassword(password)
-                                        .build();
+                // This EPerson creation should only happen once (i.e. for first test run)
+                log.info("Creating initial EPerson (email=test@email.com) for Unit Tests");
+                eperson = ePersonService.create(context);
+                eperson.setFirstName(context, "first");
+                eperson.setLastName(context, "last");
+                eperson.setEmail("test@email.com");
+                eperson.setCanLogIn(true);
+                eperson.setLanguage(context, I18nUtil.getDefaultLocale().getLanguage());
+                ePersonService.setPassword(eperson, password);
+                // actually save the eperson to unit testing DB
+                ePersonService.update(context, eperson);
             }
+
             // Set our global test EPerson as the current user in DSpace
             context.setCurrentUser(eperson);
 
@@ -145,23 +135,26 @@ public class AbstractIntegrationTestWithDatabase extends AbstractDSpaceIntegrati
 
             admin = ePersonService.findByEmail(context, "admin@email.com");
             if (admin == null) {
-                // Create test Administrator for usage in all tests
-                log.info("Creating Test Admin EPerson (email=admin@email.com) for Integration Tests");
-                admin = EPersonBuilder.createEPerson(context)
-                                      .withNameInMetadata("first (admin)", "last (admin)")
-                                      .withEmail("admin@email.com")
-                                      .withCanLogin(true)
-                                      .withLanguage(I18nUtil.getDefaultLocale().getLanguage())
-                                      .withPassword(password)
-                                      .build();
-
-                // Add Test Administrator to the ADMIN group in test database
+                // This EPerson creation should only happen once (i.e. for first test run)
+                log.info("Creating initial EPerson (email=admin@email.com) for Unit Tests");
+                admin = ePersonService.create(context);
+                admin.setFirstName(context, "first (admin)");
+                admin.setLastName(context, "last (admin)");
+                admin.setEmail("admin@email.com");
+                admin.setCanLogIn(true);
+                admin.setLanguage(context, I18nUtil.getDefaultLocale().getLanguage());
+                ePersonService.setPassword(admin, password);
+                // actually save the eperson to unit testing DB
+                ePersonService.update(context, admin);
                 GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
                 Group adminGroup = groupService.findByName(context, Group.ADMIN);
                 groupService.addMember(context, adminGroup, admin);
             }
 
             context.restoreAuthSystemState();
+        } catch (AuthorizeException ex) {
+            log.error("Error creating initial eperson or default groups", ex);
+            fail("Error creating initial eperson or default groups in AbstractUnitTest init()");
         } catch (SQLException ex) {
             log.error(ex.getMessage(), ex);
             fail("SQL Error on AbstractUnitTest init()");
@@ -184,38 +177,25 @@ public class AbstractIntegrationTestWithDatabase extends AbstractDSpaceIntegrati
             AbstractBuilder.cleanupObjects();
             parentCommunity = null;
             cleanupContext();
-        } catch (Exception e) {
-            throw new RuntimeException("Error cleaning up builder objects & context object", e);
-        }
 
-        ServiceManager serviceManager = DSpaceServicesFactory.getInstance().getServiceManager();
+            ServiceManager serviceManager = DSpaceServicesFactory.getInstance().getServiceManager();
+            // Clear the search core.
+            MockSolrSearchCore searchService = serviceManager
+                    .getServiceByName(null, MockSolrSearchCore.class);
+            searchService.reset();
+            // Clear the statistics core.
+            serviceManager
+                    .getServiceByName(SolrStatisticsCore.class.getName(), MockSolrStatisticsCore.class)
+                    .reset();
 
-        // Clear the search core.
-        MockSolrSearchCore searchService = serviceManager
-                .getServiceByName(null, MockSolrSearchCore.class);
-        searchService.reset();
+            MockSolrLoggerServiceImpl statisticsService = serviceManager
+                    .getServiceByName("solrLoggerService", MockSolrLoggerServiceImpl.class);
+            statisticsService.reset();
 
-        // Clear the statistics core.
-        serviceManager
-                .getServiceByName(SolrStatisticsCore.class.getName(), MockSolrStatisticsCore.class)
-                .reset();
+            MockAuthoritySolrServiceImpl authorityService = serviceManager
+                    .getServiceByName(AuthoritySearchService.class.getName(), MockAuthoritySolrServiceImpl.class);
+            authorityService.reset();
 
-        // Reset the statistics logger service
-        MockSolrLoggerServiceImpl loggerService = serviceManager
-                .getServiceByName("solrLoggerService", MockSolrLoggerServiceImpl.class);
-        loggerService.reset();
-
-        // Clear the authority core
-        MockAuthoritySolrServiceImpl authorityService = serviceManager
-                .getServiceByName(AuthoritySearchService.class.getName(), MockAuthoritySolrServiceImpl.class);
-        authorityService.reset();
-
-        // Clear the QA events core
-        MockQAEventService qaEventService = serviceManager
-            .getServiceByName(QAEventService.class.getName(), MockQAEventService.class);
-        qaEventService.reset();
-
-        try {
             // Reload our ConfigurationService (to reset configs to defaults again)
             DSpaceServicesFactory.getInstance().getConfigurationService().reloadConfig();
 
@@ -224,7 +204,7 @@ public class AbstractIntegrationTestWithDatabase extends AbstractDSpaceIntegrati
             // NOTE: we explicitly do NOT destroy our default eperson & admin as they
             // are cached and reused for all tests. This speeds up all tests.
         } catch (Exception e) {
-            throw new RuntimeException("Error reloading configuration & resetting builders", e);
+            throw new RuntimeException(e);
         }
     }
 

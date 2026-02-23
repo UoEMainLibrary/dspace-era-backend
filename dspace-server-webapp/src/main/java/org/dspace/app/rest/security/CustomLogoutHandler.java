@@ -7,12 +7,13 @@
  */
 package org.dspace.app.rest.security;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.core.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomLogoutHandler implements LogoutHandler {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LoggerFactory.getLogger(CustomLogoutHandler.class);
 
     @Autowired
     private RestAuthenticationService restAuthenticationService;
@@ -39,13 +40,12 @@ public class CustomLogoutHandler implements LogoutHandler {
      * @param httpServletResponse
      * @param authentication
      */
-    @Override
     public void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                        Authentication authentication) {
         try {
             Context context = ContextUtil.obtainContext(httpServletRequest);
             restAuthenticationService.invalidateAuthenticationData(httpServletRequest, httpServletResponse, context);
-            context.complete();
+            context.commit();
 
         } catch (Exception e) {
             log.error("Unable to logout", e);

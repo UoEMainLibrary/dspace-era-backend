@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
@@ -19,7 +20,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.dspace.app.util.XMLUtils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.w3c.dom.Document;
@@ -71,7 +71,7 @@ public class ControlledVocabulary {
 
         File controlledVocFile = new File(filePath.toString());
         if (controlledVocFile.exists()) {
-            DocumentBuilder builder = XMLUtils.getDocumentBuilder();
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.parse(controlledVocFile);
             XPath xPath = XPathFactory.newInstance().newXPath();
             Node node = (Node) xPath.compile("node").evaluate(document, XPathConstants.NODE);

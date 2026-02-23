@@ -65,13 +65,11 @@ public class DeleteFeature implements AuthorizationFeature {
     @Override
     public boolean isAuthorized(Context context, BaseObjectRest object) throws SQLException {
         if (object instanceof BaseObjectRest) {
-            DSpaceObject dSpaceObject = (DSpaceObject) utils.getDSpaceAPIObjectFromRest(context, object);
-
             if (object.getType().equals(WorkspaceItemRest.NAME)) {
-                WorkspaceItem workspaceItem = (WorkspaceItem) utils.getDSpaceAPIObjectFromRest(context, object);
-                dSpaceObject = workspaceItem.getItem();
+                object = ((WorkspaceItemRest)object).getItem();
             }
 
+            DSpaceObject dSpaceObject = (DSpaceObject) utils.getDSpaceAPIObjectFromRest(context, object);
             DSpaceObject parentObject = getParentObject(context, dSpaceObject);
 
             switch (object.getType()) {

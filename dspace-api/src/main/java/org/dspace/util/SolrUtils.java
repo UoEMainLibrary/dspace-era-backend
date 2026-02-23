@@ -35,8 +35,6 @@ public class SolrUtils {
      * @return date formatter compatible with Solr.
      */
     public static DateFormat getDateFormatter() {
-        DateFormat formatter = new SimpleDateFormat(SolrUtils.SOLR_DATE_FORMAT);
-        formatter.setTimeZone(SOLR_TIME_ZONE);
-        return formatter;
+        return new SimpleDateFormat(SolrUtils.SOLR_DATE_FORMAT);
     }
 }

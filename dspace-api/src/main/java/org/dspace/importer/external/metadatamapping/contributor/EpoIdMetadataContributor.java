@@ -13,8 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Resource;
 
-import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.importer.external.metadatamapping.MetadataFieldConfig;
@@ -28,7 +28,7 @@ import org.jdom2.Text;
 import org.jdom2.filter.Filters;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Custom MetadataContributor to manage Epo ID.
@@ -77,7 +77,6 @@ public class EpoIdMetadataContributor implements MetadataContributor<Element> {
      *
      * @param metadataFieldMapping the new mapping.
      */
-    @Override
     public void setMetadataFieldMapping(
         MetadataFieldMapping<Element, MetadataContributor<Element>> metadataFieldMapping) {
         this.metadataFieldMapping = metadataFieldMapping;
@@ -96,8 +95,7 @@ public class EpoIdMetadataContributor implements MetadataContributor<Element> {
     protected Map<String, String> prefixToNamespaceMapping;
 
     /**
-     * Initialize EpoIdMetadataContributor with all required fields: a query, prefixToNamespaceMapping
-     * and MetadataFieldConfig
+     * Initialize EpoIdMetadataContributor with a query, prefixToNamespaceMapping and MetadataFieldConfig
      *
      * @param query                    query string
      * @param prefixToNamespaceMapping metadata prefix to namespace mapping
@@ -115,6 +113,7 @@ public class EpoIdMetadataContributor implements MetadataContributor<Element> {
      * Empty constructor for EpoIdMetadataContributor
      */
     public EpoIdMetadataContributor() {
+
     }
 
     protected String query;
@@ -133,7 +132,7 @@ public class EpoIdMetadataContributor implements MetadataContributor<Element> {
      *
      * @param field MetadataFieldConfig used while retrieving MetadatumDTO
      */
-    @Autowired(required = true)
+    @Required
     public void setField(MetadataFieldConfig field) {
         this.field = field;
     }
@@ -147,11 +146,7 @@ public class EpoIdMetadataContributor implements MetadataContributor<Element> {
         return query;
     }
 
-    /**
-     * Setting the query
-     * @param query query used
-     */
-    @Autowired(required = true)
+    @Required
     public void setQuery(String query) {
         this.query = query;
     }

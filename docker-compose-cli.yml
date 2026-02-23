@@ -1,12 +1,8 @@
-networks:
-  # Default to using network named 'dspacenet' from docker-compose.yml.
-  # Its full name will be prepended with the project name (e.g. "-p d7" means it will be named "d7_dspacenet")
-  default:
-    name: ${COMPOSE_PROJECT_NAME}_dspacenet
-    external: true
+version: "3.7"
+
 services:
   dspace-cli:
-    image: "${DOCKER_REGISTRY:-docker.io}/${DOCKER_OWNER:-dspace}/dspace-cli:${DSPACE_VER:-dspace-8_x}"
+    image: "${DOCKER_OWNER:-dspace}/dspace-cli:${DSPACE_VER:-dspace-7_x}"
     container_name: dspace-cli
     build:
       context: .
@@ -30,8 +26,13 @@ services:
     - ./dspace/config:/dspace/config
     entrypoint: /dspace/bin/dspace
     command: help
+    networks:
+      - dspacenet
     tty: true
     stdin_open: true
 
 volumes:
   assetstore:
+
+networks:
+  dspacenet:

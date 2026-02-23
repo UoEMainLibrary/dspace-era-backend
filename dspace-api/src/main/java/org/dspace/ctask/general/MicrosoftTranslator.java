@@ -12,12 +12,12 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.client.DSpaceHttpClientFactory;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 
@@ -60,20 +60,22 @@ public class MicrosoftTranslator extends AbstractTranslator {
         String url = baseUrl + "?appId=" + apiKey;
         url += "&to=" + to + "&from=" + from + "&text=" + text;
 
-        try (CloseableHttpClient client = DSpaceHttpClientFactory.getInstance().build()) {
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
             HttpGet hm = new HttpGet(url);
-            try (CloseableHttpResponse httpResponse = client.execute(hm)) {
-                log.debug("Response code from API call is " + httpResponse);
-                if (httpResponse.getStatusLine().getStatusCode() == 200) {
-                    String response = IOUtils.toString(httpResponse.getEntity().getContent(),
-                            StandardCharsets.ISO_8859_1);
-                    response = response
-                            .replaceAll("<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/\">", "");
-                    response = response.replaceAll("</string>", "");
-                    translatedText = response;
-                }
+            HttpResponse httpResponse = client.execute(hm);
+            log.debug("Response code from API call is " + httpResponse);
+
+            if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                String response = IOUtils.toString(httpResponse.getEntity().getContent(),
+                        StandardCharsets.ISO_8859_1);
+                response = response
+                        .replaceAll("<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/\">", "");
+                response = response.replaceAll("</string>", "");
+                translatedText = response;
             }
         }
+
         return translatedText;
     }
 }
+

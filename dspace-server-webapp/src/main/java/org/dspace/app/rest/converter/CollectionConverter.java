@@ -9,11 +9,8 @@ package org.dspace.app.rest.converter;
 
 import org.dspace.app.rest.model.CollectionRest;
 import org.dspace.app.rest.projection.Projection;
-import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.content.Collection;
-import org.dspace.content.service.CollectionService;
 import org.dspace.discovery.IndexableObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,14 +23,10 @@ import org.springframework.stereotype.Component;
 public class CollectionConverter extends DSpaceObjectConverter<Collection, CollectionRest>
         implements IndexableObjectConverter<Collection, CollectionRest> {
 
-    @Autowired
-    CollectionService collectionService;
-
     @Override
     public CollectionRest convert(Collection collection, Projection projection) {
         CollectionRest resource = super.convert(collection, projection);
-        resource.setArchivedItemsCount(
-            collectionService.countArchivedItems(ContextUtil.obtainCurrentRequestContext(), collection));
+        resource.setArchivedItemsCount(collection.countArchivedItems());
         return resource;
     }
 

@@ -27,9 +27,9 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.client.HttpClient;
 import org.dspace.core.Context;
 import org.dspace.statistics.export.OpenURLTracker;
 import org.junit.Before;
@@ -55,7 +55,7 @@ public class OpenUrlServiceImplTest {
     private FailedOpenURLTrackerService failedOpenURLTrackerService;
 
     @Mock
-    private CloseableHttpClient httpClient;
+    private HttpClient httpClient;
 
     @Before
     public void setUp() throws Exception {
@@ -74,11 +74,11 @@ public class OpenUrlServiceImplTest {
      * @param statusCode the http status code to use in the mock.
      * @return a mocked http response.
      */
-    protected CloseableHttpResponse createMockHttpResponse(int statusCode) {
+    protected HttpResponse createMockHttpResponse(int statusCode) {
         StatusLine statusLine = mock(StatusLine.class);
         when(statusLine.getStatusCode()).thenReturn(statusCode);
 
-        CloseableHttpResponse httpResponse = mock(CloseableHttpResponse.class);
+        HttpResponse httpResponse = mock(HttpResponse.class);
         when(httpResponse.getStatusLine()).thenReturn(statusLine);
 
         return httpResponse;

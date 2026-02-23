@@ -21,12 +21,12 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.el.MethodNotFoundException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.util.XMLUtils;
 import org.dspace.content.Item;
 import org.dspace.importer.external.datamodel.ImportRecord;
 import org.dspace.importer.external.datamodel.Query;
@@ -57,7 +57,7 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
     private static final String AI_PATTERN  = "^AI=(.*)";
     private static final Pattern ISI_PATTERN = Pattern.compile("^\\d{15}$");
 
-    private final int timeout = 1000;
+    private int timeout = 1000;
 
     private String url;
     private String urlSearch;
@@ -109,17 +109,17 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
 
     @Override
     public int getRecordsCount(Query query) throws MetadataSourceException {
-        throw new UnsupportedOperationException("This method is not implemented for WOS");
+        throw new MethodNotFoundException("This method is not implemented for WOS");
     }
 
     @Override
     public Collection<ImportRecord> findMatchingRecords(Item item) throws MetadataSourceException {
-        throw new UnsupportedOperationException("This method is not implemented for WOS");
+        throw new MethodNotFoundException("This method is not implemented for WOS");
     }
 
     @Override
     public Collection<ImportRecord> findMatchingRecords(Query query) throws MetadataSourceException {
-        throw new UnsupportedOperationException("This method is not implemented for WOS");
+        throw new MethodNotFoundException("This method is not implemented for WOS");
     }
 
     /**
@@ -127,7 +127,7 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
      */
     private class SearchNBByQueryCallable implements Callable<Integer> {
 
-        private final String query;
+        private String query;
 
         private SearchNBByQueryCallable(String queryString) {
             this.query = queryString;
@@ -146,7 +146,9 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
                 params.put(HEADER_PARAMETERS, getRequestParameters());
                 String response = liveImportClient.executeHttpGetRequest(timeout, url, params);
 
-                SAXBuilder saxBuilder = XMLUtils.getSAXBuilder();
+                SAXBuilder saxBuilder = new SAXBuilder();
+                // disallow DTD parsing to ensure no XXE attacks can occur
+                saxBuilder.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
                 Document document = saxBuilder.build(new StringReader(response));
                 Element root = document.getRootElement();
                 XPathExpression<Element> xpath = XPathFactory.instance().compile("//*[@name=\"RecordsFound\"]",
@@ -154,8 +156,7 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
                 Element tot = xpath.evaluateFirst(root);
                 return Integer.valueOf(tot.getValue());
             }
-            log.warn("API key is missing: cannot execute count request.");
-            return 0;
+            return null;
         }
     }
 
@@ -166,7 +167,7 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
      */
     private class FindByIdCallable implements Callable<List<ImportRecord>> {
 
-        private final String doi;
+        private String doi;
 
         private FindByIdCallable(String doi) {
             this.doi = URLEncoder.encode(doi, StandardCharsets.UTF_8);
@@ -185,8 +186,6 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
                 for (Element record : elements) {
                     results.add(transformSourceRecords(record));
                 }
-            } else {
-                log.warn("API key is missing: cannot execute live import request.");
             }
             return results;
         }
@@ -204,7 +203,7 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
      */
     private class SearchByQueryCallable implements Callable<List<ImportRecord>> {
 
-        private final Query query;
+        private Query query;
 
         private SearchByQueryCallable(String queryString, Integer maxResult, Integer start) {
             query = new Query();
@@ -234,8 +233,6 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
                 for (Element el : omElements) {
                     results.add(transformSourceRecords(el));
                 }
-            } else {
-                log.warn("API key is missing: cannot execute live import request.");
             }
             return results;
         }
@@ -274,7 +271,9 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
         } else if (isIsi(query)) {
             return "UT=(" + query + ")";
         }
-        return "TS=(" + query + ")";
+        StringBuilder queryBuilder =  new StringBuilder("TS=(");
+        queryBuilder.append(query).append(")");
+        return queryBuilder.toString();
     }
 
     private boolean isIsi(String query) {
@@ -287,7 +286,9 @@ public class WOSImportMetadataSourceServiceImpl extends AbstractImportMetadataSo
 
     private List<Element> splitToRecords(String recordsSrc) {
         try {
-            SAXBuilder saxBuilder = XMLUtils.getSAXBuilder();
+            SAXBuilder saxBuilder = new SAXBuilder();
+            // disallow DTD parsing to ensure no XXE attacks can occur
+            saxBuilder.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
             Document document = saxBuilder.build(new StringReader(recordsSrc));
             Element root = document.getRootElement();
             String cData = XPathFactory.instance().compile("//*[@name=\"Records\"]",

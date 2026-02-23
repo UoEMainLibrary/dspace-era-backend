@@ -7,18 +7,14 @@
  */
 package org.dspace.app.rest.converter;
 
-import java.sql.SQLException;
-
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.rest.model.ScopeEnum;
 import org.dspace.app.rest.model.SubmissionSectionRest;
 import org.dspace.app.rest.model.SubmissionVisibilityRest;
 import org.dspace.app.rest.model.VisibilityEnum;
 import org.dspace.app.rest.projection.Projection;
+import org.dspace.app.util.SubmissionConfigReader;
 import org.dspace.app.util.SubmissionConfigReaderException;
 import org.dspace.app.util.SubmissionStepConfig;
-import org.dspace.submit.factory.SubmissionServiceFactory;
-import org.dspace.submit.service.SubmissionConfigService;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,7 +28,7 @@ public class SubmissionSectionConverter implements DSpaceConverter<SubmissionSte
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(SubmissionSectionConverter.class);
 
-    private SubmissionConfigService submissionConfigService;
+    private SubmissionConfigReader submissionConfigReader;
 
     @Override
     public SubmissionSectionRest convert(SubmissionStepConfig step, Projection projection) {
@@ -42,7 +38,6 @@ public class SubmissionSectionConverter implements DSpaceConverter<SubmissionSte
         sp.setHeader(step.getHeading());
         sp.setSectionType(step.getType());
         sp.setId(step.getId());
-        sp.setScope(ScopeEnum.fromString(step.getScope()));
         sp.setVisibility(new SubmissionVisibilityRest(VisibilityEnum.fromString(step.getVisibility()),
                                                       VisibilityEnum.fromString(step.getVisibilityOutside())));
         return sp;
@@ -52,8 +47,8 @@ public class SubmissionSectionConverter implements DSpaceConverter<SubmissionSte
         SubmissionStepConfig step;
 
         try {
-            step = getSubmissionConfigService().getStepConfig(obj.getId());
-        } catch (SQLException | IllegalStateException | SubmissionConfigReaderException e) {
+            step = getSubmissionConfigReader().getStepConfig(obj.getId());
+        } catch (SubmissionConfigReaderException e) {
             throw new RuntimeException(e);
         }
         return step;
@@ -64,11 +59,10 @@ public class SubmissionSectionConverter implements DSpaceConverter<SubmissionSte
         return SubmissionStepConfig.class;
     }
 
-    public SubmissionConfigService getSubmissionConfigService()
-            throws SubmissionConfigReaderException, SQLException, IllegalStateException {
-        if (submissionConfigService == null) {
-            submissionConfigService = SubmissionServiceFactory.getInstance().getSubmissionConfigService();
+    public SubmissionConfigReader getSubmissionConfigReader() throws SubmissionConfigReaderException {
+        if (submissionConfigReader == null) {
+            submissionConfigReader = new SubmissionConfigReader();
         }
-        return submissionConfigService;
+        return submissionConfigReader;
     }
 }

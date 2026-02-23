@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 public class VocabularyEntryRest implements RestModel {
     public static final String NAME = "vocabularyEntry";
-    public static final String PLURAL_NAME = "vocabularyEntries";
 
     @JsonInclude(Include.NON_NULL)
     private String authority;
@@ -77,10 +76,5 @@ public class VocabularyEntryRest implements RestModel {
     @Override
     public String getType() {
         return VocabularyEntryRest.NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 }

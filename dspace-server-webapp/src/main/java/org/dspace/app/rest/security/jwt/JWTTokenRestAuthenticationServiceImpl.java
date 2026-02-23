@@ -11,18 +11,15 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Iterator;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
 
 import com.nimbusds.jose.JOSEException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.model.wrapper.AuthenticationToken;
 import org.dspace.app.rest.security.DSpaceAuthentication;
-import org.dspace.app.rest.security.DSpaceCsrfAuthenticationStrategy;
 import org.dspace.app.rest.security.RestAuthenticationService;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.authenticate.AuthenticationMethod;
@@ -30,10 +27,14 @@ import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.service.EPersonService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,7 +47,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JWTTokenRestAuthenticationServiceImpl implements RestAuthenticationService, InitializingBean {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LoggerFactory.getLogger(RestAuthenticationService.class);
     private static final String AUTHORIZATION_COOKIE = "Authorization-cookie";
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORIZATION_TYPE = "Bearer";
@@ -66,7 +67,7 @@ public class JWTTokenRestAuthenticationServiceImpl implements RestAuthentication
 
     @Lazy
     @Autowired
-    private DSpaceCsrfAuthenticationStrategy dspaceCsrfAuthenticationStrategy;
+    private CsrfTokenRepository csrfTokenRepository;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -83,9 +84,6 @@ public class JWTTokenRestAuthenticationServiceImpl implements RestAuthentication
             String token = loginJWTTokenHandler.createTokenForEPerson(context, request,
                                                                  authentication.getPreviousLoginDate());
             context.commit();
-            // Close the Context, because the DSpaceRequestContextFilter is not called for requests that trigger
-            // the authentication filters (filters that extend AbstractAuthenticationProcessingFilter)
-            context.close();
 
             // Add newly generated auth token to the response
             addTokenToResponse(request, response, token, addCookie);
@@ -334,8 +332,11 @@ public class JWTTokenRestAuthenticationServiceImpl implements RestAuthentication
      * @param response current response
      */
     private void resetCSRFToken(HttpServletRequest request, HttpServletResponse response) {
-        // Use our custom CsrfAuthenticationStrategy class to force reset the CSRF token in Spring Security
-        dspaceCsrfAuthenticationStrategy.resetCSRFToken(request, response);
+        // Remove current CSRF token & generate a new one
+        // We do this as we want the token to change anytime you login or logout
+        csrfTokenRepository.saveToken(null, request, response);
+        CsrfToken newToken = csrfTokenRepository.generateToken(request);
+        csrfTokenRepository.saveToken(newToken, request, response);
     }
 
 }

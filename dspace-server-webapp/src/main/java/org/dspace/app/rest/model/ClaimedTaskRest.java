@@ -16,7 +16,10 @@ import org.dspace.app.rest.RestResourceController;
  * @author Andrea Bollini (andrea.bollini at 4science.it)
  */
 @LinksRest(links = {
-    @LinkRest(name = ClaimedTaskRest.STEP, method = "getStep")
+    @LinkRest(
+        name = ClaimedTaskRest.STEP,
+        method = "getStep"
+    )
 })
 public class ClaimedTaskRest extends BaseObjectRest<Integer> {
     public static final String NAME = "claimedtask";
@@ -42,11 +45,6 @@ public class ClaimedTaskRest extends BaseObjectRest<Integer> {
     @Override
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     @Override

@@ -9,11 +9,7 @@ package org.dspace.app.mediafilter;
 
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -44,7 +40,6 @@ import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.scripts.handler.DSpaceRunnableHandler;
 import org.dspace.services.ConfigurationService;
-import org.dspace.util.ThrowableUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -96,7 +91,6 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
     protected boolean isVerbose = false;
     protected boolean isQuiet = false;
     protected boolean isForce = false; // default to not forced
-    protected LocalDate fromDate = null;
 
     protected MediaFilterServiceImpl() {
 
@@ -124,15 +118,6 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
             for (Community topLevelCommunity : topLevelCommunities) {
                 applyFiltersCommunity(context, topLevelCommunity);
             }
-        } else if (fromDate != null) {
-            Iterator<Item> itemIterator =
-                    itemService.findByLastModifiedSince(
-                            context,
-                            Date.from(fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                    );
-            while (itemIterator.hasNext() && processed < max2Process) {
-                applyFiltersItem(context, itemIterator.next());
-            }
         } else {
             //otherwise, just find every item and process
             Iterator<Item> itemIterator = itemService.findAll(context);
@@ -145,18 +130,12 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
     @Override
     public void applyFiltersCommunity(Context context, Community community)
         throws Exception {   //only apply filters if community not in skip-list
-        // ensure that the community is attached to the current hibernate session
-        // as we are committing after each item (handles, sub-communties and
-        // collections are lazy attributes)
-        community = context.reloadEntity(community);
         if (!inSkipList(community.getHandle())) {
             List<Community> subcommunities = community.getSubcommunities();
             for (Community subcommunity : subcommunities) {
                 applyFiltersCommunity(context, subcommunity);
             }
-            // ensure that the community is attached to the current hibernate session
-            // as we are committing after each item
-            community = context.reloadEntity(community);
+
             List<Collection> collections = community.getCollections();
             for (Collection collection : collections) {
                 applyFiltersCollection(context, collection);
@@ -167,9 +146,6 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
     @Override
     public void applyFiltersCollection(Context context, Collection collection)
         throws Exception {
-        // ensure that the collection is attached to the current hibernate session
-        // as we are committing after each item (handles are lazy attributes)
-        collection = context.reloadEntity(collection);
         //only apply filters if collection not in skip-list
         if (!inSkipList(collection.getHandle())) {
             Iterator<Item> itemIterator = itemService.findAllByCollection(context, collection);
@@ -193,8 +169,6 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
             }
             // clear item objects from context cache and internal cache
             c.uncacheEntity(currentItem);
-            // commit after each item to release DB resources
-            c.commit();
             currentItem = null;
         }
     }
@@ -251,9 +225,23 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
                         filtered = true;
                     }
                 } catch (Exception e) {
+                    String handle = myItem.getHandle();
+                    List<Bundle> bundles = myBitstream.getBundles();
+                    long size = myBitstream.getSizeBytes();
+                    String checksum = myBitstream.getChecksum() + " (" + myBitstream.getChecksumAlgorithm() + ")";
+                    int assetstore = myBitstream.getStoreNumber();
+
                     // Printout helpful information to find the errored bitstream.
-                    logError(formatBitstreamDetails(myItem.getHandle(), myBitstream));
-                    logError(ThrowableUtils.formatCauseChain(e));
+                    StringBuilder sb = new StringBuilder("ERROR filtering, skipping bitstream:\n");
+                    sb.append("\tItem Handle: ").append(handle);
+                    for (Bundle bundle : bundles) {
+                        sb.append("\tBundle Name: ").append(bundle.getName());
+                    }
+                    sb.append("\tFile Size: ").append(size);
+                    sb.append("\tChecksum: ").append(checksum);
+                    sb.append("\tAsset Store: ").append(assetstore);
+                    logError(sb.toString());
+                    logError(e.getMessage(), e);
                 }
             } else if (filterClass instanceof SelfRegisterInputFormats) {
                 // Filter implements self registration, so check to see if it should be applied
@@ -331,10 +319,10 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
 
         // check if destination bitstream exists
         Bundle existingBundle = null;
-        List<Bitstream> existingBitstreams = new ArrayList<>();
+        List<Bitstream> existingBitstreams = new ArrayList<Bitstream>();
         List<Bundle> bundles = itemService.getBundles(item, formatFilter.getBundleName());
 
-        if (!bundles.isEmpty()) {
+        if (bundles.size() > 0) {
             // only finds the last matching bundle and all matching bitstreams in the proper bundle(s)
             for (Bundle bundle : bundles) {
                 List<Bitstream> bitstreams = bundle.getBitstreams();
@@ -349,7 +337,7 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
         }
 
         // if exists and overwrite = false, exit
-        if (!overWrite && (!existingBitstreams.isEmpty())) {
+        if (!overWrite && (existingBitstreams.size() > 0)) {
             if (!isQuiet) {
                 logInfo("SKIPPED: bitstream " + source.getID()
                                        + " (item: " + item.getHandle() + ") because '" + newName + "' already exists");
@@ -382,7 +370,7 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
             }
 
             Bundle targetBundle; // bundle we're modifying
-            if (bundles.isEmpty()) {
+            if (bundles.size() < 1) {
                 // create new bundle if needed
                 targetBundle = bundleService.create(context, item, formatFilter.getBundleName());
             } else {
@@ -411,7 +399,6 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
 
         } catch (OutOfMemoryError oome) {
             logError("!!! OutOfMemoryError !!!");
-            logError(formatBitstreamDetails(item.getHandle(), source));
         }
 
         // we are overwriting, so remove old bitstream
@@ -509,37 +496,6 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
         }
     }
 
-    /**
-     * Describe a Bitstream in detail.  Format a single line of text with
-     * information such as Bitstore index, backing file ID, size, checksum,
-     * enclosing Item and Bundles.
-     *
-     * @param itemHandle Handle of the Item by which we found the Bitstream.
-     * @param bitstream the Bitstream to be described.
-     * @return Bitstream details.
-     */
-    private String formatBitstreamDetails(String itemHandle,
-            Bitstream bitstream) {
-        List<Bundle> bundles;
-        try {
-            bundles = bitstream.getBundles();
-        } catch (SQLException ex) {
-            logError("Unexpected error fetching Bundles", ex);
-            bundles = Collections.EMPTY_LIST;
-        }
-        StringBuilder sb = new StringBuilder("ERROR filtering, skipping bitstream:\n");
-        sb.append("\tItem Handle: ").append(itemHandle);
-        for (Bundle bundle : bundles) {
-            sb.append("\tBundle Name: ").append(bundle.getName());
-        }
-        sb.append("\tFile Size: ").append(bitstream.getSizeBytes());
-        sb.append("\tChecksum: ").append(bitstream.getChecksum())
-                .append(" (").append(bitstream.getChecksumAlgorithm()).append(')');
-        sb.append("\tAsset Store: ").append(bitstream.getStoreNumber());
-        sb.append("\tInternal ID: ").append(bitstream.getInternalId());
-        return sb.toString();
-    }
-
     private void logInfo(String message) {
         if (handler != null) {
             handler.logInfo(message);
@@ -600,10 +556,5 @@ public class MediaFilterServiceImpl implements MediaFilterService, InitializingB
     @Override
     public void setLogHandler(DSpaceRunnableHandler handler) {
         this.handler = handler;
-    }
-
-    @Override
-    public void setFromDate(LocalDate fromDate) {
-        this.fromDate = fromDate;
     }
 }

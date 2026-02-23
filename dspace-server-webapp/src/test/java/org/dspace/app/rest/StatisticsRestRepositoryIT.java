@@ -135,13 +135,13 @@ public class StatisticsRestRepositoryIT extends AbstractControllerIntegrationTes
     @Test
     public void usagereports_notProperUUIDAndReportId_Exception() throws Exception {
         getClient(adminToken).perform(get("/api/statistics/usagereports/notProperUUIDAndReportId"))
-                   .andExpect(status().isNotFound());
+                   .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
     }
 
     @Test
     public void usagereports_nonValidUUIDpart_Exception() throws Exception {
         getClient(adminToken).perform(get("/api/statistics/usagereports/notAnUUID" + "_" + TOTAL_VISITS_REPORT_ID))
-                   .andExpect(status().isNotFound());
+                   .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
     }
 
     @Test
@@ -205,9 +205,10 @@ public class StatisticsRestRepositoryIT extends AbstractControllerIntegrationTes
         // ** WHEN **
         context.turnOffAuthorisationSystem();
         authorizeService.removeAllPolicies(context, itemNotVisitedWithBitstreams);
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
                              .withDspaceObject(itemNotVisitedWithBitstreams)
-                             .withAction(Constants.READ).build();
+                             .withAction(Constants.READ)
+                             .withUser(eperson).build();
 
         EPerson eperson1 = EPersonBuilder.createEPerson(context)
                                          .withEmail("eperson1@mail.com")
@@ -238,9 +239,10 @@ public class StatisticsRestRepositoryIT extends AbstractControllerIntegrationTes
         configurationService.setProperty("usage-statistics.authorization.admin.usage", false);
         context.turnOffAuthorisationSystem();
         authorizeService.removeAllPolicies(context, itemNotVisitedWithBitstreams);
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
                              .withDspaceObject(itemNotVisitedWithBitstreams)
-                             .withAction(Constants.READ).build();
+                             .withAction(Constants.READ)
+                             .withUser(eperson).build();
 
         EPerson eperson1 = EPersonBuilder.createEPerson(context)
                                          .withEmail("eperson1@mail.com")
@@ -826,7 +828,7 @@ public class StatisticsRestRepositoryIT extends AbstractControllerIntegrationTes
     public void TotalDownloadsReport_NotSupportedDSO_Collection() throws Exception {
         getClient(adminToken)
             .perform(get("/api/statistics/usagereports/" + collectionVisited.getID() + "_" + TOTAL_DOWNLOADS_REPORT_ID))
-            .andExpect(status().isNotFound());
+            .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
     }
 
     /**
@@ -1148,9 +1150,10 @@ public class StatisticsRestRepositoryIT extends AbstractControllerIntegrationTes
         // ** WHEN **
         context.turnOffAuthorisationSystem();
         authorizeService.removeAllPolicies(context, itemNotVisitedWithBitstreams);
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
                              .withDspaceObject(itemNotVisitedWithBitstreams)
-                             .withAction(Constants.READ).build();
+                             .withAction(Constants.READ)
+                             .withUser(eperson).build();
 
         EPerson eperson1 = EPersonBuilder.createEPerson(context)
                                          .withEmail("eperson1@mail.com")

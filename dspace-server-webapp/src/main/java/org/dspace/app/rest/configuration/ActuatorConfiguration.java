@@ -14,8 +14,6 @@ import java.util.Arrays;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dspace.app.rest.DiscoverableEndpointsService;
 import org.dspace.app.rest.health.GeoIpHealthIndicator;
-import org.dspace.app.rest.health.SEOHealthIndicator;
-import org.dspace.app.rest.health.SolrHealthIndicator;
 import org.dspace.authority.AuthoritySolrServiceImpl;
 import org.dspace.discovery.SolrSearchCore;
 import org.dspace.statistics.SolrStatisticsCore;
@@ -24,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.actuate.solr.SolrHealthIndicator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
@@ -81,12 +80,6 @@ public class ActuatorConfiguration {
     public SolrHealthIndicator solrOaiCoreHealthIndicator(SolrServerResolver solrServerResolver)
         throws SolrServerException {
         return new SolrHealthIndicator(solrServerResolver.getServer());
-    }
-
-    @Bean
-    @ConditionalOnEnabledHealthIndicator("seo")
-    public SEOHealthIndicator seoHealthIndicator() {
-        return new SEOHealthIndicator();
     }
 
     @Bean

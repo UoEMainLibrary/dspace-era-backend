@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import javax.xml.bind.JAXBException;
 
 import eu.openaire.jaxb.helper.OpenAIREHandler;
 import eu.openaire.jaxb.model.Response;
@@ -27,32 +28,32 @@ import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.client.DSpaceHttpClientFactory;
 import org.dspace.app.util.Util;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * based on OrcidRestConnector it's a rest connector for Openaire API providing
+ * based on OrcidRestConnector it's a rest connector for OpenAIRE API providing
  * ways to perform searches and token grabbing
  * 
  * @author paulo-graca
  *
  */
-public class OpenaireRestConnector {
+public class OpenAIRERestConnector {
     /**
      * log4j logger
      */
-    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(OpenaireRestConnector.class);
+    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(OpenAIRERestConnector.class);
 
     /**
-     * Openaire API Url
+     * OpenAIRE API Url
      *  and can be configured with: openaire.api.url
      */
     private String url = "https://api.openaire.eu";
@@ -64,30 +65,30 @@ public class OpenaireRestConnector {
     boolean tokenEnabled = false;
 
     /**
-     * Openaire Authorization and Authentication Token Service URL
+     * OpenAIRE Authorization and Authentication Token Service URL
      *  and can be configured with: openaire.token.url
      */
     private String tokenServiceUrl;
 
     /**
-     * Openaire clientId
+     * OpenAIRE clientId
      *  and can be configured with: openaire.token.clientId
      */
     private String clientId;
 
     /**
-     * OpenaireRest access token
+     * OpenAIRERest access token
      */
-    private OpenaireRestToken accessToken;
+    private OpenAIRERestToken accessToken;
 
     /**
-     * Openaire clientSecret
+     * OpenAIRE clientSecret
      *  and can be configured with: openaire.token.clientSecret
      */
     private String clientSecret;
 
 
-    public OpenaireRestConnector(String url) {
+    public OpenAIRERestConnector(String url) {
         this.url = url;
     }
 
@@ -98,7 +99,7 @@ public class OpenaireRestConnector {
      * 
      * @throws IOException
      */
-    public OpenaireRestToken grabNewAccessToken() throws IOException {
+    public OpenAIRERestToken grabNewAccessToken() throws IOException {
 
         if (StringUtils.isBlank(tokenServiceUrl) || StringUtils.isBlank(clientId)
                 || StringUtils.isBlank(clientSecret)) {
@@ -120,38 +121,37 @@ public class OpenaireRestConnector {
         params.add(new BasicNameValuePair("grant_type", "client_credentials"));
         httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
-        try (CloseableHttpClient httpClient = DSpaceHttpClientFactory.getInstance().build()) {
-            HttpResponse getResponse = httpClient.execute(httpPost);
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpResponse getResponse = httpClient.execute(httpPost);
 
-            JSONObject responseObject = null;
-            try (InputStream is = getResponse.getEntity().getContent();
-                 BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, "UTF-8"))) {
-                String inputStr;
-                // verify if we have basic json
-                while ((inputStr = streamReader.readLine()) != null && responseObject == null) {
-                    if (inputStr.startsWith("{") && inputStr.endsWith("}") && inputStr.contains("access_token")
-                            && inputStr.contains("expires_in")) {
-                        try {
-                            responseObject = new JSONObject(inputStr);
-                        } catch (Exception e) {
-                            // Not as valid as I'd hoped, move along
-                            responseObject = null;
-                        }
+        JSONObject responseObject = null;
+        try (InputStream is = getResponse.getEntity().getContent();
+                BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, "UTF-8"))) {
+            String inputStr;
+            // verify if we have basic json
+            while ((inputStr = streamReader.readLine()) != null && responseObject == null) {
+                if (inputStr.startsWith("{") && inputStr.endsWith("}") && inputStr.contains("access_token")
+                        && inputStr.contains("expires_in")) {
+                    try {
+                        responseObject = new JSONObject(inputStr);
+                    } catch (Exception e) {
+                        // Not as valid as I'd hoped, move along
+                        responseObject = null;
                     }
                 }
             }
-            if (responseObject == null || !responseObject.has("access_token") || !responseObject.has("expires_in")) {
-                throw new IOException("Unable to grab the access token using provided service url, " +
-                        "client id and secret");
-            }
-
-            return new OpenaireRestToken(responseObject.get("access_token").toString(),
-                    Long.valueOf(responseObject.get("expires_in").toString()));
         }
+        if (responseObject == null || !responseObject.has("access_token") || !responseObject.has("expires_in")) {
+            throw new IOException("Unable to grab the access token using provided service url, client id and secret");
+        }
+
+        return new OpenAIRERestToken(responseObject.get("access_token").toString(),
+                Long.valueOf(responseObject.get("expires_in").toString()));
+
     }
 
     /**
-     * Perform a GET request to the Openaire API
+     * Perform a GET request to the OpenAIRE API
      * 
      * @param file
      * @param accessToken
@@ -172,43 +172,42 @@ public class OpenaireRestConnector {
                 httpGet.addHeader("Authorization", "Bearer " + accessToken);
             }
 
-            try (CloseableHttpClient httpClient = DSpaceHttpClientFactory.getInstance().build()) {
-                getResponse = httpClient.execute(httpGet);
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            getResponse = httpClient.execute(httpGet);
 
-                StatusLine status = getResponse.getStatusLine();
+            StatusLine status = getResponse.getStatusLine();
 
-                // registering errors
-                switch (status.getStatusCode()) {
-                    case HttpStatus.SC_NOT_FOUND:
-                        // 404 - Not found
-                    case HttpStatus.SC_FORBIDDEN:
-                        // 403 - Invalid Access Token
-                    case 429:
-                        // 429 - Rate limit abuse for unauthenticated user
-                        Header[] limitUsed = getResponse.getHeaders("x-ratelimit-used");
-                        Header[] limitMax = getResponse.getHeaders("x-ratelimit-limit");
+            // registering errors
+            switch (status.getStatusCode()) {
+                case HttpStatus.SC_NOT_FOUND:
+                    // 404 - Not found
+                case HttpStatus.SC_FORBIDDEN:
+                    // 403 - Invalid Access Token
+                case 429:
+                    // 429 - Rate limit abuse for unauthenticated user
+                    Header[] limitUsed = getResponse.getHeaders("x-ratelimit-used");
+                    Header[] limitMax = getResponse.getHeaders("x-ratelimit-limit");
 
-                        if (limitUsed.length > 0) {
-                            String limitMsg = limitUsed[0].getValue();
-                            if (limitMax.length > 0) {
-                                limitMsg = limitMsg.concat(" of " + limitMax[0].getValue());
-                            }
-                            getGotError(new NoHttpResponseException(status.getReasonPhrase() + " with usage limit "
-                                            + limitMsg),
-                                    url + '/' + file);
-                        } else {
-                            // 429 - Rate limit abuse
-                            getGotError(new NoHttpResponseException(status.getReasonPhrase()), url + '/' + file);
+                    if (limitUsed.length > 0) {
+                        String limitMsg = limitUsed[0].getValue();
+                        if (limitMax.length > 0) {
+                            limitMsg = limitMsg.concat(" of " + limitMax[0].getValue());
                         }
-                        break;
-                    default:
-                        // 200 or other
-                        break;
-                }
-
-                // do not close this httpClient
-                result = getResponse.getEntity().getContent();
+                        getGotError(
+                                new NoHttpResponseException(status.getReasonPhrase() + " with usage limit " + limitMsg),
+                                url + '/' + file);
+                    } else {
+                        // 429 - Rate limit abuse
+                        getGotError(new NoHttpResponseException(status.getReasonPhrase()), url + '/' + file);
+                    }
+                    break;
+                default:
+                    // 200 or other
+                    break;
             }
+
+            // do not close this httpClient
+            result = getResponse.getEntity().getContent();
         } catch (MalformedURLException e1) {
             getGotError(e1, url + '/' + file);
         } catch (Exception e) {
@@ -219,12 +218,12 @@ public class OpenaireRestConnector {
     }
 
     /**
-     * Perform an Openaire Project Search By Keywords
+     * Perform an OpenAIRE Project Search By Keywords
      * 
      * @param page
      * @param size
      * @param keywords
-     * @return Openaire Response
+     * @return OpenAIRE Response
      */
     public Response searchProjectByKeywords(int page, int size, String... keywords) {
         String path = "search/projects?keywords=" + String.join("+", keywords);
@@ -232,13 +231,13 @@ public class OpenaireRestConnector {
     }
 
     /**
-     * Perform an Openaire Project Search By ID and by Funder
+     * Perform an OpenAIRE Project Search By ID and by Funder
      * 
      * @param projectID
      * @param projectFunder
      * @param page
      * @param size
-     * @return Openaire Response
+     * @return OpenAIRE Response
      */
     public Response searchProjectByIDAndFunder(String projectID, String projectFunder, int page, int size) {
         String path = "search/projects?grantID=" + projectID + "&funder=" + projectFunder;
@@ -246,12 +245,12 @@ public class OpenaireRestConnector {
     }
 
     /**
-     * Perform an Openaire Search request
+     * Perform an OpenAIRE Search request
      * 
      * @param path
      * @param page
      * @param size
-     * @return Openaire Response
+     * @return OpenAIRE Response
      */
     public Response search(String path, int page, int size) {
         String[] queryStringPagination = { "page=" + page, "size=" + size };
@@ -279,7 +278,7 @@ public class OpenaireRestConnector {
         if (result != null) {
             try {
                 return OpenAIREHandler.unmarshal(result);
-            } catch (Exception e) {
+            } catch (JAXBException e) {
                 log.error("Error extracting result from request: " + queryString);
                 getGotError(e, path);
             }

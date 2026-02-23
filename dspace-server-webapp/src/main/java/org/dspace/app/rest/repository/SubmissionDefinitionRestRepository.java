@@ -15,13 +15,12 @@ import org.dspace.app.rest.Parameter;
 import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.model.SubmissionDefinitionRest;
 import org.dspace.app.util.SubmissionConfig;
+import org.dspace.app.util.SubmissionConfigReader;
 import org.dspace.app.util.SubmissionConfigReaderException;
 import org.dspace.content.Collection;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.CollectionService;
 import org.dspace.core.Context;
-import org.dspace.submit.factory.SubmissionServiceFactory;
-import org.dspace.submit.service.SubmissionConfigService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,20 +31,20 @@ import org.springframework.stereotype.Component;
  *
  * @author Andrea Bollini (andrea.bollini at 4science.it)
  */
-@Component(SubmissionDefinitionRest.CATEGORY + "." + SubmissionDefinitionRest.PLURAL_NAME)
+@Component(SubmissionDefinitionRest.CATEGORY + "." + SubmissionDefinitionRest.NAME)
 public class SubmissionDefinitionRestRepository extends DSpaceRestRepository<SubmissionDefinitionRest, String> {
-    private SubmissionConfigService submissionConfigService;
+    private SubmissionConfigReader submissionConfigReader;
 
     private CollectionService collectionService = ContentServiceFactory.getInstance().getCollectionService();
 
     public SubmissionDefinitionRestRepository() throws SubmissionConfigReaderException {
-        submissionConfigService = SubmissionServiceFactory.getInstance().getSubmissionConfigService();
+        submissionConfigReader = new SubmissionConfigReader();
     }
 
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @Override
     public SubmissionDefinitionRest findOne(Context context, String submitName) {
-        SubmissionConfig subConfig = submissionConfigService.getSubmissionConfigByName(submitName);
+        SubmissionConfig subConfig = submissionConfigReader.getSubmissionConfigByName(submitName);
         if (subConfig == null) {
             return null;
         }
@@ -55,8 +54,8 @@ public class SubmissionDefinitionRestRepository extends DSpaceRestRepository<Sub
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @Override
     public Page<SubmissionDefinitionRest> findAll(Context context, Pageable pageable) {
-        int total = submissionConfigService.countSubmissionConfigs();
-        List<SubmissionConfig> subConfs = submissionConfigService.getAllSubmissionConfigs(
+        int total = submissionConfigReader.countSubmissionConfigs();
+        List<SubmissionConfig> subConfs = submissionConfigReader.getAllSubmissionConfigs(
                 pageable.getPageSize(), Math.toIntExact(pageable.getOffset()));
         return converter.toRestPage(subConfs, pageable, total, utils.obtainProjection());
     }
@@ -70,7 +69,7 @@ public class SubmissionDefinitionRestRepository extends DSpaceRestRepository<Sub
             return null;
         }
         SubmissionDefinitionRest def = converter
-            .toRest(submissionConfigService.getSubmissionConfigByCollection(col),
+            .toRest(submissionConfigReader.getSubmissionConfigByCollection(col.getHandle()),
                     utils.obtainProjection());
         return def;
     }

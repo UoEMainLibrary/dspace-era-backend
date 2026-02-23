@@ -13,7 +13,7 @@ import java.util.Map;
 import org.apache.commons.lang3.BooleanUtils;
 import org.dspace.content.InProgressSubmission;
 import org.dspace.content.WorkspaceItem;
-import org.dspace.core.HibernateProxyHelper;
+import org.hibernate.proxy.HibernateProxyHelper;
 
 /**
  * Class representing configuration for a single step within an Item Submission

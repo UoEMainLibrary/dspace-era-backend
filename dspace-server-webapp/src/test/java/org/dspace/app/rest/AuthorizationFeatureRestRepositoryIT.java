@@ -37,12 +37,12 @@ public class AuthorizationFeatureRestRepositoryIT extends AbstractControllerInte
     @Autowired
     private AuthorizationFeatureService authzFeatureService;
 
+    @Test
     /**
-     * All the features should be returned.
+     * All the features should be returned
      *
      * @throws Exception
      */
-    @Test
     public void findAllTest() throws Exception {
         int featuresNum = authzFeatureService.findAll().size();
         int expReturn = featuresNum > 20 ? 20 : featuresNum;
@@ -62,20 +62,20 @@ public class AuthorizationFeatureRestRepositoryIT extends AbstractControllerInte
 
     }
 
+    @Test
     /**
      * The feature endpoint must provide proper pagination. Unauthorized and
      * forbidden scenarios are managed in the findAllTest
      *
      * @throws Exception
      */
-    @Test
     public void findAllWithPaginationTest() throws Exception {
         int featuresNum = authzFeatureService.findAll().size();
 
         String adminToken = getAuthToken(admin.getEmail(), password);
-        List<String> featureIDs = new ArrayList<>();
+        List<String> featureIDs = new ArrayList<String>();
         for (int page = 0; page < featuresNum; page++) {
-            AtomicReference<String> idRef = new AtomicReference<>();
+            AtomicReference<String> idRef = new AtomicReference<String>();
 
             getClient(adminToken)
                 .perform(get("/api/authz/features").param("page", String.valueOf(page)).param("size", "1"))
@@ -101,13 +101,12 @@ public class AuthorizationFeatureRestRepositoryIT extends AbstractControllerInte
         }
     }
 
+    @Test
     /**
-     * The feature resource endpoint must expose the proper structure and be
-     * reserved to administrators.
+     * The feature resource endpoint must expose the proper structure and be reserved to administrators
      *
      * @throws Exception
      */
-    @Test
     public void findOneTest() throws Exception {
         getClient().perform(get("/api/authz/features/withdrawItem")).andExpect(status().isOk())
                    .andExpect(jsonPath("$.id", is("withdrawItem")))
@@ -122,12 +121,12 @@ public class AuthorizationFeatureRestRepositoryIT extends AbstractControllerInte
 
     }
 
+    @Test
     /**
      * It should be possible to find features by resourcetype. The endpoint is only available to administrators
      *
      * @throws Exception
      */
-    @Test
     public void findByResourceTypeTest() throws Exception {
         AuthorizationFeature alwaysTrueFeature = authzFeatureService.find(AlwaysTrueFeature.NAME);
         String adminToken = getAuthToken(admin.getEmail(), password);

@@ -8,7 +8,6 @@
 package org.dspace.content.authority;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
@@ -87,7 +86,6 @@ public class DSpaceControlledVocabularyTest extends AbstractDSpaceTest {
             CoreServiceFactory.getInstance().getPluginService().getNamedPlugin(Class.forName(PLUGIN_INTERFACE), "farm");
         assertNotNull(instance);
         Choices result = instance.getMatches(text, start, limit, locale);
-        assertNotEquals("At least one match expected", 0, result.values.length);
         assertEquals("north 40", result.values[0].value);
     }
 

@@ -9,10 +9,6 @@ package org.dspace.authority;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.time.DateTimeException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
@@ -30,6 +25,9 @@ import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.core.Context;
 import org.dspace.util.SolrUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * @author Antoine Snyers (antoine at atmire.com)
@@ -194,7 +192,7 @@ public class AuthorityValue {
     }
 
     /**
-     * Information that can be used the choice ui.
+     * Information that can be used the choice ui
      *
      * @return map
      */
@@ -202,43 +200,34 @@ public class AuthorityValue {
         return new HashMap<>();
     }
 
-    /**
-     * Build a list of ISO date formatters to parse various forms.
-     *
-     * <p><strong>Note:</strong>  any formatter which does not parse a zone or
-     * offset must have a default zone set.  See {@link stringToDate}.
-     *
-     * @return the formatters.
-     */
-    static private List<DateTimeFormatter> getDateFormatters() {
-        List<java.time.format.DateTimeFormatter> list = new ArrayList<>();
-        list.add(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]X"));
-        list.add(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                .withZone(ZoneId.systemDefault().normalized()));
+
+    public List<DateTimeFormatter> getDateFormatters() {
+        List<DateTimeFormatter> list = new ArrayList<>();
+        list.add(ISODateTimeFormat.dateTime());
+        list.add(ISODateTimeFormat.dateTimeNoMillis());
         return list;
     }
 
-    /**
-     * Convert a date string to internal form, trying several parsers.
-     *
-     * @param date serialized date to be converted.
-     * @return converted date, or null if no parser accepted the input.
-     */
-    static public Date stringToDate(String date) {
+    public Date stringToDate(String date) {
         Date result = null;
         if (StringUtils.isNotBlank(date)) {
-            for (DateTimeFormatter formatter : getDateFormatters()) {
+            List<DateTimeFormatter> dateFormatters = getDateFormatters();
+            boolean converted = false;
+            int formatter = 0;
+            while (!converted) {
                 try {
-                    ZonedDateTime dateTime = ZonedDateTime.parse(date, formatter);
-                    result = Date.from(dateTime.toInstant());
-                    break;
-                } catch (DateTimeException e) {
-                    log.debug("Input '{}' did not match {}", date, formatter);
+                    DateTimeFormatter dateTimeFormatter = dateFormatters.get(formatter);
+                    DateTime dateTime = dateTimeFormatter.parseDateTime(date);
+                    result = dateTime.toDate();
+                    converted = true;
+                } catch (IllegalArgumentException e) {
+                    formatter++;
+                    if (formatter > dateFormatters.size()) {
+                        converted = true;
+                    }
+                    log.error("Could not find a valid date format for: \"" + date + "\"", e);
                 }
             }
-        }
-        if (null == result) {
-            log.error("Could not find a valid date format for: \"{}\"", date);
         }
         return result;
     }
@@ -246,7 +235,7 @@ public class AuthorityValue {
     /**
      * log4j logger
      */
-    private static Logger log = LogManager.getLogger();
+    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(AuthorityValue.class);
 
     @Override
     public String toString() {
@@ -283,10 +272,6 @@ public class AuthorityValue {
         return new AuthorityValue();
     }
 
-    /**
-     * Get the type of authority which created this value.
-     * @return type name.
-     */
     public String getAuthorityType() {
         return "internal";
     }

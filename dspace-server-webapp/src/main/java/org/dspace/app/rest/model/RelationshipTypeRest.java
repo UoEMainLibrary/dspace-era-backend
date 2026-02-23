@@ -18,8 +18,7 @@ import org.dspace.app.rest.RestResourceController;
 public class RelationshipTypeRest extends BaseObjectRest<Integer> {
 
     public static final String NAME = "relationshiptype";
-    public static final String PLURAL_NAME = "relationshiptypes";
-    public static final String CATEGORY = RestModel.CORE;
+    public static final String CATEGORY = "core";
 
     private String leftwardType;
     private String rightwardType;
@@ -34,11 +33,6 @@ public class RelationshipTypeRest extends BaseObjectRest<Integer> {
 
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     public String getCategory() {

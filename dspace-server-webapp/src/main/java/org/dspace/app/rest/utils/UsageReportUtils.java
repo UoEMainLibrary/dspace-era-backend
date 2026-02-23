@@ -27,7 +27,6 @@ import org.dspace.content.Site;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.handle.service.HandleService;
-import org.dspace.services.ConfigurationService;
 import org.dspace.statistics.Dataset;
 import org.dspace.statistics.content.DatasetDSpaceObjectGenerator;
 import org.dspace.statistics.content.DatasetTimeGenerator;
@@ -46,9 +45,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class UsageReportUtils {
-
-    @Autowired
-    private ConfigurationService configurationService;
 
     @Autowired
     private HandleService handleService;
@@ -139,14 +135,13 @@ public class UsageReportUtils {
      */
     private UsageReportRest resolveGlobalUsageReport(Context context)
         throws SQLException, IOException, ParseException, SolrServerException {
-        int topItemsLimit = configurationService.getIntProperty("usage-statistics.topItemsLimit", 10);
-
         StatisticsListing statListing = new StatisticsListing(
             new StatisticsDataVisits());
 
-        // Adding a new generator for our top n items without a name length delimiter
+        // Adding a new generator for our top 10 items without a name length delimiter
         DatasetDSpaceObjectGenerator dsoAxis = new DatasetDSpaceObjectGenerator();
-        dsoAxis.addDsoChild(Constants.ITEM, topItemsLimit, false, -1);
+        // TODO make max nr of top items (views wise)? Must be set
+        dsoAxis.addDsoChild(Constants.ITEM, 10, false, -1);
         statListing.addDatasetGenerator(dsoAxis);
 
         Dataset dataset = statListing.getDataset(context, 1);
@@ -187,7 +182,7 @@ public class UsageReportUtils {
         UsageReportPointDsoTotalVisitsRest totalVisitPoint = new UsageReportPointDsoTotalVisitsRest();
         totalVisitPoint.setType(StringUtils.substringAfterLast(dso.getClass().getName().toLowerCase(), "."));
         totalVisitPoint.setId(dso.getID().toString());
-        if (!dataset.getColLabels().isEmpty()) {
+        if (dataset.getColLabels().size() > 0) {
             totalVisitPoint.setLabel(dso.getName());
             totalVisitPoint.addValue("views", Integer.valueOf(dataset.getMatrix()[0][0]));
         } else {
@@ -210,14 +205,10 @@ public class UsageReportUtils {
      */
     private UsageReportRest resolveTotalVisitsPerMonth(Context context, DSpaceObject dso)
         throws SQLException, IOException, ParseException, SolrServerException {
-        String startDateInterval =
-            configurationService.getProperty("usage-statistics.startDateInterval", "-6");
-        String endDateInterval =
-            configurationService.getProperty("usage-statistics.endDateInterval", "+1");
-
         StatisticsTable statisticsTable = new StatisticsTable(new StatisticsDataVisits(dso));
         DatasetTimeGenerator timeAxis = new DatasetTimeGenerator();
-        timeAxis.setDateInterval("month", startDateInterval, endDateInterval);
+        // TODO month start and end as request para?
+        timeAxis.setDateInterval("month", "-6", "+1");
         statisticsTable.addDatasetGenerator(timeAxis);
         DatasetDSpaceObjectGenerator dsoAxis = new DatasetDSpaceObjectGenerator();
         dsoAxis.addDsoChild(dso.getType(), 10, false, -1);
@@ -284,10 +275,7 @@ public class UsageReportUtils {
      */
     private UsageReportRest resolveTopCountries(Context context, DSpaceObject dso)
         throws SQLException, IOException, ParseException, SolrServerException {
-        int topCountriesLimit =
-            configurationService.getIntProperty("usage-statistics.topCountriesLimit", 100);
-
-        Dataset dataset = this.getTypeStatsDataset(context, dso, "countryCode", topCountriesLimit, 1);
+        Dataset dataset = this.getTypeStatsDataset(context, dso, "countryCode", 1);
 
         UsageReportRest usageReportRest = new UsageReportRest();
         for (int i = 0; i < dataset.getColLabels().size(); i++) {
@@ -311,10 +299,7 @@ public class UsageReportUtils {
      */
     private UsageReportRest resolveTopCities(Context context, DSpaceObject dso)
         throws SQLException, IOException, ParseException, SolrServerException {
-        int topCitiesLimit =
-            configurationService.getIntProperty("usage-statistics.topCitiesLimit", 100);
-
-        Dataset dataset = this.getTypeStatsDataset(context, dso, "city", topCitiesLimit, 1);
+        Dataset dataset = this.getTypeStatsDataset(context, dso, "city", 1);
 
         UsageReportRest usageReportRest = new UsageReportRest();
         for (int i = 0; i < dataset.getColLabels().size(); i++) {
@@ -354,17 +339,16 @@ public class UsageReportUtils {
      * @param dso            DSO we want the stats dataset of
      * @param typeAxisString String of the type we want on the axis of the dataset (corresponds to solr field),
      *                       examples: countryCode, city
-     * @param typeAxisMax    Maximum amount of results to return in the dataset
      * @param facetMinCount  Minimum amount of results on a facet data point for it to be added to dataset
      * @return Stats dataset with the given type on the axis, of the given DSO and with given facetMinCount
      */
-    private Dataset getTypeStatsDataset(Context context, DSpaceObject dso, String typeAxisString, int typeAxisMax,
-                                        int facetMinCount)
+    private Dataset getTypeStatsDataset(Context context, DSpaceObject dso, String typeAxisString, int facetMinCount)
         throws SQLException, IOException, ParseException, SolrServerException {
         StatisticsListing statListing = new StatisticsListing(new StatisticsDataVisits(dso));
         DatasetTypeGenerator typeAxis = new DatasetTypeGenerator();
         typeAxis.setType(typeAxisString);
-        typeAxis.setMax(typeAxisMax);
+        // TODO make max nr of top countries/cities a request para? Must be set
+        typeAxis.setMax(100);
         statListing.addDatasetGenerator(typeAxis);
         return statListing.getDataset(context, facetMinCount);
     }

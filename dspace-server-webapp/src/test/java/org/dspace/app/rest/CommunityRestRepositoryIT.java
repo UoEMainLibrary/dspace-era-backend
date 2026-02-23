@@ -110,12 +110,6 @@ public class CommunityRestRepositoryIT extends AbstractControllerIntegrationTest
     private EPerson submitter;
 
     @Test
-    public void singularEndpointShouldNotExist() throws Exception {
-        getClient().perform(get("/api/core/community"))
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
     public void createTest() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         CommunityRest comm = new CommunityRest();
@@ -1410,11 +1404,11 @@ public class CommunityRestRepositoryIT extends AbstractControllerIntegrationTest
                 .withAdminGroup(child2Admin)
                 .build();
 
-        Community communityChild1Child1 = CommunityBuilder.createSubCommunity(context, communityChild1)
+        Community ommunityChild1Child1 = CommunityBuilder.createSubCommunity(context, communityChild1)
                 .withName("Sub1 Community 1")
                 .build();
 
-        Community communityChild2Child1 = CommunityBuilder.createSubCommunity(context, communityChild2)
+        Community сommunityChild2Child1 = CommunityBuilder.createSubCommunity(context, communityChild2)
                 .withName("Sub2 Community 1")
                 .build();
 
@@ -1993,7 +1987,7 @@ public class CommunityRestRepositoryIT extends AbstractControllerIntegrationTest
         getClient(token)
             .perform(patch("/api/core/communities/" + parentCommunity.getID())
             .content(requestBody)
-            .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON_PATCH_JSON))
+            .contentType(javax.ws.rs.core.MediaType.APPLICATION_JSON_PATCH_JSON))
             .andExpect(status().isOk())
             .andExpect(
                  jsonPath("$.metadata",
@@ -2376,10 +2370,10 @@ public class CommunityRestRepositoryIT extends AbstractControllerIntegrationTest
         communityC = CommunityBuilder.createCommunity(context)
             .withName("the last community is topLevelCommunityC")
             .build();
-        ResourcePolicyBuilder.createResourcePolicy(context, null, groupService.findByName(context, "COMMUNITY_"
-                                     + topLevelCommunityA.getID() + "_ADMIN"))
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(communityB)
             .withAction(Constants.ADMIN)
+            .withGroup(groupService.findByName(context, "COMMUNITY_" + topLevelCommunityA.getID() + "_ADMIN"))
             .build();
         context.restoreAuthSystemState();
 
@@ -2429,10 +2423,10 @@ public class CommunityRestRepositoryIT extends AbstractControllerIntegrationTest
             .withName("the last community is topLevelCommunityC")
             .addParentCommunity(context, topLevelCommunityA)
             .build();
-        ResourcePolicyBuilder.createResourcePolicy(context, null, groupService.findByName(context, "COMMUNITY_"
-                                     + subCommunityA.getID() + "_ADMIN"))
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(communityB)
             .withAction(Constants.ADMIN)
+            .withGroup(groupService.findByName(context, "COMMUNITY_" + subCommunityA.getID() + "_ADMIN"))
             .build();
         context.restoreAuthSystemState();
 
@@ -2479,10 +2473,10 @@ public class CommunityRestRepositoryIT extends AbstractControllerIntegrationTest
         Collection collectionB = CollectionBuilder.createCollection(context, communityB)
             .withName("collectionB")
             .build();
-        ResourcePolicyBuilder.createResourcePolicy(context, null, groupService.findByName(context, "COLLECTION_"
-                                     + collectionA.getID() + "_ADMIN"))
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(collectionB)
             .withAction(Constants.ADMIN)
+            .withGroup(groupService.findByName(context, "COLLECTION_" + collectionA.getID() + "_ADMIN"))
             .build();
         communityC = CommunityBuilder.createCommunity(context)
             .withName("the last community is topLevelCommunityC")
@@ -2527,10 +2521,10 @@ public class CommunityRestRepositoryIT extends AbstractControllerIntegrationTest
         Collection collectionB = CollectionBuilder.createCollection(context, communityB)
             .withName("collectionB")
             .build();
-        ResourcePolicyBuilder.createResourcePolicy(context, null, groupService.findByName(context, "COLLECTION_"
-                                     + collectionA.getID() + "_SUBMIT"))
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(collectionB)
             .withAction(Constants.ADD)
+            .withGroup(groupService.findByName(context, "COLLECTION_" + collectionA.getID() + "_SUBMIT"))
             .build();
         communityC = CommunityBuilder.createCommunity(context)
             .withName("the last community is topLevelCommunityC")

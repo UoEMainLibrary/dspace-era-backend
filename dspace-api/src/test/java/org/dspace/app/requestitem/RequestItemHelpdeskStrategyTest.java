@@ -67,10 +67,8 @@ public class RequestItemHelpdeskStrategyTest
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-        // AbstractUnitTest doesn't do this for us.
-        AbstractBuilder.cleanupObjects();
-        AbstractBuilder.destroy();
+    public static void tearDownClass() {
+        AbstractBuilder.destroy(); // AbstractUnitTest doesn't do this for us.
     }
 
     @Before

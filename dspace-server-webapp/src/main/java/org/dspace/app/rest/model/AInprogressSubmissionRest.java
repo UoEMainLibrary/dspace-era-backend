@@ -22,11 +22,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public abstract class AInprogressSubmissionRest extends BaseObjectRest<Integer> {
 
-
     private Date lastModified = new Date();
     private Map<String, Serializable> sections;
     @JsonIgnore
+    private CollectionRest collection;
+    @JsonIgnore
+    private ItemRest item;
+    @JsonIgnore
     private SubmissionDefinitionRest submissionDefinition;
+    @JsonIgnore
+    private EPersonRest submitter;
 
     public Date getLastModified() {
         return lastModified;
@@ -36,12 +41,28 @@ public abstract class AInprogressSubmissionRest extends BaseObjectRest<Integer> 
         this.lastModified = lastModified;
     }
 
+    public ItemRest getItem() {
+        return item;
+    }
+
+    public void setItem(ItemRest item) {
+        this.item = item;
+    }
+
     public SubmissionDefinitionRest getSubmissionDefinition() {
         return submissionDefinition;
     }
 
     public void setSubmissionDefinition(SubmissionDefinitionRest submissionDefinition) {
         this.submissionDefinition = submissionDefinition;
+    }
+
+    public EPersonRest getSubmitter() {
+        return submitter;
+    }
+
+    public void setSubmitter(EPersonRest submitter) {
+        this.submitter = submitter;
     }
 
     public Map<String, Serializable> getSections() {
@@ -55,6 +76,12 @@ public abstract class AInprogressSubmissionRest extends BaseObjectRest<Integer> 
         this.sections = sections;
     }
 
+    public CollectionRest getCollection() {
+        return collection;
+    }
 
+    public void setCollection(CollectionRest collection) {
+        this.collection = collection;
+    }
 
 }

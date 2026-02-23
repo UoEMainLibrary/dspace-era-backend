@@ -229,10 +229,11 @@ public class PolicySet {
                         // before create a new policy check if an identical policy is already in place
                         if (!authorizeService.isAnIdenticalPolicyAlreadyInPlace(c, myitem, group, actionID, -1)) {
                             // now add the policy
-                            ResourcePolicy rp = resourcePolicyService.create(c, null, group);
+                            ResourcePolicy rp = resourcePolicyService.create(c);
 
                             rp.setdSpaceObject(myitem);
                             rp.setAction(actionID);
+                            rp.setGroup(group);
 
                             rp.setRpName(name);
                             rp.setRpDescription(description);
@@ -261,10 +262,11 @@ public class PolicySet {
                             // before create a new policy check if an identical policy is already in place
                             if (!authorizeService.isAnIdenticalPolicyAlreadyInPlace(c, bundle, group, actionID, -1)) {
                                 // now add the policy
-                                ResourcePolicy rp = resourcePolicyService.create(c, null, group);
+                                ResourcePolicy rp = resourcePolicyService.create(c);
 
                                 rp.setdSpaceObject(bundle);
                                 rp.setAction(actionID);
+                                rp.setGroup(group);
 
                                 rp.setRpName(name);
                                 rp.setRpDescription(description);
@@ -303,10 +305,11 @@ public class PolicySet {
                                     if (!authorizeService
                                         .isAnIdenticalPolicyAlreadyInPlace(c, bitstream, group, actionID, -1)) {
                                         // now add the policy
-                                        ResourcePolicy rp = resourcePolicyService.create(c, null, group);
+                                        ResourcePolicy rp = resourcePolicyService.create(c);
 
                                         rp.setdSpaceObject(bitstream);
                                         rp.setAction(actionID);
+                                        rp.setGroup(group);
 
                                         rp.setRpName(name);
                                         rp.setRpDescription(description);

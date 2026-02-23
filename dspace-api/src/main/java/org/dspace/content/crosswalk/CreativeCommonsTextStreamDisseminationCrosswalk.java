@@ -65,6 +65,7 @@ public class CreativeCommonsTextStreamDisseminationCrosswalk
             Bitstream cc = creativeCommonsService.getLicenseTextBitstream((Item) dso);
             if (cc != null) {
                 Utils.copy(bitstreamService.retrieve(context, cc), out);
+                out.close();
             }
         }
     }

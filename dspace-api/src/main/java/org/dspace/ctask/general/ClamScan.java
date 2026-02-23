@@ -15,12 +15,11 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections4.ListUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
 import org.dspace.content.DSpaceObject;
@@ -30,6 +29,8 @@ import org.dspace.content.service.BitstreamService;
 import org.dspace.curate.AbstractCurationTask;
 import org.dspace.curate.Curator;
 import org.dspace.curate.Suspendable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ClamScan.java
@@ -57,7 +58,7 @@ public class ClamScan extends AbstractCurationTask {
     protected final String SCAN_FAIL_MESSAGE = "Error encountered using virus service - check setup";
     protected final String NEW_ITEM_HANDLE = "in workflow";
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LoggerFactory.getLogger(ClamScan.class);
 
     protected String host = null;
     protected int port = 0;
@@ -98,12 +99,7 @@ public class ClamScan extends AbstractCurationTask {
             }
 
             try {
-                List<Bundle> bundles = itemService.getBundles(item, "ORIGINAL");
-                if (ListUtils.emptyIfNull(bundles).isEmpty()) {
-                    setResult("No ORIGINAL bundle found for item: " + getItemHandle(item));
-                    return Curator.CURATE_SKIP;
-                }
-                Bundle bundle = bundles.get(0);
+                Bundle bundle = itemService.getBundles(item, "ORIGINAL").get(0);
                 results = new ArrayList<String>();
                 for (Bitstream bitstream : bundle.getBitstreams()) {
                     InputStream inputstream = bitstreamService.retrieve(Curator.curationContext(), bitstream);
@@ -125,11 +121,10 @@ public class ClamScan extends AbstractCurationTask {
                     }
 
                 }
-            } catch (Exception e) {
-                // Any exception which may occur during the performance of the task should be caught here
-                // And end the process gracefully
-                log.error("Error scanning item: " + getItemHandle(item), e);
-                status = Curator.CURATE_ERROR;
+            } catch (AuthorizeException authE) {
+                throw new IOException(authE.getMessage(), authE);
+            } catch (SQLException sqlE) {
+                throw new IOException(sqlE.getMessage(), sqlE);
             } finally {
                 closeSession();
             }
@@ -162,7 +157,7 @@ public class ClamScan extends AbstractCurationTask {
         try {
             socket.setSoTimeout(timeout);
         } catch (SocketException e) {
-            log.error("Could not set socket timeout . . .  {}ms", timeout, e);
+            log.error("Could not set socket timeout . . .  " + timeout + "ms", e);
             throw (new IOException(e));
         }
         try {
@@ -298,6 +293,8 @@ public class ClamScan extends AbstractCurationTask {
 
 
     protected void logDebugMessage(String message) {
-        log.debug(message);
+        if (log.isDebugEnabled()) {
+            log.debug(message);
+        }
     }
 }

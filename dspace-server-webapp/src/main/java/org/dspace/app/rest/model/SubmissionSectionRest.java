@@ -23,7 +23,6 @@ import org.dspace.app.rest.RestResourceController;
 public class SubmissionSectionRest extends BaseObjectRest<String> {
 
     public static final String NAME = "submissionsection";
-    public static final String PLURAL_NAME = "submissionsections";
     public static final String ATTRIBUTE_NAME = "sections";
 
     private String header;
@@ -50,11 +49,6 @@ public class SubmissionSectionRest extends BaseObjectRest<String> {
 
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     public ScopeEnum getScope() {

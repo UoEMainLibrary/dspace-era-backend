@@ -31,8 +31,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import javax.mail.MessagingException;
 
-import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.itemexport.service.ItemExportService;
@@ -352,7 +352,7 @@ public class ItemExportServiceImpl implements ItemExportService {
 
     /**
      * Create the 'collections' file.  List handles of all Collections which
-     * contain this Item. The "owning" Collection is listed first.
+     * contain this Item.  The "owning" Collection is listed first.
      *
      * @param item list collections holding this Item.
      * @param destDir write the file here.
@@ -363,14 +363,12 @@ public class ItemExportServiceImpl implements ItemExportService {
         File outFile = new File(destDir, "collections");
         if (outFile.createNewFile()) {
             try (PrintWriter out = new PrintWriter(new FileWriter(outFile))) {
-                Collection owningCollection = item.getOwningCollection();
-                // The owning collection is null for workspace and workflow items
-                if (owningCollection != null) {
-                    out.println(owningCollection.getHandle());
-                }
+                String ownerHandle = item.getOwningCollection().getHandle();
+                out.println(ownerHandle);
                 for (Collection collection : item.getCollections()) {
-                    if (!collection.equals(owningCollection)) {
-                        out.println(collection.getHandle());
+                    String collectionHandle = collection.getHandle();
+                    if (!collectionHandle.equals(ownerHandle)) {
+                        out.println(collectionHandle);
                     }
                 }
             }
@@ -492,7 +490,7 @@ public class ItemExportServiceImpl implements ItemExportService {
 
         File wkDir = new File(workDir);
         if (!wkDir.exists() && !wkDir.mkdirs()) {
-            logError("Unable to create working directory");
+            logError("Unable to create working direcory");
         }
 
         File dnDir = new File(destDirName);
@@ -500,18 +498,11 @@ public class ItemExportServiceImpl implements ItemExportService {
             logError("Unable to create destination directory");
         }
 
-        try {
-            // export the items using normal export method (this exports items to our workDir)
-            exportItem(context, items, workDir, seqStart, migrate, excludeBitstreams);
+        // export the items using normal export method
+        exportItem(context, items, workDir, seqStart, migrate, excludeBitstreams);
 
-            // now zip up the workDir directory created above
-            zip(workDir, destDirName + System.getProperty("file.separator") + zipFileName);
-        } finally {
-            // Cleanup workDir created above, if it still exists
-            if (wkDir.exists()) {
-                deleteDirectory(wkDir);
-            }
-        }
+        // now zip up the export directory created above
+        zip(workDir, destDirName + System.getProperty("file.separator") + zipFileName);
     }
 
     @Override

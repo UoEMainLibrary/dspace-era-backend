@@ -7,10 +7,11 @@
  */
 package org.dspace.services.sessions.model;
 
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.dspace.services.model.Request;
 
 public final class HttpRequestImpl extends AbstractRequestImpl implements Request {

@@ -12,8 +12,6 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.app.rest.utils.DSpaceObjectUtils;
 import org.dspace.authorize.service.AuthorizeService;
@@ -21,19 +19,20 @@ import org.dspace.content.DSpaceObject;
 import org.dspace.core.Context;
 import org.dspace.services.RequestService;
 import org.dspace.services.model.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
 /**
- * {@link RestPermissionEvaluatorPlugin} class that evaluate admin permission against a generic DSpace Object.
- *
+ * {@link RestPermissionEvaluatorPlugin} class that evaluate admin permission against a generic DSpace Object
+ * 
  * @author Mykhaylo Boychuk (4science.it)
  */
 @Component
 public class DSpaceObjectAdminPermissionEvaluatorPlugin extends RestObjectPermissionEvaluatorPlugin {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LoggerFactory.getLogger(DSpaceObjectAdminPermissionEvaluatorPlugin.class);
 
     public static final String DSPACE_OBJECT = "dspaceObject";
 
@@ -65,7 +64,7 @@ public class DSpaceObjectAdminPermissionEvaluatorPlugin extends RestObjectPermis
             DSpaceObject dso = dspaceObjectUtil.findDSpaceObject(context, dsoUuid);
             return authorizeService.isAdmin(context, dso);
         } catch (SQLException e) {
-            log.error(e::getMessage, e);
+            log.error(e.getMessage(), e);
         }
         return false;
     }

@@ -12,15 +12,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.hp.hpl.jena.graph.Graph;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.DatasetFactory;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.core.DatasetGraph;
+import com.hp.hpl.jena.update.GraphStore;
+import com.hp.hpl.jena.update.GraphStoreFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.http.auth.AuthEnv;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdfconnection.RDFConnection;
-import org.apache.jena.rdfconnection.RDFConnectionRemote;
-import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
+import org.apache.jena.atlas.web.auth.HttpAuthenticator;
+import org.apache.jena.atlas.web.auth.SimpleAuthenticator;
+import org.apache.jena.web.DatasetGraphAccessor;
+import org.apache.jena.web.DatasetGraphAccessorHTTP;
 import org.apache.logging.log4j.Logger;
 import org.dspace.rdf.RDFUtil;
 import org.dspace.services.ConfigurationService;
@@ -38,35 +47,48 @@ public class RDFStorageImpl
 
     @Override
     public void store(String uri, Model model) {
-        RDFConnection connection = this.getConnection();
-        connection.put(uri, model);
+        Node graphNode = NodeFactory.createURI(uri);
+        DatasetGraphAccessor accessor = this.getAccessor();
+        Dataset ds = DatasetFactory.create(model);
+        DatasetGraph dsg = ds.asDatasetGraph();
+        Graph g = dsg.getDefaultGraph();
+        accessor.httpPut(graphNode, g);
     }
 
     @Override
     public Model load(String uri) {
-        RDFConnection connection = this.getConnection();
-        return connection.fetch(uri);
+        Node graphNode = NodeFactory.createURI(uri);
+        DatasetGraphAccessor accessor = this.getAccessor();
+        Graph g = accessor.httpGet(graphNode);
+        if (g == null || g.isEmpty()) {
+            return null;
+        }
+        GraphStore gs = GraphStoreFactory.create(g);
+        Dataset ds = gs.toDataset();
+        Model m = ds.getDefaultModel();
+        return m;
     }
 
-    protected RDFConnection getConnection() {
-        RDFConnection connection;
+    protected DatasetGraphAccessor getAccessor() {
+        DatasetGraphAccessor accessor;
         if (configurationService.hasProperty(RDFUtil.STORAGE_GRAPHSTORE_LOGIN_KEY)
             && configurationService.hasProperty(RDFUtil.STORAGE_GRAPHSTORE_PASSWORD_KEY)) {
-            AuthEnv.get()
-                   .registerUsernamePassword(getGraphStoreEndpoint(),
-                                             configurationService.getProperty(RDFUtil.STORAGE_GRAPHSTORE_LOGIN_KEY),
-                                             configurationService.getProperty(RDFUtil.STORAGE_GRAPHSTORE_PASSWORD_KEY));
+            HttpAuthenticator httpAuthenticator = new SimpleAuthenticator(
+                configurationService.getProperty(RDFUtil.STORAGE_GRAPHSTORE_LOGIN_KEY),
+                configurationService.getProperty(RDFUtil.STORAGE_GRAPHSTORE_PASSWORD_KEY).toCharArray());
+            accessor = new DatasetGraphAccessorHTTP(getGraphStoreEndpoint(),
+                                                    httpAuthenticator);
         } else {
             log.debug("Did not found credential to use for our connection to the "
                           + "Graph Store HTTP endpoint, trying to connect unauthenticated.");
+            accessor = new DatasetGraphAccessorHTTP(getGraphStoreEndpoint());
         }
-        connection = RDFConnectionRemote.service(getGraphStoreEndpoint()).build();
-        return connection;
+        return accessor;
     }
 
     @Override
     public void delete(String uri) {
-        this.getConnection().delete(uri);
+        this.getAccessor().httpDelete(NodeFactory.createURI(uri));
     }
 
     @Override
@@ -75,30 +97,34 @@ public class RDFStorageImpl
             this.delete(graph);
         }
         // clean default graph:
-        this.getConnection().delete();
+        this.getAccessor().httpDelete();
     }
 
     @Override
     public List<String> getAllStoredGraphs() {
         String queryString = "SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }";
+        QueryExecution qexec;
         if (configurationService.hasProperty(RDFUtil.STORAGE_SPARQL_LOGIN_KEY)
             && configurationService.hasProperty(RDFUtil.STORAGE_SPARQL_PASSWORD_KEY)) {
-            AuthEnv.get()
-                   .registerUsernamePassword(getSparqlEndpoint(),
-                                             configurationService.getProperty(RDFUtil.STORAGE_SPARQL_LOGIN_KEY),
-                                             configurationService.getProperty(RDFUtil.STORAGE_GRAPHSTORE_PASSWORD_KEY));
+            HttpAuthenticator httpAuthenticator = new SimpleAuthenticator(
+                configurationService.getProperty(RDFUtil.STORAGE_SPARQL_LOGIN_KEY),
+                configurationService.getProperty(RDFUtil.STORAGE_GRAPHSTORE_PASSWORD_KEY).toCharArray());
+            qexec = QueryExecutionFactory.sparqlService(getSparqlEndpoint(),
+                                                        queryString, httpAuthenticator);
+        } else {
+            qexec = QueryExecutionFactory.sparqlService(getSparqlEndpoint(),
+                                                        queryString);
         }
 
-        List<String> graphs = Collections.synchronizedList(new ArrayList<>());
-        try (QueryExecution qexec = QueryExecutionHTTP.service(getSparqlEndpoint()).queryString(queryString).build()) {
-            ResultSet rs = qexec.execSelect();
-            while (rs.hasNext()) {
-                QuerySolution solution = rs.next();
-                if (solution.contains("g")) {
-                    graphs.add(solution.get("g").asResource().getURI());
-                }
+        ResultSet rs = qexec.execSelect();
+        List<String> graphs = Collections.synchronizedList(new ArrayList<String>());
+        while (rs.hasNext()) {
+            QuerySolution solution = rs.next();
+            if (solution.contains("g")) {
+                graphs.add(solution.get("g").asResource().getURI());
             }
         }
+        qexec.close();
         return graphs;
     }
 

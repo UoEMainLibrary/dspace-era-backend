@@ -10,10 +10,8 @@ package org.dspace.discovery.configuration;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -199,19 +197,15 @@ public class DiscoveryConfigurationService {
     }
 
     /**
-     * Get the unique set of configured Discovery facets. This is used when inspecting configuration
-     * to include hierarchical vocabularies in the browse menu.
-     *
-     * @return All unique instances of {@link org.dspace.discovery.configuration.DiscoverySearchFilterFacet}
-     * included in "sidebarFacets" bean, across all Discovery configurations.
+     * @return All configurations for {@link org.dspace.discovery.configuration.DiscoverySearchFilterFacet}
      */
-    public List<DiscoverySearchFilterFacet> getAllUniqueFacetsConfig() {
-        Set<DiscoverySearchFilterFacet> configs = new LinkedHashSet<>();
+    public List<DiscoverySearchFilterFacet> getAllFacetsConfig() {
+        List<DiscoverySearchFilterFacet> configs = new ArrayList<>();
         for (String key : map.keySet()) {
             DiscoveryConfiguration config = map.get(key);
             configs.addAll(config.getSidebarFacets());
         }
-        return new ArrayList<>(configs);
+        return configs;
     }
 
     public static void main(String[] args) {

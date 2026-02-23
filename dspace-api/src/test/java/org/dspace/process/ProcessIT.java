@@ -9,7 +9,6 @@ package org.dspace.process;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -87,15 +86,5 @@ public class ProcessIT extends AbstractIntegrationTestWithDatabase {
         boolean isPresent = groups.stream().anyMatch(g -> g.getID().equals(groupUuid));
         assertFalse(isPresent);
 
-    }
-
-    @Test
-    public void addProcessWithNullEPersonTest() throws Exception {
-        try {
-            ProcessBuilder.createProcess(context, null, "mock-script", new LinkedList<>(),
-                new HashSet<>()).build();
-        } catch (NullPointerException e) {
-            fail("Should not have thrown NullPointerException");
-        }
     }
 }

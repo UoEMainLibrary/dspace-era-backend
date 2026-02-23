@@ -9,11 +9,8 @@ package org.dspace.app.rest.converter;
 
 import org.dspace.app.rest.model.CommunityRest;
 import org.dspace.app.rest.projection.Projection;
-import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.content.Community;
-import org.dspace.content.service.CommunityService;
 import org.dspace.discovery.IndexableObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,14 +24,9 @@ public class CommunityConverter
     extends DSpaceObjectConverter<Community, CommunityRest>
         implements IndexableObjectConverter<Community, CommunityRest> {
 
-    @Autowired
-    CommunityService communityService;
-
     public CommunityRest convert(Community community, Projection projection) {
         CommunityRest resource = super.convert(community, projection);
-
-        resource.setArchivedItemsCount(
-            communityService.countArchivedItems(ContextUtil.obtainCurrentRequestContext(), community));
+        resource.setArchivedItemsCount(community.countArchivedItems());
 
         return resource;
     }

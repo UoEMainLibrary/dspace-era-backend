@@ -19,7 +19,6 @@ public class FeedbackRest extends BaseObjectRest<Integer> {
     private static final long serialVersionUID = 1L;
 
     public static final String NAME = "feedback";
-    public static final String PLURAL_NAME = "feedbacks";
     public static final String CATEGORY = RestAddressableModel.TOOLS;
 
     private String page;
@@ -60,11 +59,6 @@ public class FeedbackRest extends BaseObjectRest<Integer> {
     @JsonIgnore
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     @Override

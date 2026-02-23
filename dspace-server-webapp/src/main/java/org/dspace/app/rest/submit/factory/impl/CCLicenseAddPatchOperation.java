@@ -7,7 +7,8 @@
  */
 package org.dspace.app.rest.submit.factory.impl;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.InProgressSubmission;
 import org.dspace.content.Item;
@@ -25,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Example: <code>
  * curl -X PATCH http://${dspace.server.url}/api/submission/workspaceitems/31599 -H "Content-Type:
  * application/json" -d '[{ "op": "add", "path": "/sections/cclicense/uri",
- * "value":"https://creativecommons.org/licenses/by-nc-sa/4.0/us/"}]'
+ * "value":"http://creativecommons.org/licenses/by-nc-sa/3.0/us/"}]'
  * </code>
  */
 public class CCLicenseAddPatchOperation extends AddPatchOperation<String> {

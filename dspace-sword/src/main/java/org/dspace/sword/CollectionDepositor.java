@@ -150,7 +150,11 @@ public class CollectionDepositor extends Depositor {
                 // for a moment
                 context.turnOffAuthorisationSystem();
 
-                String bundleName = configurationService.getProperty("sword-server.bundle.name", "SWORD");
+                String bundleName = configurationService.getProperty(
+                    "sword-server", "bundle.name");
+                if (bundleName == null || "".equals(bundleName)) {
+                    bundleName = "SWORD";
+                }
                 Item item = result.getItem();
                 List<Bundle> bundles = item.getBundles();
                 Bundle swordBundle = null;

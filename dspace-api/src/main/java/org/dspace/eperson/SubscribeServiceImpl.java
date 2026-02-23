@@ -131,8 +131,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 
     @Override
     public boolean isSubscribed(Context context, EPerson eperson, DSpaceObject dSpaceObject) throws SQLException {
-        List<Subscription> subscriptions = subscriptionDAO.findByEPersonAndDso(context, eperson, dSpaceObject, -1, -1);
-        return subscriptions != null && !subscriptions.isEmpty();
+        return subscriptionDAO.findByEPersonAndDso(context, eperson, dSpaceObject, -1, -1) != null;
     }
 
     @Override

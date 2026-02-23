@@ -8,10 +8,9 @@
 package org.dspace.app.rest.signposting.processor.bitstream;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.dspace.app.rest.signposting.model.LinksetNode;
 import org.dspace.app.rest.signposting.model.LinksetRelationType;
 import org.dspace.content.Bitstream;
@@ -26,7 +25,7 @@ import org.dspace.util.FrontendUrlService;
  */
 public class BitstreamLinksetProcessor extends BitstreamSignpostingProcessor {
 
-    private static final Logger log = LogManager.getLogger(BitstreamLinksetProcessor.class);
+    private static final Logger log = Logger.getLogger(BitstreamLinksetProcessor.class);
 
     private final BitstreamService bitstreamService;
 

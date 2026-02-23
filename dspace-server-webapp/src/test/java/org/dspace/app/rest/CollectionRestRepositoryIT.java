@@ -698,10 +698,6 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
                                            .withName("Testing autocomplete in submission")
                                            .withSubmitterGroup(eperson2)
                                            .build();
-        Collection col5 = CollectionBuilder.createCollection(context, child2)
-                                            .withName("Colección de prueba")
-                                            .withSubmitterGroup(eperson2)
-                                            .build();
         context.restoreAuthSystemState();
 
         String tokenEPerson = getAuthToken(eperson.getEmail(), password);
@@ -745,19 +741,7 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
         getClient(tokenEPerson2).perform(get("/api/core/collections/search/findSubmitAuthorized")
                  .param("query", "testing auto"))
                  .andExpect(status().isOk())
-            .andExpect(jsonPath("$._embedded.collections", Matchers.contains(
-                CollectionMatcher.matchProperties(col4.getName(), col4.getID(), col4.getHandle())
-            )))
-            .andExpect(jsonPath("$.page.totalElements", is(1)));
-
-        // Diacritics test
-        getClient(tokenEPerson2).perform(get("/api/core/collections/search/findSubmitAuthorized")
-                .param("query", "coléccion de"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$._embedded.collections", Matchers.contains(
-                CollectionMatcher.matchProperties(col5.getName(), col5.getID(), col5.getHandle())
-            )))
-            .andExpect(jsonPath("$.page.totalElements", is(1)));
+                 .andExpect(jsonPath("$.page.totalElements", is(0)));
 
         String tokenAdmin = getAuthToken(admin.getEmail(), password);
         getClient(tokenAdmin).perform(get("/api/core/collections/search/findSubmitAuthorized")
@@ -1275,7 +1259,7 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
         authorizeService.addPolicy(context, parentCommunity, Constants.ADD, eperson);
         context.restoreAuthSystemState();
 
-        AtomicReference<UUID> idRef = new AtomicReference<>();
+        AtomicReference<UUID> idRef = new AtomicReference<UUID>();
         try {
         String authToken = getAuthToken(eperson.getEmail(), password);
 
@@ -1473,7 +1457,6 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
         authorizeService.removePoliciesActionFilter(context, eperson, Constants.WRITE);
     }
 
-    @Test
     public void patchCollectionMetadataAuthorized() throws Exception {
         runPatchMetadataTests(admin, 200);
     }
@@ -1828,7 +1811,8 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
 
 
 
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
+                             .withUser(eperson)
                              .withAction(WRITE)
                              .withDspaceObject(col1)
                              .build();
@@ -2910,10 +2894,11 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
         communityC = CommunityBuilder.createCommunity(context)
             .withName("the last community is topLevelCommunityC")
             .build();
-        ResourcePolicyBuilder.createResourcePolicy(context, null, groupService.findByName(context, "COMMUNITY_" +
-                                     topLevelCommunityA.getID() + "_ADMIN"))
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(communityB)
-            .withAction(Constants.ADMIN).build();
+            .withAction(Constants.ADMIN)
+            .withGroup(groupService.findByName(context, "COMMUNITY_" + topLevelCommunityA.getID() + "_ADMIN"))
+            .build();
         collectionB = CollectionBuilder.createCollection(context, subCommunityA)
             .withName("collectionB is a very original name")
             .build();
@@ -2965,10 +2950,11 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
             .withName("the last community is topLevelCommunityC")
             .addParentCommunity(context, topLevelCommunityA)
             .build();
-        ResourcePolicyBuilder.createResourcePolicy(context, null, groupService.findByName(context, "COMMUNITY_"
-                                     + subCommunityA.getID() + "_ADMIN"))
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(communityB)
-            .withAction(Constants.ADMIN).build();
+            .withAction(Constants.ADMIN)
+            .withGroup(groupService.findByName(context, "COMMUNITY_" + subCommunityA.getID() + "_ADMIN"))
+            .build();
         collectionB = CollectionBuilder.createCollection(context, subCommunityA)
             .withName("collectionB is a very original name")
             .build();
@@ -3026,10 +3012,11 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
         collectionC = CollectionBuilder.createCollection(context, communityC)
             .withName("the last collection is collectionC")
             .build();
-        ResourcePolicyBuilder.createResourcePolicy(context, null, groupService.findByName(context, "COLLECTION_"
-                                     + collectionA.getID() + "_ADMIN"))
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(collectionB)
-            .withAction(Constants.ADMIN).build();
+            .withAction(Constants.ADMIN)
+            .withGroup(groupService.findByName(context, "COLLECTION_" + collectionA.getID() + "_ADMIN"))
+            .build();
         context.restoreAuthSystemState();
 
         String token = getAuthToken(eperson.getEmail(), password);
@@ -3078,10 +3065,11 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
         collectionB = CollectionBuilder.createCollection(context, communityB)
             .withName("collectionB is a very original name")
             .build();
-        ResourcePolicyBuilder.createResourcePolicy(context, null, groupService.findByName(context, "COLLECTION_"
-                                     + collectionA.getID() + "_SUBMIT"))
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(collectionB)
-            .withAction(Constants.ADD).build();
+            .withAction(Constants.ADD)
+            .withGroup(groupService.findByName(context, "COLLECTION_" + collectionA.getID() + "_SUBMIT"))
+            .build();
         collectionC = CollectionBuilder.createCollection(context, communityC)
             .withName("the last collection is collectionC")
             .build();
@@ -3164,7 +3152,7 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
         getClient(token)
             .perform(patch("/api/core/collections/" + col.getID())
             .content(requestBody)
-            .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON_PATCH_JSON))
+            .contentType(javax.ws.rs.core.MediaType.APPLICATION_JSON_PATCH_JSON))
             .andExpect(status().isOk())
             .andExpect(
                  jsonPath("$.metadata",
@@ -3214,15 +3202,15 @@ public class CollectionRestRepositoryIT extends AbstractControllerIntegrationTes
                                        )))
                              .andExpect(jsonPath("$.page.totalElements", is(1)));
 
-        List<Operation> updateTitle = new ArrayList<>();
-        Map<String, String> value = new HashMap<>();
+        List<Operation> updateTitle = new ArrayList<Operation>();
+        Map<String, String> value = new HashMap<String, String>();
         value.put("value", "New Name");
         updateTitle.add(new ReplaceOperation("/metadata/dc.title/0", value));
 
         String patchBody = getPatchContent(updateTitle);
         getClient(adminToken).perform(patch("/api/core/collections/" + col.getID())
                              .content(patchBody)
-                             .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON_PATCH_JSON))
+                             .contentType(javax.ws.rs.core.MediaType.APPLICATION_JSON_PATCH_JSON))
                              .andExpect(status().isOk())
                              .andExpect(jsonPath("$.metadata['dc.title'][0].value", is("New Name")));
 

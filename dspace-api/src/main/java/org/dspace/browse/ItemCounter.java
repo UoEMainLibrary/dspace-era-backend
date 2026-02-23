@@ -13,18 +13,26 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
+import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.dspace.web.ContextUtil;
 
 /**
  * This class provides a standard interface to all item counting
- * operations for communities and collections.
+ * operations for communities and collections.  It can be run from the
+ * command line to prepare the cached data if desired, simply by
+ * running:
  *
- * In the event that the data cache is not being used, this class will return direct
+ * java org.dspace.browse.ItemCounter
+ *
+ * It can also be invoked via its standard API.  In the event that
+ * the data cache is not being used, this class will return direct
  * real time counts of content.
+ *
+ * @author Richard Jones
  */
 public class ItemCounter {
     /**
@@ -32,15 +40,57 @@ public class ItemCounter {
      */
     private static Logger log = org.apache.logging.log4j.LogManager.getLogger(ItemCounter.class);
 
-    @Autowired
-    protected ItemService itemService;
-    @Autowired
-    protected ConfigurationService configurationService;
+    /**
+     * DAO to use to store and retrieve data
+     */
+    private ItemCountDAO dao;
 
     /**
-     * Construct a new item counter
+     * DSpace Context
      */
-    protected ItemCounter() {
+    private Context context;
+
+    /**
+     * This field is used to hold singular instance of a class.
+     * Singleton pattern is used but this class should be
+     * refactored to modern DSpace approach (injectible service).
+     */
+
+    private static ItemCounter instance;
+
+    protected ItemService itemService;
+    protected ConfigurationService configurationService;
+
+    private boolean showStrengths;
+    private boolean useCache;
+
+    /**
+     * Construct a new item counter which will use the given DSpace Context
+     *
+     * @param context current context
+     * @throws ItemCountException if count error
+     */
+    public ItemCounter(Context context) throws ItemCountException {
+        this.context = context;
+        this.dao = ItemCountDAOFactory.getInstance(this.context);
+        this.itemService = ContentServiceFactory.getInstance().getItemService();
+        this.configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
+        this.showStrengths = configurationService.getBooleanProperty("webui.strengths.show", false);
+        this.useCache = configurationService.getBooleanProperty("webui.strengths.cache", true);
+    }
+
+    /**
+     * Get the singular instance of a class.
+     * It creates a new instance at the first usage of this method.
+     *
+     * @return instance af a class
+     * @throws ItemCountException when error occurs
+     */
+    public static ItemCounter getInstance() throws ItemCountException {
+        if (instance == null) {
+            instance = new ItemCounter(ContextUtil.obtainCurrentRequestContext());
+        }
+        return instance;
     }
 
     /**
@@ -53,24 +103,17 @@ public class ItemCounter {
      * If it is equal to 'false' it will count the number of items
      * in the container in real time.
      *
-     * @param context DSpace Context
      * @param dso DSpaceObject
-     * @return count (-1 is returned if count could not be determined or is disabled)
+     * @return count
+     * @throws ItemCountException when error occurs
      */
-    public int getCount(Context context, DSpaceObject dso) {
-        boolean showStrengths = configurationService.getBooleanProperty("webui.strengths.show", false);
-        boolean useCache = configurationService.getBooleanProperty("webui.strengths.cache", true);
+    public int getCount(DSpaceObject dso) throws ItemCountException {
         if (!showStrengths) {
             return -1;
         }
 
         if (useCache) {
-            // NOTE: This bean is NOT Autowired above because it's a "prototype" bean which we want to reload
-            // occasionally. Each time the bean reloads it will update the cached item counts.
-            ItemCountDAO dao =
-                DSpaceServicesFactory.getInstance().getServiceManager().getServiceByName("itemCountDAO",
-                                                                                         ItemCountDAO.class);
-            return dao.getCount(context, dso);
+            return dao.getCount(dso);
         }
 
         // if we make it this far, we need to manually count
@@ -78,8 +121,8 @@ public class ItemCounter {
             try {
                 return itemService.countItems(context, (Collection) dso);
             } catch (SQLException e) {
-                log.error("Error counting number of Items in Collection {} :", dso.getID(), e);
-                return -1;
+                log.error("caught exception: ", e);
+                throw new ItemCountException(e);
             }
         }
 
@@ -87,8 +130,8 @@ public class ItemCounter {
             try {
                 return itemService.countItems(context, ((Community) dso));
             } catch (SQLException e) {
-                log.error("Error counting number of Items in Community {} :", dso.getID(), e);
-                return -1;
+                log.error("caught exception: ", e);
+                throw new ItemCountException(e);
             }
         }
 

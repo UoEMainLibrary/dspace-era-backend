@@ -21,7 +21,6 @@ public class TemplateItemRest extends BaseObjectRest<UUID> {
     private UUID uuid;
 
     public static final String NAME = "itemtemplate";
-    public static final String PLURAL_NAME = "itemtemplates";
     public static final String CATEGORY = RestAddressableModel.CORE;
     @JsonIgnore
     private CollectionRest templateItemOf;
@@ -66,11 +65,6 @@ public class TemplateItemRest extends BaseObjectRest<UUID> {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     @Override

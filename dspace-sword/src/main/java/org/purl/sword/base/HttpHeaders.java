@@ -7,7 +7,7 @@
  */
 package org.purl.sword.base;
 
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Definition of the additional HTTP Header tags that will be used in

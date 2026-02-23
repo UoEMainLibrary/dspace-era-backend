@@ -21,11 +21,11 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.inject.Inject;
 
-import jakarta.inject.Inject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dspace.servicemanager.DSpaceKernelInit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Attempt to parse date strings in a variety of formats.  This uses an external
@@ -38,7 +38,7 @@ import org.dspace.servicemanager.DSpaceKernelInit;
  * @author mwood
  */
 public class MultiFormatDateParser {
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LoggerFactory.getLogger(MultiFormatDateParser.class);
 
     /**
      * A list of rules, each binding a regular expression to a date format.
@@ -71,7 +71,7 @@ public class MultiFormatDateParser {
                 pattern = Pattern.compile(rule.getKey(), Pattern.CASE_INSENSITIVE);
             } catch (PatternSyntaxException ex) {
                 log.error("Skipping format with unparseable pattern '{}'",
-                        rule::getKey);
+                          rule.getKey());
                 continue;
             }
 
@@ -80,7 +80,7 @@ public class MultiFormatDateParser {
                 format = new SimpleDateFormat(rule.getValue());
             } catch (IllegalArgumentException ex) {
                 log.error("Skipping uninterpretable date format '{}'",
-                        rule::getValue);
+                          rule.getValue());
                 continue;
             }
             format.setCalendar(Calendar.getInstance(UTC_ZONE));
@@ -107,7 +107,7 @@ public class MultiFormatDateParser {
                     }
                 } catch (ParseException ex) {
                     log.info("Date string '{}' matched pattern '{}' but did not parse:  {}",
-                        () -> dateString, candidate.format::toPattern, ex::getMessage);
+                             new String[] {dateString, candidate.format.toPattern(), ex.getMessage()});
                     continue;
                 }
                 return result;

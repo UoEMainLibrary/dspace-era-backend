@@ -22,12 +22,6 @@ public class LinksetNode {
     private String type;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String anchor;
-    private String profile;
-
-    public LinksetNode(String link, LinksetRelationType relation, String type, String profile, String anchor) {
-        this(link, relation, type, anchor);
-        this.profile = profile;
-    }
 
     public LinksetNode(String link, LinksetRelationType relation, String type, String anchor) {
         this(link, relation, anchor);
@@ -70,13 +64,5 @@ public class LinksetNode {
 
     public void setAnchor(String anchor) {
         this.anchor = anchor;
-    }
-
-    public String getProfile() {
-        return profile;
-    }
-
-    public void setProfile(String profile) {
-        this.profile = profile;
     }
 }

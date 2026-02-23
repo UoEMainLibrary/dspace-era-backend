@@ -102,10 +102,8 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
         String token = getAuthToken(admin.getEmail(), password);
 
         // Verify the general admin has this feature
-        // Filter by "feature" ID because Admins may have >20 features enabled & cause this endpoint to paginate.
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()
-            + "&feature=isComColAdmin"))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -118,7 +116,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify the community admin has this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -131,7 +129,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify the subcommunity admin has this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -144,7 +142,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify the collection admin has this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -157,7 +155,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify a submitter doesn't have this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -177,10 +175,8 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
         String token = getAuthToken(eperson.getEmail(), password);
 
         // Verify an ePerson in a subgroup of the site administrators has this feature
-        // Filter by "feature" ID because Admins may have >20 features enabled & cause this endpoint to paginate.
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()
-            + "&feature=isComColAdmin"))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -201,7 +197,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify an ePerson in a subgroup of a community admin group has this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -222,7 +218,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify an ePerson in a subgroup of a subcommunity admin group has this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -243,7 +239,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify an ePerson in a subgroup of a collection admin group has this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -264,7 +260,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify an ePerson in a subgroup of submitter group doesn't have this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -288,10 +284,8 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
         String token = getAuthToken(eperson.getEmail(), password);
 
         // Verify an ePerson in a sub-subgroup of the site administrators has this feature
-        // Filter by "feature" ID because Admins may have >20 features enabled & cause this endpoint to paginate.
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()
-            + "&feature=isComColAdmin"))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -316,7 +310,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify an ePerson in a sub-subgroup of a community admin group has this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -341,7 +335,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify an ePerson in a sub-subgroup of a subcommunity admin group has this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -366,7 +360,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify an ePerson in a sub-subgroup of a collection admin group has this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")
@@ -391,7 +385,7 @@ public class ComColAdminFeatureIT extends AbstractControllerIntegrationTest {
 
         // Verify an ePerson in a sub-subgroup of submitter group doesn't have this feature
         getClient(token).perform(get("/api/authz/authorizations/search/object?embed=feature&uri="
-            + "http://localhost/api/core/sites/" + siteService.findSite(context).getID()))
+            + "http://localhost/api/core/site/" + siteService.findSite(context).getID()))
             .andExpect(status().isOk())
             .andExpect(
                 jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='isComColAdmin')]")

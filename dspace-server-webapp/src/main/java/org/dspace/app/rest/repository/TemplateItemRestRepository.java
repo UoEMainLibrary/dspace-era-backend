@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 /**
  * This is the repository class that is responsible for handling {@link TemplateItemRest} objects
  */
-@Component(TemplateItemRest.CATEGORY + "." + TemplateItemRest.PLURAL_NAME)
+@Component(TemplateItemRest.CATEGORY + "." + TemplateItemRest.NAME)
 public class TemplateItemRestRepository extends DSpaceRestRepository<TemplateItemRest, UUID> {
 
     @Autowired

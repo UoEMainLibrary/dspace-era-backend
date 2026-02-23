@@ -36,11 +36,6 @@ public class OrcidQueueRest extends BaseObjectRest<Integer> {
     }
 
     @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
-    }
-
-    @Override
     public String getCategory() {
         return CATEGORY;
     }

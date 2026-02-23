@@ -16,15 +16,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.time.Period;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Splitter;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.AbstractUnitTest;
 import org.dspace.authorize.AuthorizeException;
@@ -45,6 +41,10 @@ import org.dspace.core.Constants;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.GroupService;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.MutablePeriod;
+import org.joda.time.format.PeriodFormat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class GoogleMetadataTest extends AbstractUnitTest {
     /**
      * log4j category
      */
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(GoogleMetadataTest.class);
 
     /**
      * Item instance for the tests
@@ -125,17 +125,19 @@ public class GoogleMetadataTest extends AbstractUnitTest {
         Bitstream b = bitstreamService.create(
             context, new ByteArrayInputStream("Bitstream 1".getBytes(StandardCharsets.UTF_8)));
         b.setName(context, "Word");
-        b.setFormat(context, bitstreamFormatService.findByMIMEType(context, "application/msword"));
+        b.setFormat(context, bitstreamFormatService.create(context));
+        b.getFormat(context).setMIMEType("application/msword");
         bundleService.addBitstream(context, bundle, b);
         Bitstream b2 = bitstreamService.create(
             context, new ByteArrayInputStream("Bitstream 2".getBytes(StandardCharsets.UTF_8)));
         b2.setName(context, "Pdf");
-        b2.setFormat(context, bitstreamFormatService.findByMIMEType(context, "application/pdf"));
+        b2.setFormat(context, bitstreamFormatService.create(context));
+        b2.getFormat(context).setMIMEType("application/pdf");
         bundleService.addBitstream(context, bundle, b2);
         Bitstream b3 = bitstreamService.create(
             context, new ByteArrayInputStream("Bitstream 3".getBytes(StandardCharsets.UTF_8)));
         b3.setName(context, "Rtf");
-        b3.setFormat(context, bitstreamFormatService.findByMIMEType(context, "text/richtext"));
+        b3.setFormat(context, bitstreamFormatService.create(context));
         b3.getFormat(context).setMIMEType("text/richtext");
         bundleService.addBitstream(context, bundle, b3);
         context.restoreAuthSystemState();
@@ -158,17 +160,20 @@ public class GoogleMetadataTest extends AbstractUnitTest {
         Bitstream b = bitstreamService.create(
             context, new ByteArrayInputStream("123456789".getBytes(StandardCharsets.UTF_8)));
         b.setName(context, "size9");
-        b.setFormat(context, bitstreamFormatService.findByMIMEType(context, "application/pdf"));
+        b.setFormat(context, bitstreamFormatService.create(context));
+        b.getFormat(context).setMIMEType("application/pdf");
         bundleService.addBitstream(context, bundle, b);
         Bitstream b2 = bitstreamService.create(
             context, new ByteArrayInputStream("1".getBytes(StandardCharsets.UTF_8)));
         b2.setName(context, "size1");
-        b2.setFormat(context,  bitstreamFormatService.findByMIMEType(context, "application/pdf"));
+        b2.setFormat(context, bitstreamFormatService.create(context));
+        b2.getFormat(context).setMIMEType("application/pdf");
         bundleService.addBitstream(context, bundle, b2);
         Bitstream b3 = bitstreamService.create(
             context, new ByteArrayInputStream("12345".getBytes(StandardCharsets.UTF_8)));
         b3.setName(context, "size5");
-        b3.setFormat(context,  bitstreamFormatService.findByMIMEType(context, "text/richtext"));
+        b3.setFormat(context, bitstreamFormatService.create(context));
+        b3.getFormat(context).setMIMEType("text/richtext");
         bundleService.addBitstream(context, bundle, b3);
         context.restoreAuthSystemState();
         context.commit();
@@ -190,17 +195,20 @@ public class GoogleMetadataTest extends AbstractUnitTest {
         Bitstream b = bitstreamService.create(
             context, new ByteArrayInputStream("1".getBytes(StandardCharsets.UTF_8)));
         b.setName(context, "first");
-        b.setFormat(context, bitstreamFormatService.findByMIMEType(context, "application/pdf"));
+        b.setFormat(context, bitstreamFormatService.create(context));
+        b.getFormat(context).setMIMEType("application/pdf");
         bundleService.addBitstream(context, bundle, b);
         Bitstream b2 = bitstreamService.create(
             context, new ByteArrayInputStream("1".getBytes(StandardCharsets.UTF_8)));
         b2.setName(context, "second");
-        b2.setFormat(context, bitstreamFormatService.findByMIMEType(context, "application/pdf"));
+        b2.setFormat(context, bitstreamFormatService.create(context));
+        b2.getFormat(context).setMIMEType("application/pdf");
         bundleService.addBitstream(context, bundle, b2);
         Bitstream b3 = bitstreamService.create(
             context, new ByteArrayInputStream("1".getBytes(StandardCharsets.UTF_8)));
         b3.setName(context, "third");
-        b3.setFormat(context, bitstreamFormatService.findByMIMEType(context, "application/pdf"));
+        b3.setFormat(context, bitstreamFormatService.create(context));
+        b3.getFormat(context).setMIMEType("application/pdf");
         bundleService.addBitstream(context, bundle, b3);
         context.restoreAuthSystemState();
         context.commit();
@@ -222,17 +230,20 @@ public class GoogleMetadataTest extends AbstractUnitTest {
         Bitstream b = bitstreamService.create(
             context, new ByteArrayInputStream("Larger file than primary".getBytes(StandardCharsets.UTF_8)));
         b.setName(context, "first");
-        b.setFormat(context, bitstreamFormatService.findUnknown(context));
+        b.setFormat(context, bitstreamFormatService.create(context));
+        b.getFormat(context).setMIMEType("unknown");
         bundleService.addBitstream(context, bundle, b);
         Bitstream b2 = bitstreamService.create(context, new ByteArrayInputStream(
             "Bitstream with more prioritized mimetype than primary".getBytes(StandardCharsets.UTF_8)));
         b2.setName(context, "second");
-        b2.setFormat(context, bitstreamFormatService.findByMIMEType(context, "application/pdf"));
+        b2.setFormat(context, bitstreamFormatService.create(context));
+        b2.getFormat(context).setMIMEType("application/pdf");
         bundleService.addBitstream(context, bundle, b2);
         Bitstream b3 = bitstreamService.create(
             context, new ByteArrayInputStream("1".getBytes(StandardCharsets.UTF_8)));
         b3.setName(context, "primary");
-        b3.setFormat(context, bitstreamFormatService.findByMIMEType(context, "text/richtext"));
+        b3.setFormat(context, bitstreamFormatService.create(context));
+        b3.getFormat(context).setMIMEType("Primary");
         bundleService.addBitstream(context, bundle, b3);
         bundle.setPrimaryBitstreamID(b3);
         context.restoreAuthSystemState();
@@ -256,17 +267,20 @@ public class GoogleMetadataTest extends AbstractUnitTest {
         Bitstream b = bitstreamService.create(
             context, new ByteArrayInputStream("12".getBytes(StandardCharsets.UTF_8)));
         b.setName(context, "small");
-        b.setFormat(context, bitstreamFormatService.findUnknown(context));
+        b.setFormat(context, bitstreamFormatService.create(context));
+        b.getFormat(context).setMIMEType("unknown type 1");
         bundleService.addBitstream(context, bundle, b);
         Bitstream b2 = bitstreamService.create(
             context, new ByteArrayInputStream("12121212".getBytes(StandardCharsets.UTF_8)));
         b2.setName(context, "medium");
-        b2.setFormat(context, bitstreamFormatService.findUnknown(context));
+        b2.setFormat(context, bitstreamFormatService.create(context));
+        b2.getFormat(context).setMIMEType("unknown type 2");
         bundleService.addBitstream(context, bundle, b2);
         Bitstream b3 = bitstreamService.create(
             context, new ByteArrayInputStream("12121212121212".getBytes(StandardCharsets.UTF_8)));
         b3.setName(context, "large");
-        b3.setFormat(context, bitstreamFormatService.findUnknown(context));
+        b3.setFormat(context, bitstreamFormatService.create(context));
+        b3.getFormat(context).setMIMEType("unknown type 3");
         bundleService.addBitstream(context, bundle, b3);
         context.restoreAuthSystemState();
         context.commit();
@@ -305,7 +319,6 @@ public class GoogleMetadataTest extends AbstractUnitTest {
 
     /**
      * Test empty bitstreams
-     * @throws java.lang.Exception passed through.
      */
     @Test
     public void testGetPDFURLWithEmptyBitstreams() throws Exception {
@@ -314,15 +327,18 @@ public class GoogleMetadataTest extends AbstractUnitTest {
 
         Bitstream b = bitstreamService.create(context, new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8)));
         b.setName(context, "small");
-        b.setFormat(context, bitstreamFormatService.findUnknown(context));
+        b.setFormat(context, bitstreamFormatService.create(context));
+        b.getFormat(context).setMIMEType("unknown type 1");
         bundleService.addBitstream(context, bundle, b);
         Bitstream b2 = bitstreamService.create(context, new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8)));
         b2.setName(context, "medium");
-        b2.setFormat(context, bitstreamFormatService.findUnknown(context));
+        b2.setFormat(context, bitstreamFormatService.create(context));
+        b2.getFormat(context).setMIMEType("unknown type 2");
         bundleService.addBitstream(context, bundle, b2);
         Bitstream b3 = bitstreamService.create(context, new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8)));
         b3.setName(context, "large");
-        b3.setFormat(context, bitstreamFormatService.findUnknown(context));
+        b3.setFormat(context, bitstreamFormatService.create(context));
+        b3.getFormat(context).setMIMEType("unknown type 3");
         bundleService.addBitstream(context, bundle, b3);
         context.restoreAuthSystemState();
         context.commit();
@@ -332,9 +348,8 @@ public class GoogleMetadataTest extends AbstractUnitTest {
     }
 
     /**
-     * Verify there is no mapping for {@link GoogleMetadata#PDF} if there are
-     * only embargoed (non-publicly accessible bitstream) files.
-     * @throws java.lang.Exception passed through.
+     * Verify there is no mapping for {@link GoogleMetadata#PDF} if there are only embargoed (non-publically accessible
+     * bitstream) files
      */
     @Test
     public void testGetPdfUrlOfEmbargoed() throws Exception {
@@ -344,13 +359,12 @@ public class GoogleMetadataTest extends AbstractUnitTest {
         Bitstream b = bitstreamService.create(
             context, new ByteArrayInputStream("Larger file than primary".getBytes(StandardCharsets.UTF_8)));
         b.setName(context, "first");
-        b.setFormat(context, bitstreamFormatService.findUnknown(context));
+        b.setFormat(context, bitstreamFormatService.create(context));
+        b.getFormat(context).setMIMEType("unknown");
         bundleService.addBitstream(context, bundle, b);
         // Set 3 month embargo on pdf
-        Period period = Period.ofMonths(3);
-        Date embargoDate = Date.from(ZonedDateTime.now(ZoneOffset.UTC)
-                .plus(period)
-                .toInstant());
+        MutablePeriod period = PeriodFormat.getDefault().parseMutablePeriod("3 months");
+        Date embargoDate = DateTime.now(DateTimeZone.UTC).plus(period).toDate();
         Group anonGroup = groupService.findByName(context, Group.ANONYMOUS);
         authorizeService.removeAllPolicies(context, b);
         resourcePolicyService.removeAllPolicies(context, b);

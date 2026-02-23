@@ -22,8 +22,8 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -32,11 +32,11 @@ import org.apache.logging.log4j.Logger;
  * @author Aaron Zeckoski (azeckoski @ gmail.com)
  */
 public final class DSpaceKernelManager {
-    private static final Logger log = LogManager.getLogger();
+    private static Logger log = LoggerFactory.getLogger(DSpaceKernelManager.class);
 
     private static DSpaceKernel defaultKernel = null;
 
-    private static final Map<String, DSpaceKernel> namedKernelMap = new HashMap<>();
+    private static Map<String, DSpaceKernel> namedKernelMap = new HashMap<String, DSpaceKernel>();
 
 
     public static DSpaceKernel getDefaultKernel() {
@@ -50,7 +50,7 @@ public final class DSpaceKernelManager {
     /**
      * A lock on the kernel to handle multiple threads getting the first item.
      */
-    private final Object lock = new Object();
+    private Object lock = new Object();
 
     /**
      * Get the kernel.  This will be a single instance for the JVM, but
@@ -126,7 +126,7 @@ public final class DSpaceKernelManager {
     /**
      * Static initialized random default Kernel name
      */
-    private static final String defaultKernelName = UUID.randomUUID().toString();
+    private static String defaultKernelName = UUID.randomUUID().toString();
 
     /**
      * Ensure that we have a name suitable for an mbean.
@@ -162,8 +162,7 @@ public final class DSpaceKernelManager {
                 if (!mbs.isRegistered(name)) {
                     // register the MBean
                     mbs.registerMBean(kernel, name);
-                    log.info("Registered new Kernel MBEAN: {} [{}]",
-                            checkedMBeanName, kernel);
+                    log.info("Registered new Kernel MBEAN: " + checkedMBeanName + " [" + kernel + "]");
                 }
             } catch (MalformedObjectNameException e) {
                 throw new IllegalStateException(e);
@@ -198,7 +197,7 @@ public final class DSpaceKernelManager {
                 return true;
             } catch (Exception e) {
                 //log this issue as a System Warning. Also log the underlying error message.
-                log.warn("Failed to unregister the MBean: {}", checkedMBeanName, e);
+                log.warn("Failed to unregister the MBean: " + checkedMBeanName, e);
                 return false;
             }
         }

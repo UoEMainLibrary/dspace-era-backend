@@ -12,9 +12,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import org.dspace.app.rest.DiscoverableEndpointsService;
 import org.dspace.app.rest.Parameter;
 import org.dspace.app.rest.SearchRestMethod;
@@ -25,7 +25,6 @@ import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.ResourcePolicyRest;
 import org.dspace.app.rest.model.patch.Patch;
 import org.dspace.app.rest.repository.patch.ResourcePatch;
-import org.dspace.app.rest.security.DSpacePermissionEvaluator;
 import org.dspace.app.rest.utils.DSpaceObjectUtils;
 import org.dspace.app.rest.utils.Utils;
 import org.dspace.authorize.AuthorizeException;
@@ -45,8 +44,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.Link;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -54,7 +51,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Luigi Andrea Pascarelli (luigiandrea.pascarelli at 4science.it)
  */
-@Component(ResourcePolicyRest.CATEGORY + "." + ResourcePolicyRest.PLURAL_NAME)
+@Component(ResourcePolicyRest.CATEGORY + "." + ResourcePolicyRest.NAME)
 public class ResourcePolicyRestRepository extends DSpaceRestRepository<ResourcePolicyRest, Integer>
                                           implements InitializingBean {
 
@@ -75,9 +72,6 @@ public class ResourcePolicyRestRepository extends DSpaceRestRepository<ResourceP
 
     @Autowired
     ResourcePatch<ResourcePolicy> resourcePatch;
-
-    @Autowired
-    private DSpacePermissionEvaluator permissionEvaluator;
 
     @Autowired
     DiscoverableEndpointsService discoverableEndpointsService;
@@ -228,12 +222,13 @@ public class ResourcePolicyRestRepository extends DSpaceRestRepository<ResourceP
     }
 
     @Override
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ADMIN')")
     protected ResourcePolicyRest createAndReturn(Context context) throws AuthorizeException, SQLException {
 
         String resourceUuidStr = getRequestService().getCurrentRequest().getServletRequest().getParameter("resource");
         String epersonUuidStr = getRequestService().getCurrentRequest().getServletRequest().getParameter("eperson");
         String groupUuidStr = getRequestService().getCurrentRequest().getServletRequest().getParameter("group");
+
 
         if (resourceUuidStr == null) {
             throw new MissingParameterException("Missing resource (uuid) parameter");
@@ -249,11 +244,6 @@ public class ResourcePolicyRestRepository extends DSpaceRestRepository<ResourceP
 
         UUID resourceUuid = UUID.fromString(resourceUuidStr);
 
-        if (isNotAuthorized(resourceUuid, "WRITE")) {
-            throw new AuthorizeException(
-                    "User unauthorized to create a new ResourcePolicy for resource: " + resourceUuid);
-        }
-
         try {
             resourcePolicyRest = mapper.readValue(req.getInputStream(), ResourcePolicyRest.class);
         } catch (IOException exIO) {
@@ -264,6 +254,14 @@ public class ResourcePolicyRestRepository extends DSpaceRestRepository<ResourceP
         if (dspaceObject == null) {
             throw new UnprocessableEntityException("DSpaceObject with this uuid: " + resourceUuid + " not found");
         }
+        resourcePolicy = resourcePolicyService.create(context);
+        resourcePolicy.setRpType(resourcePolicyRest.getPolicyType());
+        resourcePolicy.setdSpaceObject(dspaceObject);
+        resourcePolicy.setRpName(resourcePolicyRest.getName());
+        resourcePolicy.setRpDescription(resourcePolicyRest.getDescription());
+        resourcePolicy.setAction(Constants.getActionID(resourcePolicyRest.getAction()));
+        resourcePolicy.setStartDate(resourcePolicyRest.getStartDate());
+        resourcePolicy.setEndDate(resourcePolicyRest.getEndDate());
 
         if (epersonUuidStr != null) {
             try {
@@ -272,11 +270,12 @@ public class ResourcePolicyRestRepository extends DSpaceRestRepository<ResourceP
                 if (ePerson == null) {
                     throw new UnprocessableEntityException("EPerson with uuid: " + epersonUuid + " not found");
                 }
-                resourcePolicy = resourcePolicyService.create(context, ePerson, null);
-
+                resourcePolicy.setEPerson(ePerson);
+                resourcePolicyService.update(context, resourcePolicy);
             } catch (SQLException excSQL) {
                 throw new RuntimeException(excSQL.getMessage(), excSQL);
             }
+            return converter.toRest(resourcePolicy, utils.obtainProjection());
         } else {
             try {
                 UUID groupUuid = UUID.fromString(groupUuidStr);
@@ -284,31 +283,17 @@ public class ResourcePolicyRestRepository extends DSpaceRestRepository<ResourceP
                 if (group == null) {
                     throw new UnprocessableEntityException("Group with uuid: " + groupUuid + " not found");
                 }
-                resourcePolicy = resourcePolicyService.create(context, null, group);
+                resourcePolicy.setGroup(group);
+                resourcePolicyService.update(context, resourcePolicy);
             } catch (SQLException excSQL) {
                 throw new RuntimeException(excSQL.getMessage(), excSQL);
             }
-        }
-
-        if (resourcePolicy != null) {
-
-            resourcePolicy.setRpType(resourcePolicyRest.getPolicyType());
-            resourcePolicy.setdSpaceObject(dspaceObject);
-            resourcePolicy.setRpName(resourcePolicyRest.getName());
-            resourcePolicy.setRpDescription(resourcePolicyRest.getDescription());
-            resourcePolicy.setAction(Constants.getActionID(resourcePolicyRest.getAction()));
-            resourcePolicy.setStartDate(resourcePolicyRest.getStartDate());
-            resourcePolicy.setEndDate(resourcePolicyRest.getEndDate());
-            resourcePolicyService.update(context, resourcePolicy);
             return converter.toRest(resourcePolicy, utils.obtainProjection());
-        } else {
-            throw new UnprocessableEntityException("A resource policy must contain a valid eperson or group");
         }
-
     }
 
     @Override
-    @PreAuthorize("hasPermission(#id, 'resourcepolicy', 'ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     protected void delete(Context context, Integer id) throws AuthorizeException {
         ResourcePolicy resourcePolicy = null;
         try {
@@ -342,10 +327,4 @@ public class ResourcePolicyRestRepository extends DSpaceRestRepository<ResourceP
                       Link.of("/api/" + ResourcePolicyRest.CATEGORY + "/" + ResourcePolicyRest.PLURAL_NAME + "/search",
                                          ResourcePolicyRest.PLURAL_NAME + "-search")));
     }
-
-    private boolean isNotAuthorized(UUID id, String permission) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return !permissionEvaluator.hasPermission(authentication, id, "resourcepolicy", permission);
-    }
-
 }

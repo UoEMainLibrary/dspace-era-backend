@@ -191,7 +191,6 @@ public class LoginAsEPersonIT extends AbstractControllerIntegrationTest {
         // create a workspaceitem explicitly in the col1
         MvcResult mvcResult = getClient(authToken).perform(post("/api/submission/workspaceitems")
                                                                .param("owningCollection", col1.getID().toString())
-                                                               .param("embed", "collection")
                                                                .header("X-On-Behalf-Of", eperson.getID())
                                                                .contentType(org.springframework
                                                                                 .http.MediaType.APPLICATION_JSON))
@@ -205,8 +204,7 @@ public class LoginAsEPersonIT extends AbstractControllerIntegrationTest {
         Map<String,Object> map = mapper.readValue(content, Map.class);
         String workspaceItemId = String.valueOf(map.get("id"));
 
-        getClient(authToken).perform(get("/api/submission/workspaceitems/" + workspaceItemId)
-                                        .param("embed", "submitter"))
+        getClient(authToken).perform(get("/api/submission/workspaceitems/" + workspaceItemId))
                             .andExpect(jsonPath("$._embedded.submitter", EPersonMatcher.matchProperties(eperson)));
     }
 

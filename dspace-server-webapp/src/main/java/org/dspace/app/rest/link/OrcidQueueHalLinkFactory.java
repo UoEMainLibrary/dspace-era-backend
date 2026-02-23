@@ -11,6 +11,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.LinkedList;
 
+import org.atteo.evo.inflector.English;
 import org.dspace.app.rest.RestResourceController;
 import org.dspace.app.rest.model.ItemRest;
 import org.dspace.app.rest.model.OrcidQueueRest;
@@ -36,7 +37,7 @@ public class OrcidQueueHalLinkFactory extends HalLinkFactory<OrcidQueueResource,
         OrcidQueueRest orcidQueueRest = halResource.getContent();
         if (orcidQueueRest.getProfileItemId() != null) {
             UriComponentsBuilder uriComponentsBuilder = linkTo(getMethodOn(ItemRest.CATEGORY, ItemRest.NAME)
-                                       .findRel(null, null, ItemRest.CATEGORY, ItemRest.PLURAL_NAME,
+                                       .findRel(null, null, ItemRest.CATEGORY, English.plural(ItemRest.NAME),
                                         orcidQueueRest.getProfileItemId(), "", null, null)).toUriComponentsBuilder();
             String uribuilder = uriComponentsBuilder.build().toString();
             list.add(buildLink("profileItem", uribuilder.substring(0, uribuilder.lastIndexOf("/"))));
@@ -44,7 +45,7 @@ public class OrcidQueueHalLinkFactory extends HalLinkFactory<OrcidQueueResource,
 
         if (orcidQueueRest.getEntityId() != null) {
             UriComponentsBuilder uriComponentsBuilder = linkTo(getMethodOn(ItemRest.CATEGORY, ItemRest.NAME)
-                                       .findRel(null, null, ItemRest.CATEGORY, ItemRest.PLURAL_NAME,
+                                       .findRel(null, null, ItemRest.CATEGORY, English.plural(ItemRest.NAME),
                                         orcidQueueRest.getEntityId(), "", null, null)).toUriComponentsBuilder();
             String uribuilder = uriComponentsBuilder.build().toString();
             list.add(buildLink("entity", uribuilder.substring(0, uribuilder.lastIndexOf("/"))));

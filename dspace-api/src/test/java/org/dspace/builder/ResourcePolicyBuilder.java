@@ -110,20 +110,28 @@ public class ResourcePolicyBuilder extends AbstractBuilder<ResourcePolicy, Resou
         indexingService.commit();
     }
 
-    public static ResourcePolicyBuilder createResourcePolicy(Context context, EPerson ePerson,
-                                                             Group group)
+    public static ResourcePolicyBuilder createResourcePolicy(Context context)
             throws SQLException, AuthorizeException {
         ResourcePolicyBuilder resourcePolicyBuilder = new ResourcePolicyBuilder(context);
-        return resourcePolicyBuilder.create(context, ePerson, group);
+        return resourcePolicyBuilder.create(context);
     }
 
-    private ResourcePolicyBuilder create(Context context, final EPerson ePerson,
-                                         final Group epersonGroup)
+    private ResourcePolicyBuilder create(Context context)
             throws SQLException, AuthorizeException {
         this.context = context;
 
-        resourcePolicy = resourcePolicyService.create(context, ePerson, epersonGroup);
+        resourcePolicy = resourcePolicyService.create(context);
 
+        return this;
+    }
+
+    public ResourcePolicyBuilder withUser(EPerson ePerson) throws SQLException {
+        resourcePolicy.setEPerson(ePerson);
+        return this;
+    }
+
+    public ResourcePolicyBuilder withGroup(Group epersonGroup) throws SQLException {
+        resourcePolicy.setGroup(epersonGroup);
         return this;
     }
 

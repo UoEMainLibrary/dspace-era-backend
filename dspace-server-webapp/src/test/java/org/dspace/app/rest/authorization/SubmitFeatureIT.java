@@ -89,7 +89,8 @@ public class SubmitFeatureIT extends AbstractControllerIntegrationTest {
 
     @Test
     public void testDirectEPersonAddPolicy() throws Exception {
-        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context)
+                .withUser(eperson)
                 .withDspaceObject(collectionA1)
                 .withAction(Constants.ADD)
                 .build();
@@ -98,7 +99,8 @@ public class SubmitFeatureIT extends AbstractControllerIntegrationTest {
 
     @Test
     public void testDirectGroupAddPolicy() throws Exception {
-        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context, null, group)
+        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context)
+            .withGroup(group)
             .withDspaceObject(collectionA1)
             .withAction(Constants.ADD)
             .build();
@@ -107,7 +109,8 @@ public class SubmitFeatureIT extends AbstractControllerIntegrationTest {
 
     @Test
     public void testDirectEPersonAdminPolicy() throws Exception {
-        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context)
+            .withUser(eperson)
             .withDspaceObject(collectionA1)
             .withAction(Constants.ADMIN)
             .build();
@@ -116,7 +119,8 @@ public class SubmitFeatureIT extends AbstractControllerIntegrationTest {
 
     @Test
     public void testDirectGroupAdminPolicy() throws Exception {
-        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context, null, group)
+        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context)
+            .withGroup(group)
             .withDspaceObject(collectionA1)
             .withAction(Constants.ADMIN)
             .build();
@@ -195,7 +199,8 @@ public class SubmitFeatureIT extends AbstractControllerIntegrationTest {
 
     @Test
     public void testDirectEPersonAddPolicyOnCollection() throws Exception {
-        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context)
+                .withUser(eperson)
                 .withDspaceObject(collectionA1)
                 .withAction(Constants.ADD)
                 .build();
@@ -205,7 +210,8 @@ public class SubmitFeatureIT extends AbstractControllerIntegrationTest {
 
     @Test
     public void testDirectGroupAddPolicyOnCollection() throws Exception {
-        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context, null, group)
+        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context)
+            .withGroup(group)
             .withDspaceObject(collectionA1)
             .withAction(Constants.ADD)
             .build();
@@ -215,7 +221,8 @@ public class SubmitFeatureIT extends AbstractControllerIntegrationTest {
 
     @Test
     public void testDirectEPersonAdminPolicyOnCollection() throws Exception {
-        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context)
+            .withUser(eperson)
             .withDspaceObject(collectionA1)
             .withAction(Constants.ADMIN)
             .build();
@@ -225,7 +232,8 @@ public class SubmitFeatureIT extends AbstractControllerIntegrationTest {
 
     @Test
     public void testDirectGroupAdminPolicyOnCollection() throws Exception {
-        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context, null, group)
+        ResourcePolicy rp = ResourcePolicyBuilder.createResourcePolicy(context)
+            .withGroup(group)
             .withDspaceObject(collectionA1)
             .withAction(Constants.ADMIN)
             .build();

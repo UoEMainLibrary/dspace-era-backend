@@ -105,13 +105,4 @@ public class MetadatumDTO {
     public void setValue(String value) {
         this.value = value;
     }
-
-    /**
-     * Return string representation of MetadatumDTO
-     * @return string representation of format "[schema].[element].[qualifier]=[value]"
-     */
-    @Override
-    public String toString() {
-        return schema + "." + element + "." + qualifier + "=" + value;
-    }
 }

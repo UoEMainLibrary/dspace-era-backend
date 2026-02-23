@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
  * @author Luca Giamminonni (luca.giamminonni at 4science.it)
  *
  */
-@Component(OrcidQueueRest.CATEGORY + "." + OrcidQueueRest.PLURAL_NAME)
+@Component(OrcidQueueRest.CATEGORY + "." + OrcidQueueRest.NAME)
 @ConditionalOnProperty("orcid.synchronization-enabled")
 public class OrcidQueueRestRepository extends DSpaceRestRepository<OrcidQueueRest, Integer> {
 

@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class BrowseEntryRest implements RestModel {
     private static final long serialVersionUID = -3415049466402327251L;
     public static final String NAME = "browseEntry";
-    public static final String PLURAL_NAME = "browseEntries";
     private String authority;
     private String value;
     private String valueLang;
@@ -69,10 +68,5 @@ public class BrowseEntryRest implements RestModel {
     @Override
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 }

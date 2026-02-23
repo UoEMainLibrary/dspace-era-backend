@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
@@ -23,6 +21,8 @@ import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.services.RequestService;
 import org.dspace.services.model.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrcidQueueSearchRestPermissionEvaluatorPlugin extends RestObjectPermissionEvaluatorPlugin {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LoggerFactory.getLogger(OrcidQueueAndHistoryRestPermissionEvaluatorPlugin.class);
 
     public static final String ORCID_QUEUE_SEARCH = "ORCID_QUEUE_SEARCH";
 
@@ -75,7 +75,7 @@ public class OrcidQueueSearchRestPermissionEvaluatorPlugin extends RestObjectPer
                 return true;
             }
         } catch (SQLException e) {
-            log.error(e::getMessage, e);
+            log.error(e.getMessage(), e);
         }
         return false;
     }

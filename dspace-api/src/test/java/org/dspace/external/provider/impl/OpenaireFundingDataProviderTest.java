@@ -23,15 +23,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Unit tests for OpenaireFundingDataProvider
+ * Unit tests for OpenAIREFundingDataProvider
  * 
  * @author pgraca
  *
  */
-public class OpenaireFundingDataProviderTest extends AbstractDSpaceTest {
+public class OpenAIREFundingDataProviderTest extends AbstractDSpaceTest {
 
     ExternalDataService externalDataService;
-    ExternalDataProvider openaireFundingDataProvider;
+    ExternalDataProvider openAIREFundingDataProvider;
 
     /**
      * This method will be run before every test as per @Before. It will initialize
@@ -44,38 +44,38 @@ public class OpenaireFundingDataProviderTest extends AbstractDSpaceTest {
     public void init() {
         // Set up External Service Factory and set data providers
         externalDataService = ExternalServiceFactory.getInstance().getExternalDataService();
-        openaireFundingDataProvider = externalDataService.getExternalDataProvider("openaireFunding");
+        openAIREFundingDataProvider = externalDataService.getExternalDataProvider("openAIREFunding");
     }
 
     @Test
     public void testNumberOfResultsWSingleKeyword() {
-        assertNotNull("openaireFundingDataProvider is not null", openaireFundingDataProvider);
-        assertEquals("openaireFunding.numberOfResults.query:mock", 77,
-                openaireFundingDataProvider.getNumberOfResults("mock"));
+        assertNotNull("openAIREFundingDataProvider is not null", openAIREFundingDataProvider);
+        assertEquals("openAIREFunding.numberOfResults.query:mock", 77,
+                openAIREFundingDataProvider.getNumberOfResults("mock"));
     }
 
     @Test
     public void testNumberOfResultsWKeywords() {
-        assertNotNull("openaireFundingDataProvider is not null", openaireFundingDataProvider);
-        assertEquals("openaireFunding.numberOfResults.query:mock+test", 77,
-                openaireFundingDataProvider.getNumberOfResults("mock+test"));
+        assertNotNull("openAIREFundingDataProvider is not null", openAIREFundingDataProvider);
+        assertEquals("openAIREFunding.numberOfResults.query:mock+test", 77,
+                openAIREFundingDataProvider.getNumberOfResults("mock+test"));
     }
 
     @Test
     public void testQueryResultsWSingleKeyword() {
-        assertNotNull("openaireFundingDataProvider is not null", openaireFundingDataProvider);
-        List<ExternalDataObject> results = openaireFundingDataProvider.searchExternalDataObjects("mock", 0, 10);
-        assertEquals("openaireFunding.searchExternalDataObjects.size", 10, results.size());
+        assertNotNull("openAIREFundingDataProvider is not null", openAIREFundingDataProvider);
+        List<ExternalDataObject> results = openAIREFundingDataProvider.searchExternalDataObjects("mock", 0, 10);
+        assertEquals("openAIREFunding.searchExternalDataObjects.size", 10, results.size());
     }
 
     @Test
     public void testQueryResultsWKeywords() {
         String value = "Mushroom Robo-Pic - Development of an autonomous robotic mushroom picking system";
 
-        assertNotNull("openaireFundingDataProvider is not null", openaireFundingDataProvider);
-        List<ExternalDataObject> results = openaireFundingDataProvider.searchExternalDataObjects("mock+test", 0, 10);
-        assertEquals("openaireFunding.searchExternalDataObjects.size", 10, results.size());
-        assertTrue("openaireFunding.searchExternalDataObjects.first.value", value.equals(results.get(0).getValue()));
+        assertNotNull("openAIREFundingDataProvider is not null", openAIREFundingDataProvider);
+        List<ExternalDataObject> results = openAIREFundingDataProvider.searchExternalDataObjects("mock+test", 0, 10);
+        assertEquals("openAIREFunding.searchExternalDataObjects.size", 10, results.size());
+        assertTrue("openAIREFunding.searchExternalDataObjects.first.value", value.equals(results.get(0).getValue()));
     }
 
     @Test
@@ -84,22 +84,22 @@ public class OpenaireFundingDataProviderTest extends AbstractDSpaceTest {
         String value = "Portuguese Wild Mushrooms: Chemical characterization and functional study"
                 + " of antiproliferative and proapoptotic properties in cancer cell lines";
 
-        assertNotNull("openaireFundingDataProvider is not null", openaireFundingDataProvider);
+        assertNotNull("openAIREFundingDataProvider is not null", openAIREFundingDataProvider);
 
-        Optional<ExternalDataObject> result = openaireFundingDataProvider.getExternalDataObject(id);
+        Optional<ExternalDataObject> result = openAIREFundingDataProvider.getExternalDataObject(id);
 
-        assertTrue("openaireFunding.getExternalDataObject.exists", result.isPresent());
-        assertTrue("openaireFunding.getExternalDataObject.value", value.equals(result.get().getValue()));
+        assertTrue("openAIREFunding.getExternalDataObject.exists", result.isPresent());
+        assertTrue("openAIREFunding.getExternalDataObject.value", value.equals(result.get().getValue()));
     }
 
     @Test
     public void testGetDataObjectWInvalidId() {
         String id = "WRONGID";
 
-        assertNotNull("openaireFundingDataProvider is not null", openaireFundingDataProvider);
+        assertNotNull("openAIREFundingDataProvider is not null", openAIREFundingDataProvider);
 
-        Optional<ExternalDataObject> result = openaireFundingDataProvider.getExternalDataObject(id);
+        Optional<ExternalDataObject> result = openAIREFundingDataProvider.getExternalDataObject(id);
 
-        assertTrue("openaireFunding.getExternalDataObject.notExists:WRONGID", result.isEmpty());
+        assertTrue("openAIREFunding.getExternalDataObject.notExists:WRONGID", result.isEmpty());
     }
 }

@@ -7,7 +7,8 @@
  */
 package org.dspace.app.rest.projection;
 
-import jakarta.persistence.Entity;
+import javax.persistence.Entity;
+
 import org.dspace.app.rest.model.LinkRest;
 import org.dspace.app.rest.model.RestAddressableModel;
 import org.dspace.app.rest.model.RestModel;

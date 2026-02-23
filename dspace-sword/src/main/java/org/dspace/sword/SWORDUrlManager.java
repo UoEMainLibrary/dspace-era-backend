@@ -431,7 +431,8 @@ public class SWORDUrlManager {
      */
     public String getBaseMediaLinkUrl()
         throws DSpaceSWORDException {
-        String mlUrl = configurationService.getProperty("sword-server.media-link.url");
+        String mlUrl = configurationService.getProperty(
+            "sword-server", "media-link.url");
         if (StringUtils.isBlank(mlUrl)) {
             if (dspaceUrl == null || "".equals(dspaceUrl)) {
                 throw new DSpaceSWORDException(

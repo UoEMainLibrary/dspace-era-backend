@@ -24,7 +24,6 @@ import org.dspace.app.rest.matcher.SubmissionFormFieldMatcher;
 import org.dspace.app.rest.repository.SubmissionFormRestRepository;
 import org.dspace.app.rest.test.AbstractControllerIntegrationTest;
 import org.dspace.app.util.DCInputsReaderException;
-import org.dspace.app.util.SubmissionConfigReaderException;
 import org.dspace.builder.EPersonBuilder;
 import org.dspace.content.authority.DCInputAuthority;
 import org.dspace.content.authority.service.ChoiceAuthorityService;
@@ -667,7 +666,7 @@ public class SubmissionFormsControllerIT extends AbstractControllerIntegrationTe
         ;
     }
 
-    private void resetLocalesConfiguration() throws DCInputsReaderException, SubmissionConfigReaderException {
+    private void resetLocalesConfiguration() throws DCInputsReaderException {
         configurationService.setProperty("default.locale","en");
         configurationService.setProperty("webui.supported.locales",null);
         submissionFormRestRepository.reload();

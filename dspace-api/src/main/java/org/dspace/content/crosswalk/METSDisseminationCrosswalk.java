@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.dspace.app.util.XMLUtils;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.packager.PackageDisseminator;
@@ -130,7 +129,7 @@ public class METSDisseminationCrosswalk
 
             try {
                 //Return just the root Element of the METS file
-                SAXBuilder builder = XMLUtils.getSAXBuilder();
+                SAXBuilder builder = new SAXBuilder();
                 Document metsDocument = builder.build(tempFile);
                 return metsDocument.getRootElement();
             } catch (JDOMException je) {

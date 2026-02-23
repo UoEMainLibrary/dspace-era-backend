@@ -151,13 +151,15 @@ public class CanManageMappingsFeatureIT extends AbstractControllerIntegrationTes
 
     @Test
     public void addWriteEpersonCollectionSuccess() throws Exception {
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(collectionA)
             .withAction(Constants.ADD)
+            .withUser(eperson)
             .build();
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(collectionA)
             .withAction(Constants.WRITE)
+            .withUser(eperson)
             .build();
 
         String epersonToken = getAuthToken(eperson.getEmail(), password);
@@ -173,9 +175,10 @@ public class CanManageMappingsFeatureIT extends AbstractControllerIntegrationTes
 
     @Test
     public void adminEpersonCollectionSuccess() throws Exception {
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(collectionA)
             .withAction(Constants.ADMIN)
+            .withUser(eperson)
             .build();
 
         String epersonToken = getAuthToken(eperson.getEmail(), password);

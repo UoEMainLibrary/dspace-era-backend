@@ -37,6 +37,7 @@ import org.dspace.versioning.service.VersionHistoryService;
 import org.dspace.versioning.service.VersioningService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Fabio Bolognesi (fabio at atmire dot com)
@@ -44,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Ben Bosman (ben at atmire dot com)
  * @author Pascal-Nicolas Becker (dspace at pascal dash becker dot de)
  */
+@Component
 public class VersionedHandleIdentifierProvider extends IdentifierProvider implements InitializingBean {
     /**
      * log4j category

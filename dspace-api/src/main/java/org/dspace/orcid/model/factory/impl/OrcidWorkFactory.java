@@ -9,7 +9,6 @@ package org.dspace.orcid.model.factory.impl;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.orcid.jaxb.model.common.Relationship.PART_OF;
 import static org.orcid.jaxb.model.common.Relationship.SELF;
 
 import java.util.ArrayList;
@@ -20,8 +19,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.service.ItemService;
@@ -45,6 +42,8 @@ import org.orcid.jaxb.model.v3.release.record.ExternalIDs;
 import org.orcid.jaxb.model.v3.release.record.Work;
 import org.orcid.jaxb.model.v3.release.record.WorkContributors;
 import org.orcid.jaxb.model.v3.release.record.WorkTitle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -56,7 +55,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class OrcidWorkFactory implements OrcidEntityFactory {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrcidWorkFactory.class);
 
     @Autowired
     private ItemService itemService;
@@ -74,12 +73,12 @@ public class OrcidWorkFactory implements OrcidEntityFactory {
     @Override
     public Activity createOrcidObject(Context context, Item item) {
         Work work = new Work();
-        work.setWorkType(getWorkType(context, item));
         work.setJournalTitle(getJournalTitle(context, item));
         work.setWorkContributors(getWorkContributors(context, item));
         work.setWorkTitle(getWorkTitle(context, item));
         work.setPublicationDate(getPublicationDate(context, item));
-        work.setWorkExternalIdentifiers(getWorkExternalIds(context, item, work));
+        work.setWorkExternalIdentifiers(getWorkExternalIds(context, item));
+        work.setWorkType(getWorkType(context, item));
         work.setShortDescription(getShortDescription(context, item));
         work.setLanguageCode(getLanguageCode(context, item));
         work.setUrl(getUrl(context, item));
@@ -150,65 +149,57 @@ public class OrcidWorkFactory implements OrcidEntityFactory {
     }
 
     /**
-     * Returns a list of external work IDs constructed in the org.orcid.jaxb
-     * ExternalIDs object
+     * Creates an instance of ExternalIDs from the metadata values of the given
+     * item, using the orcid.mapping.funding.external-ids configuration.
      */
-    private ExternalIDs getWorkExternalIds(Context context, Item item, Work work) {
-        ExternalIDs externalIDs = new ExternalIDs();
-        externalIDs.getExternalIdentifier().addAll(getWorkExternalIdList(context, item, work));
-        return externalIDs;
+    private ExternalIDs getWorkExternalIds(Context context, Item item) {
+        ExternalIDs externalIdentifiers = new ExternalIDs();
+        externalIdentifiers.getExternalIdentifier().addAll(getWorkSelfExternalIds(context, item));
+        return externalIdentifiers;
     }
 
     /**
      * Creates a list of ExternalID, one for orcid.mapping.funding.external-ids
-     * value, taking the values from the given item and work type.
+     * value, taking the values from the given item.
      */
-    private List<ExternalID> getWorkExternalIdList(Context context, Item item, Work work) {
+    private List<ExternalID> getWorkSelfExternalIds(Context context, Item item) {
 
-        List<ExternalID> externalIds = new ArrayList<>();
+        List<ExternalID> selfExternalIds = new ArrayList<ExternalID>();
 
         Map<String, String> externalIdentifierFields = fieldMapping.getExternalIdentifierFields();
 
         if (externalIdentifierFields.containsKey(SIMPLE_HANDLE_PLACEHOLDER)) {
             String handleType = externalIdentifierFields.get(SIMPLE_HANDLE_PLACEHOLDER);
-            ExternalID handle = new ExternalID();
-            handle.setType(handleType);
-            handle.setValue(item.getHandle());
-            handle.setRelationship(SELF);
-            externalIds.add(handle);
+            selfExternalIds.add(getExternalId(handleType, item.getHandle(), SELF));
         }
 
-        // Resolve work type, used to determine identifier relationship type
-        // For version / funding relationships, we might want to use more complex
-        // business rules than just "work and id type"
-        final String workType = (work != null && work.getWorkType() != null) ?
-            work.getWorkType().value() : WorkType.OTHER.value();
         getMetadataValues(context, item, externalIdentifierFields.keySet()).stream()
-            .map(metadataValue -> this.getExternalId(metadataValue, workType))
-            .forEach(externalIds::add);
+            .map(this::getSelfExternalId)
+            .forEach(selfExternalIds::add);
 
-        return externalIds;
+        return selfExternalIds;
+    }
+
+    /**
+     * Creates an instance of ExternalID taking the value from the given
+     * metadataValue. The type of the ExternalID is calculated using the
+     * orcid.mapping.funding.external-ids configuration. The relationship of the
+     * ExternalID is SELF.
+     */
+    private ExternalID getSelfExternalId(MetadataValue metadataValue) {
+        Map<String, String> externalIdentifierFields = fieldMapping.getExternalIdentifierFields();
+        String metadataField = metadataValue.getMetadataField().toString('.');
+        return getExternalId(externalIdentifierFields.get(metadataField), metadataValue.getValue(), SELF);
     }
 
     /**
      * Creates an instance of ExternalID with the given type, value and
      * relationship.
      */
-    private ExternalID getExternalId(MetadataValue metadataValue, String workType) {
-        Map<String, String> externalIdentifierFields = fieldMapping.getExternalIdentifierFields();
-        Map<String, List<String>> externalIdentifierPartOfMap = fieldMapping.getExternalIdentifierPartOfMap();
-        String metadataField = metadataValue.getMetadataField().toString('.');
-        String identifierType = externalIdentifierFields.get(metadataField);
-        // Default relationship type is SELF, configuration can
-        // override to PART_OF based on identifier and work type
-        Relationship relationship = SELF;
-        if (externalIdentifierPartOfMap.containsKey(identifierType)
-                && externalIdentifierPartOfMap.get(identifierType).contains(workType)) {
-            relationship = PART_OF;
-        }
+    private ExternalID getExternalId(String type, String value, Relationship relationship) {
         ExternalID externalID = new ExternalID();
-        externalID.setType(identifierType);
-        externalID.setValue(metadataValue.getValue());
+        externalID.setType(type);
+        externalID.setValue(value);
         externalID.setRelationship(relationship);
         return externalID;
     }

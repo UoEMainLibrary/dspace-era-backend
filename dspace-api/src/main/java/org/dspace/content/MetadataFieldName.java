@@ -8,8 +8,7 @@
 package org.dspace.content;
 
 import java.util.Arrays;
-
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 /**
  * Simple immutable holder for the name of a metadata field.

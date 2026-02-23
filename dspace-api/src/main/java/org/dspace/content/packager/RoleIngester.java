@@ -19,9 +19,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.codec.DecoderException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.dspace.app.util.XMLUtils;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
@@ -39,6 +36,8 @@ import org.dspace.eperson.PasswordHash;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -52,7 +51,8 @@ import org.xml.sax.SAXException;
  * @author mwood
  */
 public class RoleIngester implements PackageIngester {
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LoggerFactory
+        .getLogger(RoleIngester.class);
 
     protected CommunityService communityService = ContentServiceFactory.getInstance().getCommunityService();
     protected CollectionService collectionService = ContentServiceFactory.getInstance().getCollectionService();
@@ -217,10 +217,10 @@ public class RoleIngester implements PackageIngester {
                 // Community or Collection that doesn't currently exist in the
                 // system.  So, log a warning & skip it for now.
                 log.warn(
-                    "Skipping group named '{}' as it seems to correspond to a Community or Collection that " +
+                    "Skipping group named '" + name + "' as it seems to correspond to a Community or Collection that " +
                         "does not exist in the system.  " +
                         "If you are performing an AIP restore, you can ignore this warning as the " +
-                        "Community/Collection AIP will likely create this group once it is processed.", name);
+                        "Community/Collection AIP will likely create this group once it is processed.");
                 continue;
             }
             log.debug("Translated group name:  {}", name);
@@ -307,7 +307,7 @@ public class RoleIngester implements PackageIngester {
                 // Always set the name:  parent.createBlop() is guessing
                 groupService.setName(groupObj, name);
 
-                log.info("Created Group {}.", groupObj::getName);
+                log.info("Created Group {}.", groupObj.getName());
             }
 
             // Add EPeople to newly created Group
@@ -386,7 +386,7 @@ public class RoleIngester implements PackageIngester {
         Document document;
 
         try {
-            DocumentBuilderFactory dbf = XMLUtils.getDocumentBuilderFactory();
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setIgnoringComments(true);
             dbf.setCoalescing(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -420,7 +420,7 @@ public class RoleIngester implements PackageIngester {
         Document document;
 
         try {
-            DocumentBuilderFactory dbf = XMLUtils.getDocumentBuilderFactory();
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setIgnoringComments(true);
             dbf.setCoalescing(true);
             DocumentBuilder db = dbf.newDocumentBuilder();

@@ -7,20 +7,21 @@
  */
 package org.dspace.servicemanager.example;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dspace.services.RequestService;
 import org.dspace.services.model.RequestInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A sample RequestInterceptor which simply logs request start and end
  * calls.
  *
  * @author Mark Diggory (mdiggory at atmire.com)
+ * @version $Revision$
  */
 public final class RequestInterceptorExample implements RequestInterceptor {
 
-    private static final Logger log = LogManager.getLogger();
+    private static Logger log = LoggerFactory.getLogger(RequestInterceptorExample.class);
 
     /**
      * Constructor which will inject the instantiated
@@ -35,12 +36,12 @@ public final class RequestInterceptorExample implements RequestInterceptor {
     @Override
     public void onEnd(String requestId, boolean succeeded,
                       Exception failure) {
-        log.info("Intercepting End of Request: id={}, succeeded={}", requestId, succeeded);
+        log.info("Intercepting End of Request: id=" + requestId + ", succeeded=" + succeeded);
     }
 
     @Override
     public void onStart(String requestId) {
-        log.info("Intercepting Start of Request: id={}", requestId);
+        log.info("Intercepting Start of Request: id=" + requestId);
     }
 
     @Override

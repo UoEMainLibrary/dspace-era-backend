@@ -19,7 +19,6 @@ import org.dspace.statistics.util.LocationUtils;
  */
 public class UsageReportPointCountryRest extends UsageReportPointRest {
     public static final String NAME = "country";
-    public static final String PLURAL_NAME = "countries";
 
     @Override
     public void setLabel(String label) {
@@ -36,10 +35,5 @@ public class UsageReportPointCountryRest extends UsageReportPointRest {
     @Override
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 }

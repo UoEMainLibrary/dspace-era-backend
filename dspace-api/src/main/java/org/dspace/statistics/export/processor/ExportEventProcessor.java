@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.DCDate;
@@ -136,10 +136,9 @@ public abstract class ExportEventProcessor {
             .append(URLEncoder.encode(clientUA, UTF_8));
 
         String hostName = Utils.getHostName(configurationService.getProperty("dspace.ui.url"));
-        String oaiPrefix = configurationService.getProperty("oai.identifier.prefix");
 
         data.append("&").append(URLEncoder.encode("rft.artnum", UTF_8)).append("=").
-                append(URLEncoder.encode("oai:" + oaiPrefix + ":" + item
+                append(URLEncoder.encode("oai:" + hostName + ":" + item
                         .getHandle(), UTF_8));
         data.append("&").append(URLEncoder.encode("rfr_dat", UTF_8)).append("=")
             .append(URLEncoder.encode(referer, UTF_8));

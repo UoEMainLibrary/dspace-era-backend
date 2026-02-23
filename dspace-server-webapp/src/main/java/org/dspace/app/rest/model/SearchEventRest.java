@@ -19,7 +19,6 @@ import org.dspace.app.rest.RestResourceController;
 public class SearchEventRest extends BaseObjectRest<UUID> {
 
     public static final String NAME = "searchevent";
-    public static final String PLURAL_NAME = "searchevents";
     public static final String CATEGORY = RestAddressableModel.STATISTICS;
 
     private String query;
@@ -42,11 +41,6 @@ public class SearchEventRest extends BaseObjectRest<UUID> {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     public String getQuery() {

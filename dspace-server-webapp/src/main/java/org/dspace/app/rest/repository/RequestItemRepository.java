@@ -12,17 +12,16 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -49,13 +48,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.HtmlUtils;
+
 /**
  * Component to expose item requests.
  *
  * @author Mark H. Wood <mwood@iupui.edu>
  */
-@Component(RequestItemRest.CATEGORY + '.' + RequestItemRest.PLURAL_NAME)
+@Component(RequestItemRest.CATEGORY + '.' + RequestItemRest.NAME)
 public class RequestItemRepository
         extends DSpaceRestRepository<RequestItemRest, String> {
     private static final Logger LOG = LogManager.getLogger();
@@ -174,11 +173,11 @@ public class RequestItemRepository
             username = user.getFullName();
         } else { // An anonymous session may provide a name.
             // Escape username to evade nasty XSS attempts
-            username = HtmlUtils.htmlEscape(rir.getRequestName(),"UTF-8");
+            username = StringEscapeUtils.escapeHtml4(rir.getRequestName());
         }
 
         // Requester's message text, escaped to evade nasty XSS attempts
-        String message = HtmlUtils.htmlEscape(rir.getRequestMessage(),"UTF-8");
+        String message = StringEscapeUtils.escapeHtml4(rir.getRequestMessage());
 
         // Create the request.
         String token;
@@ -244,20 +243,13 @@ public class RequestItemRepository
         }
 
         JsonNode responseMessageNode = requestBody.findValue("responseMessage");
-        String message = null;
-        if (responseMessageNode != null && !responseMessageNode.isNull()) {
-            message = responseMessageNode.asText();
-        }
+        String message = responseMessageNode.asText();
 
-        JsonNode responseSubjectNode = requestBody.findValue("subject");
-        String subject = null;
-        if (responseSubjectNode != null && !responseSubjectNode.isNull()) {
-            subject = responseSubjectNode.asText();
-        }
         ri.setDecision_date(new Date());
         requestItemService.update(context, ri);
 
         // Send the response email
+        String subject = requestBody.findValue("subject").asText();
         try {
             requestItemEmailNotifier.sendResponse(context, ri, subject, message);
         } catch (IOException ex) {
@@ -289,24 +281,19 @@ public class RequestItemRepository
      * Generate a link back to DSpace, to act on a request.
      *
      * @param token identifies the request.
-     * @return URL to the item request API, with /request-a-copy/{token} as the last URL segments
+     * @return URL to the item request API, with the token as request parameter
+     *          "token".
      * @throws URISyntaxException passed through.
      * @throws MalformedURLException passed through.
      */
-    public String getLinkTokenEmail(String token)
+    private String getLinkTokenEmail(String token)
             throws URISyntaxException, MalformedURLException {
         final String base = configurationService.getProperty("dspace.ui.url");
 
-        // Construct the link, making sure to support sub-paths
-        URIBuilder uriBuilder = new URIBuilder(base);
-        List<String> segments = new LinkedList<>();
-        if (StringUtils.isNotBlank(uriBuilder.getPath())) {
-            segments.add(StringUtils.strip(uriBuilder.getPath(), "/"));
-        }
-        segments.add("request-a-copy");
-        segments.add(token);
+        URI link = new URIBuilder(base)
+                .setPathSegments("request-a-copy", token)
+                .build();
 
-        // Build and return the URL from segments (or throw exception)
-        return uriBuilder.setPathSegments(segments).build().toURL().toExternalForm();
+        return link.toURL().toExternalForm();
     }
 }

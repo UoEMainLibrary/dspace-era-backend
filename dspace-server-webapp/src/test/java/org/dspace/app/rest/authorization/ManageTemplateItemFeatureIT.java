@@ -123,9 +123,10 @@ public class ManageTemplateItemFeatureIT extends AbstractControllerIntegrationTe
     @Test
     public void collectionAdminCollectionTestSuccess() throws Exception {
         context.turnOffAuthorisationSystem();
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(collectionA)
             .withAction(Constants.ADMIN)
+            .withUser(eperson)
             .build();
         context.restoreAuthSystemState();
 
@@ -143,9 +144,10 @@ public class ManageTemplateItemFeatureIT extends AbstractControllerIntegrationTe
     @Test
     public void collectionAdminCommunityTestNotFound() throws Exception {
         context.turnOffAuthorisationSystem();
-        ResourcePolicyBuilder.createResourcePolicy(context, eperson, null)
+        ResourcePolicyBuilder.createResourcePolicy(context)
             .withDspaceObject(collectionA)
             .withAction(Constants.ADMIN)
+            .withUser(eperson)
             .build();
         context.restoreAuthSystemState();
 

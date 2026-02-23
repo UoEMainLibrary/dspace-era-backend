@@ -19,7 +19,6 @@ import org.dspace.supervision.SupervisionOrder;
 public class SupervisionOrderRest extends BaseObjectRest<Integer> {
 
     public static final String NAME = "supervisionorder";
-    public static final String PLURAL_NAME = "supervisionorders";
     public static final String CATEGORY = RestAddressableModel.CORE;
 
     private Integer id;
@@ -69,10 +68,5 @@ public class SupervisionOrderRest extends BaseObjectRest<Integer> {
     @Override
     public String getType() {
         return NAME;
-    }
-
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 }

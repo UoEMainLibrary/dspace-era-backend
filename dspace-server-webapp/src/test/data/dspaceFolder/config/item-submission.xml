@@ -135,28 +135,28 @@
             <heading>fake.workflow.readonly</heading> <processing-class>org.dspace.submit.step.SampleStep</processing-class> 
             <type>sample</type> <scope visibility="read-only">workflow</scope> </step-definition> -->
 
-        <!-- Openaire submission steps/forms -->
-        <step-definition id="openaireProjectForm" mandatory="true">
+        <!-- OpenAIRE submission steps/forms -->
+        <step-definition id="openAIREProjectForm" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
         </step-definition>
-        <step-definition id="openairePersonForm" mandatory="true">
+        <step-definition id="openAIREPersonForm" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
         </step-definition>
-        <step-definition id="openaireOrganizationForm" mandatory="true">
+        <step-definition id="openAIREOrganizationForm" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
         </step-definition>
-        <step-definition id="openairePublicationPageoneForm" mandatory="true">
+        <step-definition id="openAIREPublicationPageoneForm" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
         </step-definition>
-        <step-definition id="openairePublicationPagetwoForm" mandatory="true">
+        <step-definition id="openAIREPublicationPagetwoForm" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
@@ -259,13 +259,13 @@
             <step id="license"/>
         </submission-process>
 
-        <!-- Openaire submission processes -->
-        <submission-process name="openairePublicationSubmission">
+        <!-- OpenAIRE submission processes -->
+        <submission-process name="openAIREPublicationSubmission">
             <step id="collection"/>
 
             <!--Step will be to Describe the item. -->
-            <step id="openairePublicationPageoneForm"/>
-            <step id="openairePublicationPagetwoForm"/>
+            <step id="openAIREPublicationPageoneForm"/>
+            <step id="openAIREPublicationPagetwoForm"/>
 
             <!--Step will be to Upload the item -->
             <!-- step id="upload-with-embargo"/-->
@@ -274,17 +274,17 @@
             <!--Step will be to Sign off on the License -->
             <step id="license"/>
         </submission-process>
-        <submission-process name="openairePersonSubmission">
+        <submission-process name="openAIREPersonSubmission">
             <step id="collection"/>
-            <step id="openairePersonForm"/>
+            <step id="openAIREPersonForm"/>
         </submission-process>
-        <submission-process name="openaireProjectSubmission">
+        <submission-process name="openAIREProjectSubmission">
             <step id="collection"/>
-            <step id="openaireProjectForm"/>
+            <step id="openAIREProjectForm"/>
         </submission-process>
-        <submission-process name="openaireOrganizationSubmission">
+        <submission-process name="openAIREOrganizationSubmission">
             <step id="collection"/>
-            <step id="openaireOrganizationForm"/>
+            <step id="openAIREOrganizationForm"/>
         </submission-process>
     </submission-definitions>
 

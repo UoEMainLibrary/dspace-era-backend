@@ -7,8 +7,7 @@
  */
 package org.dspace.importer.external.crossref;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,11 +18,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.importer.external.metadatamapping.contributor.JsonPathMetadataProcessor;
+import org.joda.time.LocalDate;
 
 /**
  * This class is used for CrossRef's Live-Import to extract
  * issued attribute.
- * Beans are configured in the {@code crossref-integration.xml} file.
+ * Beans are configured in the crossref-integration.xml file.
  *
  * @author Francesco Pio Scognamiglio (francescopio.scognamiglio at 4science.com)
  */
@@ -41,25 +41,22 @@ public class CrossRefDateMetadataProcessor implements JsonPathMetadataProcessor 
         while (dates.hasNext()) {
             JsonNode date = dates.next();
             LocalDate issuedDate = null;
-            DateTimeFormatter issuedDateFormat = null;
+            SimpleDateFormat issuedDateFormat = null;
             if (date.has(0) && date.has(1) && date.has(2)) {
-                issuedDate = LocalDate.of(
+                issuedDate = new LocalDate(
                         date.get(0).numberValue().intValue(),
                         date.get(1).numberValue().intValue(),
                         date.get(2).numberValue().intValue());
-                issuedDateFormat = DateTimeFormatter.ISO_LOCAL_DATE;
+                issuedDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             } else if (date.has(0) && date.has(1)) {
-                issuedDate = LocalDate.of(date.get(0).numberValue().intValue(),
-                        date.get(1).numberValue().intValue(),
-                        1);
-                issuedDateFormat = DateTimeFormatter.ofPattern("yyyy-MM");
+                issuedDate = new LocalDate().withYear(date.get(0).numberValue().intValue())
+                        .withMonthOfYear(date.get(1).numberValue().intValue());
+                issuedDateFormat = new SimpleDateFormat("yyyy-MM");
             } else if (date.has(0)) {
-                issuedDate = LocalDate.of(date.get(0).numberValue().intValue(),
-                        1,
-                        1);
-                issuedDateFormat = DateTimeFormatter.ofPattern("yyyy");
+                issuedDate = new LocalDate().withYear(date.get(0).numberValue().intValue());
+                issuedDateFormat = new SimpleDateFormat("yyyy");
             }
-            values.add(issuedDate.format(issuedDateFormat));
+            values.add(issuedDateFormat.format(issuedDate.toDate()));
         }
         return values;
     }

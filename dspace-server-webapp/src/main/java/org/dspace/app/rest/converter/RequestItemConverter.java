@@ -8,7 +8,8 @@
 
 package org.dspace.app.rest.converter;
 
-import jakarta.inject.Named;
+import javax.inject.Named;
+
 import org.dspace.app.requestitem.RequestItem;
 import org.dspace.app.rest.model.RequestItemRest;
 import org.dspace.app.rest.projection.Projection;

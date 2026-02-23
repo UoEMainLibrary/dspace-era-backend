@@ -46,7 +46,7 @@ public class WorkflowActionRestRepositoryIT extends AbstractControllerIntegratio
     private GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
 
     private static final String WORKFLOW_ACTIONS_ENDPOINT
-        = "/api/" + WorkflowActionRest.CATEGORY + "/" + WorkflowActionRest.PLURAL_NAME;
+        = "/api/" + WorkflowActionRest.CATEGORY + "/" + WorkflowActionRest.NAME_PLURAL;
 
     @Test
     public void getAllWorkflowActions_NonImplementedEndpoint() throws Exception {

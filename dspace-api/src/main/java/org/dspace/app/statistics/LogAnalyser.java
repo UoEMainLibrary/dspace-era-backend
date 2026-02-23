@@ -281,14 +281,10 @@ public class LogAnalyser {
      */
     private static String fileTemplate = "dspace\\.log.*";
 
-    private static final ConfigurationService configurationService =
-            DSpaceServicesFactory.getInstance().getConfigurationService();
-
     /**
      * the configuration file from which to configure the analyser
      */
-    private static String configFile = configurationService.getProperty("dspace.dir")
-            + File.separator + "config" + File.separator + "dstat.cfg";
+    private static String configFile;
 
     /**
      * the output file to which to write aggregation data
@@ -620,6 +616,8 @@ public class LogAnalyser {
         }
 
         // now do the host name and url lookup
+        ConfigurationService configurationService
+                = DSpaceServicesFactory.getInstance().getConfigurationService();
         hostName = Utils.getHostName(configurationService.getProperty("dspace.ui.url"));
         name = configurationService.getProperty("dspace.name").trim();
         url = configurationService.getProperty("dspace.ui.url").trim();
@@ -660,6 +658,8 @@ public class LogAnalyser {
                                      String myConfigFile, String myOutFile,
                                      Date myStartDate, Date myEndDate,
                                      boolean myLookUp) {
+        ConfigurationService configurationService
+                = DSpaceServicesFactory.getInstance().getConfigurationService();
 
         if (myLogDir != null) {
             logDir = myLogDir;
@@ -673,6 +673,9 @@ public class LogAnalyser {
 
         if (myConfigFile != null) {
             configFile = myConfigFile;
+        } else {
+            configFile = configurationService.getProperty("dspace.dir")
+                    + File.separator + "config" + File.separator + "dstat.cfg";
         }
 
         if (myStartDate != null) {

@@ -18,7 +18,6 @@ import org.dspace.app.rest.AuthenticationRestController;
 public class AuthnRest extends BaseObjectRest<Integer> {
 
     public static final String NAME = "authn";
-    public static final String PLURAL_NAME = NAME;
     public static final String CATEGORY = RestAddressableModel.AUTHENTICATION;
 
     public String getCategory() {
@@ -27,14 +26,6 @@ public class AuthnRest extends BaseObjectRest<Integer> {
 
     public String getType() {
         return NAME;
-    }
-
-    /**
-     * The plural name is the same as the singular name
-     */
-    @Override
-    public String getTypePlural() {
-        return PLURAL_NAME;
     }
 
     public Class getController() {

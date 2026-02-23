@@ -11,8 +11,6 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.app.util.AuthorizeUtil;
 import org.dspace.authorize.service.AuthorizeService;
@@ -24,6 +22,8 @@ import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.RequestService;
 import org.dspace.services.model.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GroupRestPermissionEvaluatorPlugin extends RestObjectPermissionEvaluatorPlugin {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LoggerFactory.getLogger(GroupRestPermissionEvaluatorPlugin.class);
 
     @Autowired
     private RequestService requestService;
@@ -57,9 +57,6 @@ public class GroupRestPermissionEvaluatorPlugin extends RestObjectPermissionEval
         DSpaceRestPermission restPermission = DSpaceRestPermission.convert(permission);
         if (!DSpaceRestPermission.READ.equals(restPermission)
                 || Constants.getTypeID(targetType) != Constants.GROUP) {
-            return false;
-        }
-        if (targetId == null) {
             return false;
         }
 
@@ -90,7 +87,7 @@ public class GroupRestPermissionEvaluatorPlugin extends RestObjectPermissionEval
             }
 
         } catch (SQLException e) {
-            log.error(e::getMessage, e);
+            log.error(e.getMessage(), e);
         }
         return false;
     }

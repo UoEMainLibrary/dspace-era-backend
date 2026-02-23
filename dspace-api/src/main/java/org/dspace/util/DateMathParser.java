@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -108,7 +107,7 @@ public class DateMathParser {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    public static final TimeZone UTC = TimeZone.getTimeZone(ZoneOffset.UTC);
+    public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     /**
      * Default TimeZone for DateMath rounding (UTC)

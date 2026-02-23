@@ -296,11 +296,6 @@ public class ConverterServiceIT extends AbstractControllerIntegrationTest {
         public String getType() {
             return null;
         }
-
-        @Override
-        public String getTypePlural() {
-            return null;
-        }
     }
 
     class MockHalResource extends HALResource<MockRestAddressableModel> {

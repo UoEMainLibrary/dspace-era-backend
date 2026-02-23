@@ -70,19 +70,16 @@ public class DeleteBitstreamsAction extends UpdateBitstreamsAction {
                                 }
                             }
 
-                            if (alterProvenance && !bundles.isEmpty()) {
+                            if (alterProvenance) {
                                 DtoMetadata dtom = DtoMetadata.create("dc.description.provenance", "en", "");
 
                                 String append = "Bitstream " + bs.getName() + " deleted on " + DCDate
                                     .getCurrent() + "; ";
-                                List<Item> items = bundles.iterator().next().getItems();
-                                if (!items.isEmpty()) {
-                                    Item item = items.iterator().next();
-                                    ItemUpdate.pr("Append provenance with: " + append);
+                                Item item = bundles.iterator().next().getItems().iterator().next();
+                                ItemUpdate.pr("Append provenance with: " + append);
 
-                                    if (!isTest) {
-                                        MetadataUtilities.appendMetadata(context, item, dtom, false, append);
-                                    }
+                                if (!isTest) {
+                                    MetadataUtilities.appendMetadata(context, item, dtom, false, append);
                                 }
                             }
                         }

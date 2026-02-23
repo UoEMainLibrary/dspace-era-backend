@@ -1136,6 +1136,29 @@
             <row>
                 <field>
                     <dc-schema>dc</dc-schema>
+                    <dc-element>rights</dc-element>
+                    <repeatable>false</repeatable>
+                    <label>Access Type</label>
+                    <input-type value-pairs-name="openaire_rights">dropdown</input-type>
+                    <hint>Select the access type of the resource.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>oaire</dc-schema>
+                    <dc-element>license</dc-element>
+                    <dc-qualifier>condition</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>License</label>
+                    <input-type value-pairs-name="openaire_license_types">dropdown</input-type>
+                    <hint>Select the license of the resource.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
                     <dc-element>coverage</dc-element>
                     <dc-qualifier></dc-qualifier>
                     <repeatable>false</repeatable>
@@ -1324,6 +1347,372 @@
                 </field>
             </row>
         </form>
+
+        <!-- Custom Forms -->
+        <!-- Thesis Form -->
+        <form name="thesisform">
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>title</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Title</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the main title of the item.</hint>
+                    <required>You must enter a main title for this thesis</required>
+                </field>
+            </row>
+        
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>title</dc-element>
+                    <dc-qualifier>alternative</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Other Titles</label>
+                    <input-type>onebox</input-type>
+                    <hint>If the item has any alternative titles, please enter them below.</hint>
+                    <required></required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>author</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Authors</label>
+                    <input-type>name</input-type>
+                    <hint>Enter the name of the author for the thesis.</hint>
+                    <required>Author is required</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>advisor</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Supervisor/Advisor</label>
+                    <input-type>name</input-type>
+                    <hint>Enter the name of your Supervisor(s) and Advisor(s) where appropriate Last name e.g. Robertson First name and Initials e.g. Bryan.</hint>
+                    <required></required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>publisher</dc-element>
+                    <dc-qualifier>institution</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Institution, College, School</label>
+                    <input-type value-pairs-name="institution">dropdown</input-type>
+                    <hint></hint>
+                    <required></required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>type</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Qualification Type</label>
+                    <input-type value-pairs-name="thesis_types">dropdown</input-type>
+                    <hint>Select the qualification type that you are submitting.</hint>
+                    <required>Select the qualification type that you are submitting for.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>type</dc-element>
+                    <dc-qualifier>qualificationlevel</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Qualification Level</label>
+                    <input-type value-pairs-name="common_qual_level">dropdown</input-type>
+                    <hint> </hint>
+                    <required>Please select a qualification level.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>type</dc-element>
+                    <dc-qualifier>qualificationname</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Qualification Name</label>
+                    <input-type value-pairs-name="common_qual_name">dropdown</input-type>
+                    <hint> </hint>
+                    <required>Please select a qualification name.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>date</dc-element>
+                    <dc-qualifier>issued</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Date of Award</label>
+                    <input-type>date</input-type>
+                    <hint>Please give the graduation date for this thesis or dissertation.</hint>
+                    <required>You must enter at least the year.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>relation</dc-element>
+                    <dc-qualifier>hasversion</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Citation</label>
+                    <input-type>onebox</input-type>
+                    <hint>If any parts of the work have been published before, please supply citations to the publications here.</hint>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>relation</dc-element>
+                    <dc-qualifier>references</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Included/Quoted Work</label>
+                    <input-type>onebox</input-type>
+                    <hint>If your thesis is based upon or includes significant sections of another work you may reference that work here. It is not necessary to enter all your references, only those that form a basis for your submission.</hint>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>sponsor</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Sponsors</label>
+                    <input-type value-pairs-name="common_sponsors">dropdown</input-type>
+                    <hint>Enter the names of any funders in the box above</hint>
+                    <required></required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>language</dc-element>
+                    <dc-qualifier>iso</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Language</label>
+                    <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
+                    <hint>Select the language of the main content of the item.  If the language does not appear in the list below, please select 'Other'.  If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
+                    <required>Language is required.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier>abstract</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Abstract</label>
+                    <input-type>textarea</input-type>
+                    <hint> Enter the abstract of the thesis below. </hint>
+                    <required>Please enter the abstract of your thesis.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>subject</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Subject Keywords</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter appropriate subject keywords or phrases above. Please enter one word or phrase per box. Maximum of 10 keywords.</hint>
+                    <required></required>
+                </field>
+            </row>
+        </form>
+        <!-- Thesis Form end -->
+
+        <!-- Research Form -->
+        <form name="researchform">
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>title</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Title</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the main title of the item.</hint>
+                    <required>You must enter a main title for this item.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>author</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Authors</label>
+                    <input-type>name</input-type>
+                    <hint>Enter the name of the author of this item below.</hint>
+                    <required>You must enter at least one author.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>date</dc-element>
+                    <dc-qualifier>issued</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Date of Issue</label>
+                    <input-type>date</input-type>
+                    <hint>Please give the date of publication or public distribution below. You can leave out the day and/or month if they aren't applicable.</hint>
+                    <required>You must enter at least the year.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>publisher</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Publisher</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the name of the publisher of the previously issued instance of this item.</hint>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>identifier</dc-element>
+                    <dc-qualifier>citation</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Citation</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the standard citation for the previously issued instance of this item.</hint>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>relation</dc-element>
+                    <dc-qualifier>ispartofseries</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Series/Report No.</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the series and number assigned to this item by your community.</hint>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>identifier</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Identifiers</label>
+                    <input-type value-pairs-name="common_identifiers">qualdrop_value</input-type>
+                    <hint>If the item has any identification numbers or codes associated with it, please enter the types and the actual numbers or codes below.</hint>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>type</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Type</label>
+                    <input-type value-pairs-name="common_research_types">dropdown</input-type>
+                    <hint> Select the type(s) of content you are submitting. To select more than one value in the list, you may have to hold down the "CTRL" or "Shift" key.</hint>
+                    <required>Please specify the content type.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>language</dc-element>
+                    <dc-qualifier>iso</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Language</label>
+                    <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
+                    <hint>Select the language of the main content of the item.  If the language does not appear in the list below, please select 'Other'.  If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
+                    <required>Language is required.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier>abstract</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Abstract</label>
+                    <input-type>textarea</input-type>
+                    <hint> Enter the abstract of the item below. </hint>
+                    <required>Please enter the abstract of your item.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>subject</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Subject Keywords</label>
+                    <input-type>onebox</input-type>
+                    <hint> Enter appropriate subject keywords or phrases below. </hint>
+                    <required>Please enter subject keywords.</required>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>sponsor</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Sponsors</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the names of any sponsors in the box below</hint>
+                </field>
+            </row>
+
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Description</label>
+                    <input-type>textarea</input-type>
+                    <hint>Enter any other description or comments in this box.</hint>
+                </field>
+            </row>
+        </form>
+        <!-- Research Form end -->
+        <!-- Custom Forms end -->
 
     </form-definitions>
 
@@ -1556,8 +1945,8 @@
 
         </value-pairs>
 
-        <!-- OpenAIRE document types
-             https://openaire-guidelines-for-literature-repository-managers.readthedocs.io/en/4.0.1/field_publicationtype.html
+        <!-- Openaire document types
+             https://openaire-guidelines-for-literature-repository-managers.readthedocs.io/en/v4.0.0/field_publicationtype.html
              Based on COAR Vocabularies -> Controlled Vocabulary for Resource Type Genres (Version 2.0):
              http://vocabularies.coar-repositories.org/documentation/resource_types/
         -->
@@ -1962,6 +2351,340 @@
                 <stored-value>FundingOrganization</stored-value>
             </pair>
         </value-pairs>
+
+        <value-pairs value-pairs-name="common_funders" dc-term="contributor.funder">
+            <pair>
+                <displayed-value>N/A</displayed-value>
+                <stored-value></stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Arts and Humanities Research Council (AHRC)</displayed-value>
+                <stored-value>Arts and Humanities Research Council (AHRC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Biotechnology and Biological Sciences Research Council (BBSRC)</displayed-value>
+                <stored-value>Biotechnology and Biological Sciences Research Council (BBSRC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Economic and Social Research Council (ESRC)</displayed-value>
+                <stored-value>Economic and Social Research Council (ESRC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Engineering and Physical Sciences Research Council (EPSRC)</displayed-value>
+                <stored-value>Engineering and Physical Sciences Research Council (EPSRC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>European Commission</displayed-value>
+                <stored-value>European Commission</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>European Research Council</displayed-value>
+                <stored-value>European Research Council</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Medical Research Council (MRC)</displayed-value>
+                <stored-value>Medical Research Council (MRC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Natural Environment Research Council (NERC)</displayed-value>
+                <stored-value>Natural Environment Research Council (NERC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>National Health Service (NHS)</displayed-value>
+                <stored-value>National Health Service (NHS)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Science and Technology Facilities Council (STFC)</displayed-value>
+                <stored-value>Science and Technology Facilities Council (STFC)</stored-value>
+            </pair>
+
+        </value-pairs>
+
+        <!-- Custom value pairs -->
+        <!-- Common sponsors -->
+        <value-pairs value-pairs-name="common_sponsors" dc-term="contributor.sponsor">
+            <pair>
+                <displayed-value>N/A</displayed-value>
+                <stored-value></stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Arts and Humanities Research Council (AHRC)</displayed-value>
+                <stored-value>Arts and Humanities Research Council (AHRC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Biotechnology and Biological Sciences Research Council (BBSRC)</displayed-value>
+                <stored-value>Biotechnology and Biological Sciences Research Council (BBSRC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Economic and Social Research Council (ESRC)</displayed-value>
+                <stored-value>Economic and Social Research Council (ESRC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Engineering and Physical Sciences Research Council (EPSRC)</displayed-value>
+                <stored-value>Engineering and Physical Sciences Research Council (EPSRC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>European Commission</displayed-value>
+                <stored-value>European Commission</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>European Research Council</displayed-value>
+                <stored-value>European Research Council</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Medical Research Council (MRC)</displayed-value>
+                <stored-value>Medical Research Council (MRC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Natural Environment Research Council (NERC)</displayed-value>
+                <stored-value>Natural Environment Research Council (NERC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>National Health Service (NHS)</displayed-value>
+                <stored-value>National Health Service (NHS)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Science and Technology Facilities Council (STFC)</displayed-value>
+                <stored-value>Science and Technology Facilities Council (STFC)</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Wellcome Trust</displayed-value>
+                <stored-value>Wellcome Trust</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>(Other)</displayed-value>
+                <stored-value>other</stored-value>
+            </pair>
+        </value-pairs>
+        <!-- Common sponsors end -->
+
+        <!-- Common research types -->
+        <value-pairs value-pairs-name="common_research_types" dc-term="type">
+            <pair>
+                <displayed-value>Article</displayed-value>
+                <stored-value>Article</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Book</displayed-value>
+                <stored-value>Book</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Book chapter</displayed-value>
+                <stored-value>Book chapter</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Conference Paper</displayed-value>
+                <stored-value>Conference Paper</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Dataset</displayed-value>
+                <stored-value>Dataset</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Image</displayed-value>
+                <stored-value>Image</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Musical Score</displayed-value>
+                <stored-value>Musical Score</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Preprint</displayed-value>
+                <stored-value>Preprint</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Presentation</displayed-value>
+                <stored-value>Presentation</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Recording</displayed-value>
+                <stored-value>Recording</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Technical Report</displayed-value>
+                <stored-value>Technical Report</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Working Paper</displayed-value>
+                <stored-value>Working Paper</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Video</displayed-value>
+                <stored-value>Video</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Other</displayed-value>
+                <stored-value>Other</stored-value>
+            </pair>
+        </value-pairs>
+        <!-- Common research types end -->
+
+        <!-- Common institutions -->
+        <value-pairs value-pairs-name="institution" dc-term="publisher">
+            <pair>
+            <displayed-value>The University of Edinburgh</displayed-value>
+            <stored-value>The University of Edinburgh</stored-value>
+            </pair>
+        </value-pairs>
+        <!-- Common institutions end -->
+
+        <!-- Common qualification level -->
+        <value-pairs value-pairs-name="common_qual_level" dc-term="type">
+            <pair>
+                <displayed-value>Doctoral</displayed-value>
+                <stored-value>Doctoral</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Masters</displayed-value>
+                <stored-value>Masters</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Undergraduate</displayed-value>
+                <stored-value>Undergraduate</stored-value>
+            </pair>
+        </value-pairs>
+        <!-- Common qualification level end -->
+
+        <!-- Common qualification name -->
+        <value-pairs value-pairs-name="common_qual_name" dc-term="type">
+            <pair>
+                <displayed-value>PhD Doctor of Philosophy</displayed-value>
+                <stored-value>PhD Doctor of Philosophy</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MSc Master of Science</displayed-value>
+                <stored-value>MSc Master of Science</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>DClinPsychol Doctorate in Clinical Psychology</displayed-value>
+                <stored-value>DClinPsychol Doctorate in Clinical Psychology</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>DDS Doctor of Dental Surgery</displayed-value>
+                <stored-value>DDS Doctor of Dental Surgery</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>DD Doctor of Divinity</displayed-value>
+                <stored-value>DD Doctor of Divinity</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>LLD Doctor of Laws</displayed-value>
+                <stored-value>LLD Doctor of Laws</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>DLT Doctor of Letters</displayed-value>
+                <stored-value>DLT Doctor of Letters</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MD Doctor of Medicine</displayed-value>
+                <stored-value>MD Doctor of Medicine</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>DMU Doctor of Music</displayed-value>
+                <stored-value>DMU Doctor of Music</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>PhD(P) Doctor of Philosophy by Research Publications</displayed-value>
+                <stored-value>PhD(P) Doctor of Philosophy by Research Publications</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>DPS Doctor of Psychology</displayed-value>
+                <stored-value>DPS Doctor of Psychology</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>DCS Doctor of Science</displayed-value>
+                <stored-value>DCS Doctor of Science</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>DVM Doctor of Veterinary Medicine and Surgery</displayed-value>
+                <stored-value>DVM Doctor of Veterinary Medicine and Surgery</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>EdD Doctor of Education</displayed-value>
+                <stored-value>EdD Doctor of Education</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>EngD Doctor of Engineering</displayed-value>
+                <stored-value>EngD Doctor of Engineering</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>LLM Master of Laws</displayed-value>
+                <stored-value>LLM Master of Laws</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MA Master of Arts</displayed-value>
+                <stored-value>MA Master of Arts</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MBA Master of Business Administration</displayed-value>
+                <stored-value>MBA Master of Business Administration</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MClinDent Master of Clinical Dentistry</displayed-value>
+                <stored-value>MClinDent Master of Clinical Dentistry</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MCS Master of Chinese Studies</displayed-value>
+                <stored-value>MCS Master of Chinese Studies</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MEd Master of Education</displayed-value>
+                <stored-value>MEd Master of Education</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MLT Master of Letters</displayed-value>
+                <stored-value>MLT Master of Letters</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MMus Master of Music</displayed-value>
+                <stored-value>MMus Master of Music</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MPhil Master of Philosophy</displayed-value>
+                <stored-value>MPhil Master of Philosophy</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MSc(R) Master of Science by Research</displayed-value>
+                <stored-value>MSc(R) Master of Science by Research</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MTeach Master of Teaching</displayed-value>
+                <stored-value>MTeach Master of Teaching</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MTh of Theology</displayed-value>
+                <stored-value>MTh of Theology</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MVetSci Masters in Veterinary Science</displayed-value>
+                <stored-value>MVetSci Masters in Veterinary Science</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>MVetSci by Research</displayed-value>
+                <stored-value>MVetSci by Research</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Postgraduate Diploma</displayed-value>
+                <stored-value>Postgraduate Diploma</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Postgraduate Certificate</displayed-value>
+                <stored-value>Postgraduate Certificate</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Undergraduate</displayed-value>
+                <stored-value>Undergraduate</stored-value>
+            </pair>
+        </value-pairs>
+
+         <value-pairs value-pairs-name="thesis_types" dc-term="type">
+            <pair>
+                <displayed-value>Thesis</displayed-value>
+                <stored-value>Thesis</stored-value>
+            </pair>
+         </value-pairs>
+        <!-- Common qualification name end -->
+        <!-- Custom value pairs end -->
 
     </form-value-pairs>
 

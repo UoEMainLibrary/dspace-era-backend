@@ -107,7 +107,7 @@ public class SwordUrlManager {
                     "Unable to construct service document urls, due to missing/invalid " +
                         "config in sword2.url and/or dspace.server.url");
             }
-            sUrl = dspaceUrl + "/" + swordPath;
+            sUrl = buildSWORDUrl("swordv2");
         }
         return sUrl;
     }
@@ -458,9 +458,10 @@ public class SwordUrlManager {
         throws DSpaceSwordException {
         WorkflowTools wft = new WorkflowTools();
 
-        // if the item is in the workspace, we need to give it its own special identifier
+        // if the item is in the workspace, we need to give it it's own special identifier
         if (wft.isItemInWorkspace(context, item)) {
-            String urlTemplate = configurationService.getProperty("swordv2-server.workspace.url-template");
+            String urlTemplate = configurationService
+                .getProperty("swordv2-server", "workspace.url-template");
             if (urlTemplate != null) {
                 return urlTemplate.replace("#wsid#", Integer.toString(
                     wft.getWorkspaceItem(context, item).getID()));

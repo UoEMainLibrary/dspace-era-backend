@@ -145,7 +145,6 @@ public class EntityServiceImplTest  {
         // Declare objects utilized for this test
         Item item = mock(Item.class);
         Entity entity = mock(Entity.class);
-        EntityType entityType = mock(EntityType.class);
         RelationshipType relationshipType = mock(RelationshipType.class);
         relationshipType.setLeftType(leftType);
         relationshipType.setLeftType(rightType);
@@ -157,8 +156,7 @@ public class EntityServiceImplTest  {
         // Mock the state of objects utilized in getAllRelationshipTypes()
         // to meet the success criteria of the invocation
         when(entity.getItem()).thenReturn(item);
-        when(entityService.getType(context, entity)).thenReturn(entityType);
-        when(relationshipTypeService.findByEntityType(context, entityType, -1, -1))
+        when(relationshipTypeService.findByEntityType(context, entityService.getType(context, entity), -1, -1))
                 .thenReturn(relationshipTypeList);
 
         // The relation(s) reported from our mocked Entity should match our relationshipList
@@ -183,9 +181,10 @@ public class EntityServiceImplTest  {
 
         // Mock the state of objects utilized in getLeftRelationshipTypes()
         // to meet the success criteria of the invocation
+        when(itemService.getMetadata(item, "dspace", "entity", "type", Item.ANY, false)).thenReturn(metsList);
         when(entity.getItem()).thenReturn(item);
         when(entityService.getType(context, entity)).thenReturn(entityType);
-        when(relationshipTypeService.findByEntityType(context, entityType, true, -1, -1))
+        when(relationshipTypeService.findByEntityType(context, entityService.getType(context, entity), true, -1, -1))
                 .thenReturn(relationshipTypeList);
 
         // The left relationshipType(s) reported from our mocked Entity should match our relationshipList
@@ -210,9 +209,10 @@ public class EntityServiceImplTest  {
 
         // Mock the state of objects utilized in getRightRelationshipTypes()
         // to meet the success criteria of the invocation
+        when(itemService.getMetadata(item, "dspace", "entity", "type", Item.ANY, false)).thenReturn(metsList);
         when(entity.getItem()).thenReturn(item);
         when(entityService.getType(context, entity)).thenReturn(entityType);
-        when(relationshipTypeService.findByEntityType(context, entityType, false, -1, -1))
+        when(relationshipTypeService.findByEntityType(context, entityService.getType(context, entity), false, -1, -1))
                 .thenReturn(relationshipTypeList);
 
         // The right relationshipType(s) reported from our mocked Entity should match our relationshipList
