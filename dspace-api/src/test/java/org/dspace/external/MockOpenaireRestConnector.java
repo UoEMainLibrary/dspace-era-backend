@@ -8,21 +8,20 @@
 package org.dspace.external;
 
 import java.io.InputStream;
-import javax.xml.bind.JAXBException;
 
 import eu.openaire.jaxb.helper.OpenAIREHandler;
 import eu.openaire.jaxb.model.Response;
 
 /**
- * Mock the OpenAIRE rest connector for unit testing<br>
+ * Mock the Openaire rest connector for unit testing<br>
  * will be resolved against static test xml files
  * 
  * @author pgraca
  *
  */
-public class MockOpenAIRERestConnector extends OpenAIRERestConnector {
+public class MockOpenaireRestConnector extends OpenaireRestConnector {
 
-    public MockOpenAIRERestConnector(String url) {
+    public MockOpenaireRestConnector(String url) {
         super(url);
     }
 
@@ -30,7 +29,7 @@ public class MockOpenAIRERestConnector extends OpenAIRERestConnector {
     public Response searchProjectByKeywords(int page, int size, String... keywords) {
         try {
             return OpenAIREHandler.unmarshal(this.getClass().getResourceAsStream("openaire-projects.xml"));
-        } catch (JAXBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -40,7 +39,7 @@ public class MockOpenAIRERestConnector extends OpenAIRERestConnector {
     public Response searchProjectByIDAndFunder(String projectID, String projectFunder, int page, int size) {
         try {
             return OpenAIREHandler.unmarshal(this.getClass().getResourceAsStream("openaire-project.xml"));
-        } catch (JAXBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -50,7 +49,7 @@ public class MockOpenAIRERestConnector extends OpenAIRERestConnector {
     public Response search(String path, int page, int size) {
         try {
             return OpenAIREHandler.unmarshal(this.getClass().getResourceAsStream("openaire-no-projects.xml"));
-        } catch (JAXBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

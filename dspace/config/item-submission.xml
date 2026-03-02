@@ -18,7 +18,7 @@
     <!-- for handle "default". -->
     <submission-map>
         <!-- Default submission process -->
-        <name-map collection-handle="default" submission-name="researchform"/>
+        <name-map collection-handle="default" submission-name="traditional"/>
 
         <!-- Sample Entities Collection configuration based on the demo Entities dataset available at:
              https://github.com/DSpace-Labs/AIP-Files/releases/tag/demo-entities-data
@@ -71,52 +71,6 @@
 
         <name-map community-handle="123456789/1234" submission-name="xxxx"/>
         -->
-
-        <!-- Form mapping for thesis collection -->
-        <name-map collection-handle="1842/2204" submission-name="thesisform" />
-        <name-map collection-handle="1842/2138" submission-name="thesisform" />
-        <name-map collection-handle="1842/2274" submission-name="thesisform" />
-        <name-map collection-handle="1842/3415" submission-name="thesisform" />
-        <name-map collection-handle="1842/1682" submission-name="thesisform" />
-        <name-map collection-handle="1842/1536" submission-name="thesisform" />
-        <name-map collection-handle="1842/35594" submission-name="thesisform" />
-        <name-map collection-handle="1842/35593" submission-name="thesisform" />
-        <name-map collection-handle="1842/868" submission-name="thesisform" />
-        <name-map collection-handle="1842/3420" submission-name="thesisform" />
-        <name-map collection-handle="1842/1256" submission-name="thesisform" />
-        <name-map collection-handle="1842/1394" submission-name="thesisform" />
-        <name-map collection-handle="1842/3414" submission-name="thesisform" />
-        <name-map collection-handle="1842/1154" submission-name="thesisform" />
-        <name-map collection-handle="1842/1901" submission-name="thesisform" />
-        <name-map collection-handle="1842/1687" submission-name="thesisform" />
-        <name-map collection-handle="1842/1788" submission-name="thesisform" />
-        <name-map collection-handle="1842/1692" submission-name="thesisform" />
-        <name-map collection-handle="1842/1694" submission-name="thesisform" />
-        <name-map collection-handle="1842/1252" submission-name="thesisform" />
-        <name-map collection-handle="1842/1746" submission-name="thesisform" />
-        <name-map collection-handle="1842/1747" submission-name="thesisform" />
-        <name-map collection-handle="1842/2284" submission-name="thesisform" />
-        <name-map collection-handle="1842/3520" submission-name="thesisform" />
-        <name-map collection-handle="1842/1745" submission-name="thesisform" />
-        <name-map collection-handle="1842/3013" submission-name="thesisform" />
-        <name-map collection-handle="1842/2624" submission-name="thesisform" />
-        <name-map collection-handle="1842/1516" submission-name="thesisform" />
-        <name-map collection-handle="1842/1807" submission-name="thesisform" />
-        <name-map collection-handle="1842/3412" submission-name="thesisform" />
-        <name-map collection-handle="1842/1410" submission-name="thesisform" />
-        <name-map collection-handle="1842/3990" submission-name="thesisform" />
-        <name-map collection-handle="1842/3389" submission-name="thesisform" />
-        <name-map collection-handle="1842/4446" submission-name="thesisform" />
-        <name-map collection-handle="1842/1951" submission-name="thesisform" />
-        <name-map collection-handle="1842/1688" submission-name="thesisform" />
-        <name-map collection-handle="1842/917" submission-name="thesisform" />
-        <name-map collection-handle="1842/6695" submission-name="thesisform" />
-        <name-map collection-handle="1842/7551" submission-name="thesisform" />
-        <name-map collection-handle="1842/8719" submission-name="thesisform" />
-        <name-map collection-handle="1842/1690" submission-name="thesisform" />
-        <name-map collection-handle="1842/15819" submission-name="thesisform" />
-        <name-map collection-handle="1842/21712" submission-name="thesisform" />
-        <name-map collection-handle="1842/37246" submission-name="thesisform" />
 
     </submission-map>
 
@@ -300,24 +254,6 @@
             <type>duplicates</type>
         </step-definition>
 
-        <!-- Custom Definitions -->
-        <!-- Thesis form -->
-        <step-definition id="thesisform">
-            <heading>submit.progressbar.describe.stepone</heading>
-            <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
-            <type>submission-form</type>
-        </step-definition>
-        <!-- Thesis form end -->
-
-        <!-- Research form -->
-        <step-definition id="researchform">
-            <heading>submit.progressbar.describe.stepone</heading>
-            <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
-            <type>submission-form</type>
-        </step-definition>
-        <!-- Research form end -->
-        <!-- Custom Definitions end -->
-
     </step-definitions>
 
     <!-- The submission-definitions map lays out the detailed definition of -->
@@ -350,7 +286,7 @@
             <step id="traditionalpagetwo"/>
 
             <!-- Uncomment this step to allow the user to embargo or access restrict the entire item -->
-            <step id="itemAccessConditions"/>
+            <!-- <step id="itemAccessConditions"/> -->
 
             <!-- Uncomment this step to show when appropriate publisher policies retrieved from SHERPA/RoMEO -->
             <!-- <step id="sherpaPolicies"/> -->
@@ -386,6 +322,8 @@
             <!-- Publications use a custom first step, but share page 2 with "traditional" Item form -->
             <step id="publicationStep"/>
             <step id="traditionalpagetwo"/>
+            <!--Step for COAR Notify services requests -->
+            <!-- <step id="coarnotify"/> -->
             <step id="upload"/>
             <step id="license"/>
         </submission-process>
@@ -470,6 +408,10 @@
 
             <!--Step will be to Sign off on the License -->
             <step id="license"/>
+
+            <!-- Step allows the user to select a Creative Commons License -->
+            <!-- Required for OpenAIREv4 support -->
+            <step id="cclicense"/>
         </submission-process>
         <submission-process name="openairePersonSubmission">
             <step id="collection"/>
@@ -483,23 +425,6 @@
             <step id="collection"/>
             <step id="openaireOrganizationForm"/>
         </submission-process>
-
-        <!-- Custom submission processes -->
-        <submission-process name="thesisform">
-            <step id="collection"/>
-            <step id="thesisform"/>
-            <step id="upload"/>
-            <step id="itemAccessConditions"/>
-            <step id="license"/>
-        </submission-process>
-
-        <submission-process name="researchform">
-            <step id="collection"/>
-            <step id="researchform"/>
-            <step id="upload"/>
-            <step id="license"/>
-        </submission-process>
-        <!-- ustum submission processes end -->
     </submission-definitions>
 
 </item-submission>

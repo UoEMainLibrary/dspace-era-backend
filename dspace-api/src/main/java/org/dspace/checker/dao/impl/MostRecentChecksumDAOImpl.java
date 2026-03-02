@@ -11,14 +11,14 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.dspace.checker.ChecksumHistory;
 import org.dspace.checker.ChecksumHistory_;
 import org.dspace.checker.ChecksumResult;
@@ -56,8 +56,8 @@ public class MostRecentChecksumDAOImpl extends AbstractHibernateDAO<MostRecentCh
         criteriaQuery.where(criteriaBuilder.and(
             criteriaBuilder.equal(mostRecentChecksumRoot.get(MostRecentChecksum_.toBeProcessed), false),
             criteriaBuilder
-                .lessThanOrEqualTo(mostRecentChecksumRoot.get(MostRecentChecksum_.processStartDate), startDate),
-            criteriaBuilder.greaterThan(mostRecentChecksumRoot.get(MostRecentChecksum_.processStartDate), endDate)
+                .lessThanOrEqualTo(mostRecentChecksumRoot.get(MostRecentChecksum_.processStartDate), endDate),
+            criteriaBuilder.greaterThan(mostRecentChecksumRoot.get(MostRecentChecksum_.processStartDate), startDate)
                             )
         );
         List<Order> orderList = new LinkedList<>();
