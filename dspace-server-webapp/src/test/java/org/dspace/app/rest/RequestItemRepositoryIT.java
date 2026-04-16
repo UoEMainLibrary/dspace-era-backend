@@ -13,6 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -28,6 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -55,10 +58,13 @@ import org.dspace.builder.RequestItemBuilder;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
+import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.services.ConfigurationService;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -80,6 +86,12 @@ public class RequestItemRepositoryIT
 
     @Autowired(required = true)
     RequestItemService requestItemService;
+
+    @Autowired
+    ApplicationContext applicationContext;
+
+    @Autowired
+    private ConfigurationService configurationService;
 
     private Collection collection;
 
@@ -593,5 +605,74 @@ public class RequestItemRepositoryIT
         RequestItemRepository instance = new RequestItemRepository();
         Class instanceClass = instance.getDomainClass();
         assertEquals("Wrong domain class", RequestItemRest.class, instanceClass);
+    }
+
+    /**
+     * Test that generated links include the correct base URL, where the UI URL has a subpath like /subdir
+     */
+    @Test
+    public void testGetLinkTokenEmailWithSubPath() throws MalformedURLException, URISyntaxException {
+        RequestItemRepository instance = applicationContext.getBean(
+                RequestItemRest.CATEGORY + '.' + RequestItemRest.PLURAL_NAME,
+                RequestItemRepository.class);
+        String currentDspaceUrl = configurationService.getProperty("dspace.ui.url");
+        String newDspaceUrl = currentDspaceUrl + "/subdir";
+        // Add a /subdir to the url for this test
+        configurationService.setProperty("dspace.ui.url", newDspaceUrl);
+        String expectedUrl = newDspaceUrl + "/request-a-copy/token";
+        String generatedLink = instance.getLinkTokenEmail("token");
+        // The URLs should match
+        assertEquals(expectedUrl, generatedLink);
+        configurationService.reloadConfig();
+    }
+
+    /**
+     * Test that generated links include the correct base URL, with NO subpath elements
+     */
+    @Test
+    public void testGetLinkTokenEmailWithoutSubPath() throws MalformedURLException, URISyntaxException {
+        RequestItemRepository instance = applicationContext.getBean(
+                RequestItemRest.CATEGORY + '.' + RequestItemRest.PLURAL_NAME,
+                RequestItemRepository.class);
+        String currentDspaceUrl = configurationService.getProperty("dspace.ui.url");
+        String expectedUrl = currentDspaceUrl + "/request-a-copy/token";
+        String generatedLink = instance.getLinkTokenEmail("token");
+        // The URLs should match
+        assertEquals(expectedUrl, generatedLink);
+        configurationService.reloadConfig();
+    }
+
+    /**
+     * Test that deleting a bitstream also removes any {@link RequestItem} entities associated with it.
+     */
+    @Test
+    public void testDeleteBitstreamRemovesRequestItem() throws Exception {
+        // Fake up a request in REST form.
+        RequestItemRest rir = new RequestItemRest();
+        rir.setAllfiles(false);
+        rir.setItemId(item.getID().toString());
+        rir.setBitstreamId(bitstream.getID().toString());
+        rir.setRequestEmail(eperson.getEmail());
+        rir.setRequestName(eperson.getFullName());
+        rir.setRequestMessage(RequestItemBuilder.REQ_MESSAGE);
+
+        // Create it and see if it was created correctly.
+        ObjectMapper mapper = new ObjectMapper();
+        String authToken = getAuthToken(eperson.getEmail(), password);
+
+        getClient(authToken)
+            .perform(post(URI_ROOT)
+                         .content(mapper.writeValueAsBytes(rir))
+                         .contentType(contentType))
+            .andExpect(status().isCreated())
+            // verify the body is empty
+            .andExpect(jsonPath("$").doesNotExist());
+
+        // Delete associated Bitstream
+        ContentServiceFactory.getInstance().getBitstreamService().delete(context, bitstream);
+
+        // Verify that all RequestItems related to this bitstream have been removed
+        Iterator<RequestItem> itemRequests = requestItemService.findByItem(context, item);
+        assertFalse(itemRequests.hasNext());
     }
 }
